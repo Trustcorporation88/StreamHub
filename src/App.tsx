@@ -6,8 +6,9 @@ import HomePage from "./components/HomePage"
 import IPTVPlayer from "./components/IPTVPlayer"
 import IPTVCatalog from "./components/IPTVCatalog"
 import LiveSports from "./components/LiveSports"
+import LegalDisclaimer from "./components/LegalDisclaimer"
 
-export type Tab = "home" | "iptv" | "catalog" | "sports"
+export type Tab = "home" | "iptv" | "catalog" | "sports" | "legal"
 
 function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>("home")
@@ -58,6 +59,7 @@ function AppShell() {
           {activeTab === "iptv" && <IPTVPlayer />}
           {activeTab === "catalog" && <IPTVCatalog />}
           {activeTab === "sports" && <LiveSports />}
+          {activeTab === "legal" && <LegalDisclaimer />}
         </main>
       </div>
     </div>
