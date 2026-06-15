@@ -82,10 +82,10 @@ export default function IPTVPlayer() {
   }, [])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col xl:h-full">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
+      <div className="mb-5 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <div className={`p-2 rounded-xl ${isDark ? "bg-accent/20" : "bg-accent/10"}`}>
             <Tv className="w-6 h-6 text-accent-light" />
           </div>
@@ -97,20 +97,21 @@ export default function IPTVPlayer() {
               Select a channel to start streaming
             </p>
           </div>
-          <span className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-green/20 text-sport-green rounded-full border border-sport-green/30">
+          <span className="sm:ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-green/20 text-sport-green rounded-full border border-sport-green/30">
             <span className="w-1.5 h-1.5 rounded-full bg-sport-green animate-pulse" />
             LIVE
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 flex-1 min-h-0">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">
         {/* Player Section */}
         <div className="xl:col-span-2 flex flex-col min-h-0">
-          <div className="flex-1 rounded-2xl overflow-hidden bg-black border border-white/5">
+          <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-white/5 xl:aspect-auto xl:flex-1 xl:min-h-0">
             <VideoPlayer
               src={activeChannel.url}
               title={`${activeChannel.name} — ${activeChannel.category}`}
+              fillContainer
             />
           </div>
 
@@ -157,10 +158,10 @@ export default function IPTVPlayer() {
                 ({channels.length})
               </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1 sm:max-h-none">
               <button
                 onClick={() => setFilter("All")}
-                className={`px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
+                className={`min-h-[36px] px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
                   filter === "All"
                     ? "bg-accent text-white shadow-lg shadow-accent/25"
                     : isDark
@@ -174,7 +175,7 @@ export default function IPTVPlayer() {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
+                  className={`min-h-[36px] px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
                     filter === cat
                       ? "bg-accent text-white shadow-lg shadow-accent/25"
                       : isDark
@@ -190,7 +191,7 @@ export default function IPTVPlayer() {
           </div>
 
           {/* Channel List */}
-          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
+          <div className="max-h-[46vh] xl:max-h-none xl:flex-1 overflow-y-auto space-y-1.5 pr-1 pb-1">
             {filtered.map((channel) => {
               const isActive = activeChannel.id === channel.id
               return (

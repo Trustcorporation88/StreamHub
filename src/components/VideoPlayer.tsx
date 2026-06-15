@@ -15,6 +15,7 @@ import {
 interface VideoPlayerProps {
   src: string
   title?: string
+  fillContainer?: boolean
 }
 
 function toProxyUrl(url: string): string {
@@ -23,7 +24,7 @@ function toProxyUrl(url: string): string {
   return `/api/iptv-proxy?url=${encodeURIComponent(url)}`
 }
 
-export default function VideoPlayer({ src, title }: VideoPlayerProps) {
+export default function VideoPlayer({ src, title, fillContainer = false }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -70,7 +71,7 @@ export default function VideoPlayer({ src, title }: VideoPlayerProps) {
 
         hls.on(Hls.Events.ERROR, (_, data) => {
           if (data.fatal) {
-            let reason = ""
+            let reason: string
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
               reason = data.response?.code
                 ? `HTTP ${data.response.code}`
@@ -102,11 +103,15 @@ export default function VideoPlayer({ src, title }: VideoPlayerProps) {
       video.addEventListener("loadedmetadata", () => setLoading(false))
       return () => { video.src = "" }
     }
-  }, [src])
+  }, [src, isHEVC])
 
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return
-    videoRef.current.paused ? videoRef.current.play().catch(() => {}) : videoRef.current.pause()
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch(() => {})
+    } else {
+      videoRef.current.pause()
+    }
     setPlaying(!videoRef.current.paused)
   }, [])
 
@@ -171,13 +176,17 @@ export default function VideoPlayer({ src, title }: VideoPlayerProps) {
   return (
     <div
       ref={containerRef}
-      className="relative group rounded-2xl overflow-hidden bg-black shadow-2xl"
+      className={`relative group rounded-2xl overflow-hidden bg-black shadow-2xl ${
+        fillContainer ? "h-full" : ""
+      }`}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => playing && setShowControls(false)}
     >
       <video
         ref={videoRef}
-        className="w-full aspect-video object-contain cursor-pointer"
+        className={`w-full object-contain cursor-pointer ${
+          fillContainer ? "h-full" : "aspect-video"
+        }`}
         onClick={togglePlay}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={() => setLoading(false)}

@@ -11,6 +11,10 @@ import {
   ArrowRight,
   Play,
   Wifi,
+  Search,
+  Code2,
+  Palette,
+  Gauge,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../App"
@@ -19,527 +23,273 @@ interface HomePageProps {
   onNavigate: (tab: Tab) => void
 }
 
-const features = [
+const destinations = [
   {
     id: "iptv" as Tab,
     icon: Tv,
     title: "IPTV Player",
-    description:
-      "Stream curated free IPTV channels with a built-in HLS player. Quality badges, category filters, and real-time connection status.",
-    color: "from-violet-500 to-purple-600",
-    stats: "4+ channels",
+    description: "Curated channels with HLS playback and quick category filters.",
+    color: "text-accent-light",
+    metric: "4+",
+    metricLabel: "curated",
   },
   {
     id: "catalog" as Tab,
     icon: List,
     title: "IPTV Catalog",
-    description:
-      "Browse thousands of community-maintained channels from iptv-org. Search by name, filter by category, and preview instantly.",
-    color: "from-blue-500 to-cyan-500",
-    stats: "2500+ channels",
+    description: "Search the full iptv-org channel list and preview streams.",
+    color: "text-sport-green",
+    metric: "2500+",
+    metricLabel: "channels",
   },
   {
     id: "sports" as Tab,
     icon: Trophy,
     title: "Live Sports",
-    description:
-      "Watch live sports streams across football, basketball, NFL, hockey, and more via the free SportSRC API with embedded players.",
-    color: "from-amber-500 to-orange-500",
-    stats: "8 categories",
+    description: "Browse live and upcoming matches with embedded stream sources.",
+    color: "text-sport-yellow",
+    metric: "8",
+    metricLabel: "sports",
   },
 ]
 
-const techStack = [
-  { name: "React 19", icon: "⚛️" },
-  { name: "TypeScript", icon: "📘" },
-  { name: "Tailwind CSS", icon: "🎨" },
-  { name: "Vite", icon: "⚡" },
-  { name: "HLS.js", icon: "📺" },
-  { name: "Lucide Icons", icon: "✨" },
+const stats = [
+  { label: "IPTV channels", value: "2500+", icon: Radio, color: "text-accent-light" },
+  { label: "Sports categories", value: "8", icon: Trophy, color: "text-sport-yellow" },
+  { label: "Open source", value: "100%", icon: Heart, color: "text-sport-red" },
+  { label: "Live-ready", value: "HLS", icon: Wifi, color: "text-sport-green" },
+]
+
+const sourceCards = [
+  {
+    title: "iptv-org/iptv",
+    href: "https://github.com/iptv-org/iptv",
+    icon: Globe,
+    description: "Community-maintained M3U playlists powering the IPTV catalog.",
+    tags: ["M3U", "Open source", "Global"],
+    tone: "text-sport-green",
+  },
+  {
+    title: "SportSRC API",
+    href: "https://sportsrc.org",
+    icon: Trophy,
+    description: "Match schedules and stream embeds for live sports categories.",
+    tags: ["REST API", "Streams", "Sports"],
+    tone: "text-sport-yellow",
+  },
+]
+
+const stack = [
+  { name: "React 19", icon: Code2 },
+  { name: "TypeScript", icon: Search },
+  { name: "Tailwind CSS", icon: Palette },
+  { name: "Vite", icon: Zap },
+  { name: "HLS.js", icon: Monitor },
+  { name: "Lucide", icon: Gauge },
 ]
 
 export default function HomePage({ onNavigate }: HomePageProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
 
+  const panelClass = isDark
+    ? "bg-dark-300/30 border-white/[0.06]"
+    : "bg-white border-slate-200"
+
+  const mutedText = isDark ? "text-dark-100" : "text-slate-500"
+  const strongText = isDark ? "text-white" : "text-slate-900"
+
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      {/* Hero Section */}
-      <div className="relative mb-8">
-        {/* Background Gradient */}
-        <div
-          className={`absolute inset-0 rounded-3xl overflow-hidden ${
-            isDark ? "opacity-40" : "opacity-20"
-          }`}
-        >
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-accent rounded-full blur-[128px]" />
-          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-sport-green rounded-full blur-[128px]" />
-        </div>
-
-        <div
-          className={`relative rounded-3xl p-6 sm:p-8 lg:p-12 border backdrop-blur-sm ${
-            isDark
-              ? "bg-dark-300/30 border-white/5"
-              : "bg-white/60 border-slate-200"
-          }`}
-        >
-          <div className="flex items-start gap-3 sm:gap-4 mb-6">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-accent to-sport-green flex items-center justify-center shrink-0 shadow-lg shadow-accent/25">
-              <Monitor className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+    <div className="flex flex-col gap-5 sm:gap-6 xl:h-full">
+      <section className={`rounded-2xl border p-4 sm:p-5 ${panelClass}`}>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+            <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
+              <Monitor className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h1
-                className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-2 ${
-                  isDark ? "text-white" : "text-slate-900"
-                }`}
-              >
-                Stream
-                <span className="gradient-text">Hub</span>
+            <div className="min-w-0">
+              <h1 className={`text-2xl sm:text-3xl font-extrabold ${strongText}`}>
+                StreamHub
               </h1>
-              <p
-                className={`text-base lg:text-lg max-w-2xl ${
-                  isDark ? "text-dark-100" : "text-slate-500"
-                }`}
-              >
-                A free, open-source IPTV dashboard for streaming live TV
-                channels, browsing community playlists, and watching sports — all
-                in one place.
+              <p className={`mt-1 max-w-2xl text-sm sm:text-base ${mutedText}`}>
+                IPTV, channel discovery, and live sports in one focused dashboard.
               </p>
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-            {[
-              {
-                label: "IPTV Channels",
-                value: "2500+",
-                icon: Radio,
-                color: "text-accent-light",
-              },
-              {
-                label: "Sports Categories",
-                value: "8",
-                icon: Trophy,
-                color: "text-sport-yellow",
-              },
-              {
-                label: "Free & Open Source",
-                value: "100%",
-                icon: Heart,
-                color: "text-sport-red",
-              },
-              {
-                label: "Live Streams",
-                value: "∞",
-                icon: Wifi,
-                color: "text-sport-green",
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className={`flex items-center gap-3 p-3 rounded-xl border ${
-                  isDark
-                    ? "bg-white/5 border-white/5"
-                    : "bg-white/80 border-slate-200"
-                }`}
-              >
-                <stat.icon className={`w-5 h-5 ${stat.color} shrink-0`} />
-                <div>
-                  <p
-                    className={`text-lg font-bold leading-tight ${
-                      isDark ? "text-white" : "text-slate-900"
-                    }`}
-                  >
-                    {stat.value}
-                  </p>
-                  <p
-                    className={`text-[10px] ${
-                      isDark ? "text-dark-100" : "text-slate-500"
-                    }`}
-                  >
-                    {stat.label}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-5">
-          <Zap
-            className={`w-5 h-5 ${isDark ? "text-dark-100" : "text-slate-400"}`}
-          />
-          <h2
-            className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}
-          >
-            Features
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {features.map((feature) => (
-            <button
-              key={feature.id}
-              onClick={() => onNavigate(feature.id)}
-              className={`group text-left p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${
-                isDark
-                  ? "bg-dark-300/30 border-white/5 hover:border-white/10 hover:bg-white/5"
-                  : "bg-white/80 border-slate-200 hover:border-slate-300 hover:bg-white"
-              }`}
-            >
-              <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}
-              >
-                <feature.icon className="w-6 h-6 text-white" />
-              </div>
-              <h3
-                className={`text-lg font-bold mb-1.5 ${
-                  isDark ? "text-white" : "text-slate-900"
-                }`}
-              >
-                {feature.title}
-              </h3>
-              <p
-                className={`text-sm mb-3 leading-relaxed ${
-                  isDark ? "text-dark-100" : "text-slate-500"
-                }`}
-              >
-                {feature.description}
-              </p>
-              <div className="flex items-center justify-between">
-                <span
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${
-                    isDark
-                      ? "bg-white/10 text-dark-100"
-                      : "bg-slate-100 text-slate-500"
-                  }`}
-                >
-                  {feature.stats}
-                </span>
-                <span className="flex items-center gap-1 text-xs font-medium text-accent-light group-hover:gap-2 transition-all">
-                  Open <ArrowRight className="w-3 h-3" />
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Credits Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-5">
-          <Heart
-            className={`w-5 h-5 ${isDark ? "text-dark-100" : "text-slate-400"}`}
-          />
-          <h2
-            className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}
-          >
-            Credits & Data Sources
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* iptv-org */}
-          <div
-            className={`p-5 rounded-2xl border transition-all ${
-              isDark
-                ? "bg-dark-300/30 border-white/5 hover:border-white/10"
-                : "bg-white/80 border-slate-200 hover:border-slate-300"
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shrink-0 shadow-lg shadow-green-500/25">
-                <Globe className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3
-                    className={`text-base font-bold ${
-                      isDark ? "text-white" : "text-slate-900"
-                    }`}
-                  >
-                    iptv-org/iptv
-                  </h3>
-                  <a
-                    href="https://github.com/iptv-org/iptv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent-light hover:text-accent transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-                <p
-                  className={`text-sm mb-2 leading-relaxed ${
-                    isDark ? "text-dark-100" : "text-slate-500"
-                  }`}
-                >
-                  Community-curated collection of{" "}
-                  <span className="font-semibold text-sport-green">
-                    2,500+ free IPTV channels
-                  </span>{" "}
-                  from around the world. Powers the IPTV Catalog with channels
-                  organized by category and country.
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-green-50 text-green-700"
-                    }`}
-                  >
-                    M3U Playlists
-                  </span>
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-green-50 text-green-700"
-                    }`}
-                  >
-                    Open Source
-                  </span>
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-green-50 text-green-700"
-                    }`}
-                  >
-                    MIT License
-                  </span>
-                </div>
-              </div>
-            </div>
-            <a
-              href="https://github.com/iptv-org/iptv"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center justify-center gap-2 mt-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isDark
-                  ? "bg-white/5 text-dark-100 hover:bg-white/10 hover:text-white border border-white/5"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 border border-slate-200"
-              }`}
-            >
-              <ExternalLink className="w-4 h-4" />
-              View on GitHub
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-
-          {/* SportSRC API */}
-          <div
-            className={`p-5 rounded-2xl border transition-all ${
-              isDark
-                ? "bg-dark-300/30 border-white/5 hover:border-white/10"
-                : "bg-white/80 border-slate-200 hover:border-slate-300"
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/25">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3
-                    className={`text-base font-bold ${
-                      isDark ? "text-white" : "text-slate-900"
-                    }`}
-                  >
-                    SportSRC API
-                  </h3>
-                  <a
-                    href="https://sportsrc.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent-light hover:text-accent transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-                <p
-                  className={`text-sm mb-2 leading-relaxed ${
-                    isDark ? "text-dark-100" : "text-slate-500"
-                  }`}
-                >
-                  Free sports streaming API providing match schedules and
-                  embedded stream links for{" "}
-                  <span className="font-semibold text-sport-yellow">
-                    8 sports categories
-                  </span>{" "}
-                  including football, basketball, NFL, hockey, and more.
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-amber-500/10 text-amber-400"
-                        : "bg-amber-50 text-amber-700"
-                    }`}
-                  >
-                    REST API
-                  </span>
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-amber-500/10 text-amber-400"
-                        : "bg-amber-50 text-amber-700"
-                    }`}
-                  >
-                    Free
-                  </span>
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                      isDark
-                        ? "bg-amber-500/10 text-amber-400"
-                        : "bg-amber-50 text-amber-700"
-                    }`}
-                  >
-                    Live Streams
-                  </span>
-                </div>
-              </div>
-            </div>
-            <a
-              href="https://sportsrc.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center justify-center gap-2 mt-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isDark
-                  ? "bg-white/5 text-dark-100 hover:bg-white/10 hover:text-white border border-white/5"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 border border-slate-200"
-              }`}
-            >
-              <Trophy className="w-4 h-4" />
-              Visit SportSRC
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Tech Stack & Get Started */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        {/* Tech Stack */}
-        <div
-          className={`p-5 rounded-2xl border ${
-            isDark
-              ? "bg-dark-300/30 border-white/5"
-              : "bg-white/80 border-slate-200"
-          }`}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">🛠️</span>
-            <h3
-              className={`text-base font-bold ${
-                isDark ? "text-white" : "text-slate-900"
-              }`}
-            >
-              Built With
-            </h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className={`flex items-center gap-2 p-2.5 rounded-xl text-sm font-medium ${
-                  isDark
-                    ? "bg-white/5 text-dark-100"
-                    : "bg-slate-100 text-slate-500"
-                }`}
-              >
-                <span>{tech.icon}</span>
-                <span>{tech.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Get Started */}
-        <div
-          className={`p-5 rounded-2xl border flex flex-col justify-between ${
-            isDark
-              ? "bg-gradient-to-br from-accent/10 to-sport-green/10 border-accent/20"
-              : "bg-gradient-to-br from-accent/5 to-sport-green/5 border-accent/10"
-          }`}
-        >
-          <div>
-            <h3
-              className={`text-base font-bold mb-2 ${
-                isDark ? "text-white" : "text-slate-900"
-              }`}
-            >
-              Ready to start?
-            </h3>
-            <p
-              className={`text-sm mb-4 leading-relaxed ${
-                isDark ? "text-dark-100" : "text-slate-500"
-              }`}
-            >
-              Jump into the IPTV Player to stream curated channels, browse the
-              full catalog, or check out live sports schedules.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:justify-end">
             <button
               onClick={() => onNavigate("iptv")}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent-light text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-accent/25 active:scale-95 min-h-[44px]"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light"
             >
               <Play className="w-4 h-4" />
-              Start Streaming
+              Watch
             </button>
             <button
               onClick={() => onNavigate("catalog")}
-              className={`flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all min-h-[44px] ${
+              className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                 isDark
-                  ? "bg-white/10 text-dark-100 hover:text-white hover:bg-white/15 border border-white/10"
-                  : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
+                  ? "bg-white/10 text-white hover:bg-white/15"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
-              <List className="w-4 h-4" />
-              Browse Catalog
+              <Search className="w-4 h-4" />
+              Search
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <div
-        className={`text-center py-6 border-t ${
-          isDark ? "border-white/5" : "border-slate-200"
-        }`}
-      >
-        <p
-          className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
-        >
-          Built with React, TypeScript & Tailwind CSS. IPTV data provided by{" "}
-          <a
-            href="https://github.com/iptv-org/iptv"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent-light hover:underline"
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className={`rounded-2xl border p-3 sm:p-4 ${panelClass}`}
           >
-            iptv-org
-          </a>{" "}
-          &amp;{" "}
-          <a
-            href="https://sportsrc.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent-light hover:underline"
-          >
-            SportSRC
-          </a>
-          .
-        </p>
-      </div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className={`text-lg sm:text-xl font-bold leading-tight ${strongText}`}>
+                  {stat.value}
+                </p>
+                <p className={`text-[11px] sm:text-xs truncate ${mutedText}`}>
+                  {stat.label}
+                </p>
+              </div>
+              <stat.icon className={`w-5 h-5 shrink-0 ${stat.color}`} />
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <div className="flex items-center gap-2 mb-3">
+          <Zap className={`w-4 h-4 ${mutedText}`} />
+          <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
+            Open A Section
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          {destinations.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`group min-h-[132px] rounded-2xl border p-4 text-left transition-colors ${
+                isDark
+                  ? "bg-dark-300/30 border-white/[0.06] hover:bg-white/[0.05] hover:border-white/10"
+                  : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
+                  <item.icon className={`w-5 h-5 ${item.color}`} />
+                </div>
+                <div className="text-right">
+                  <p className={`text-lg font-bold leading-tight ${strongText}`}>
+                    {item.metric}
+                  </p>
+                  <p className={`text-[10px] uppercase tracking-wider ${mutedText}`}>
+                    {item.metricLabel}
+                  </p>
+                </div>
+              </div>
+
+              <h3 className={`mt-4 text-base font-bold ${strongText}`}>
+                {item.title}
+              </h3>
+              <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
+                {item.description}
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-accent-light transition-all group-hover:gap-2">
+                Open <ArrowRight className="w-3 h-3" />
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Heart className={`w-4 h-4 ${mutedText}`} />
+            <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
+              Data Sources
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            {sourceCards.map((source) => (
+              <div
+                key={source.title}
+                className={`rounded-2xl border p-4 ${panelClass}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
+                    <source.icon className={`w-5 h-5 ${source.tone}`} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className={`text-base font-bold truncate ${strongText}`}>
+                        {source.title}
+                      </h3>
+                      <a
+                        href={source.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent-light hover:text-accent"
+                        aria-label={`Open ${source.title}`}
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                    <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
+                      {source.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {source.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className={`rounded-lg px-2 py-1 text-[10px] font-semibold ${
+                        isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Code2 className={`w-4 h-4 ${mutedText}`} />
+            <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
+              Built With
+            </h2>
+          </div>
+
+          <div className={`rounded-2xl border p-4 ${panelClass}`}>
+            <div className="grid grid-cols-2 gap-2">
+              {stack.map((tech) => (
+                <div
+                  key={tech.name}
+                  className={`flex min-h-[40px] items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium ${
+                    isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  <tech.icon className="w-4 h-4 shrink-0 text-accent-light" />
+                  <span className="truncate">{tech.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

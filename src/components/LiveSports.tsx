@@ -126,7 +126,11 @@ export default function LiveSports() {
   }, [])
 
   useEffect(() => {
-    fetchMatches(sport)
+    const timeout = window.setTimeout(() => {
+      void fetchMatches(sport)
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [sport, fetchMatches])
 
   const fetchDetail = async (match: Match) => {
@@ -158,10 +162,10 @@ export default function LiveSports() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col xl:h-full">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
+      <div className="mb-5 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-1">
           <div
             className={`p-2.5 rounded-xl ${isDark ? "bg-sport-yellow/15" : "bg-amber-50"}`}
           >
@@ -182,7 +186,7 @@ export default function LiveSports() {
             </p>
           </div>
           <span
-            className={`ml-auto flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-full ${
+            className={`sm:ml-auto flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold rounded-full ${
               isDark
                 ? "bg-sport-green/15 text-sport-green border border-sport-green/20"
                 : "bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -195,7 +199,7 @@ export default function LiveSports() {
       </div>
 
       {/* Sport Category Tabs */}
-      <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1 scrollbar-hide scroll-snap-x -mx-1 px-1">
+      <div className="flex gap-1.5 mb-5 sm:mb-6 overflow-x-auto pb-1 scrollbar-hide scroll-snap-x -mx-1 px-1">
         {sportCategories.map(({ id, label, icon: Icon }) => {
           const isActive = sport === id
           return (
@@ -271,9 +275,13 @@ export default function LiveSports() {
 
       {/* Main Content */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 flex-1 min-h-0">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 xl:flex-1 xl:min-h-0">
           {/* Match List */}
-          <div className="xl:col-span-2 flex flex-col min-h-0">
+          <div
+            className={`xl:col-span-2 flex flex-col min-h-0 ${
+              detail || detailLoading || detailError ? "order-2" : "order-1"
+            } xl:order-1`}
+          >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Timer
@@ -292,7 +300,7 @@ export default function LiveSports() {
               </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+            <div className="max-h-[58vh] xl:max-h-none xl:flex-1 overflow-y-auto space-y-2 pr-1 pb-1">
               {matches.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div
@@ -333,8 +341,8 @@ export default function LiveSports() {
                     }`}
                   >
                     {/* Top Row: Status + Time */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
                         {match.popular && (
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-md ${
@@ -377,7 +385,7 @@ export default function LiveSports() {
                     </div>
 
                     {/* Teams Row */}
-                    <div className="flex items-center gap-3">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
                       {/* Home Team */}
                       <div className="flex items-center gap-2.5 flex-1 min-w-0">
                         {match.teams.home.badge ? (
@@ -403,7 +411,7 @@ export default function LiveSports() {
                           </div>
                         )}
                         <span
-                          className={`text-sm font-semibold truncate ${isDark ? "text-white" : "text-slate-900"}`}
+                          className={`text-xs sm:text-sm font-semibold truncate ${isDark ? "text-white" : "text-slate-900"}`}
                         >
                           {match.teams.home.name}
                         </span>
@@ -414,7 +422,7 @@ export default function LiveSports() {
                         className={`px-2.5 py-1 rounded-lg shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}
                       >
                         <span
-                          className={`text-[10px font-bold tracking-widest ${isDark ? "text-dark-100" : "text-slate-400"}`}
+                          className={`text-[10px] font-bold tracking-widest ${isDark ? "text-dark-100" : "text-slate-400"}`}
                         >
                           VS
                         </span>
@@ -423,7 +431,7 @@ export default function LiveSports() {
                       {/* Away Team */}
                       <div className="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
                         <span
-                          className={`text-sm font-semibold truncate text-right ${isDark ? "text-white" : "text-slate-900"}`}
+                          className={`text-xs sm:text-sm font-semibold truncate text-right ${isDark ? "text-white" : "text-slate-900"}`}
                         >
                           {match.teams.away.name}
                         </span>
@@ -476,7 +484,11 @@ export default function LiveSports() {
           </div>
 
           {/* Stream Panel */}
-          <div className="flex flex-col min-h-0">
+          <div
+            className={`flex flex-col min-h-0 ${
+              detail || detailLoading || detailError ? "order-1" : "order-2"
+            } xl:order-2`}
+          >
             <div className="flex items-center gap-2 mb-3">
               <Play
                 className={`w-3.5 h-3.5 ${isDark ? "text-dark-100" : "text-slate-400"}`}
@@ -518,8 +530,8 @@ export default function LiveSports() {
 
             {/* Player */}
             {detail && !detailLoading && (
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex-1 rounded-2xl overflow-hidden bg-black border border-white/[0.06]">
+              <div className="flex flex-col min-h-0 xl:flex-1">
+                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-white/[0.06] xl:aspect-auto xl:flex-1 xl:min-h-0">
                   {activeSource ? (
                     <iframe
                       src={getDirectPlayerUrl(activeSource)}

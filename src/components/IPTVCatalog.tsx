@@ -81,8 +81,6 @@ export default function IPTVCatalog() {
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
-    setError(null)
 
     fetch(M3U_URL, { signal: AbortSignal.timeout(30000) })
       .then((res) => {
@@ -154,10 +152,10 @@ export default function IPTVCatalog() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col xl:h-full">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
+      <div className="mb-5 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <div className={`p-2 rounded-xl ${isDark ? "bg-accent/20" : "bg-accent/10"}`}>
             <List className="w-6 h-6 text-accent-light" />
           </div>
@@ -170,7 +168,7 @@ export default function IPTVCatalog() {
             </p>
           </div>
           {totalCount > 0 && (
-            <span className={`ml-auto px-3 py-1.5 text-xs font-semibold rounded-full border ${isDark ? "bg-accent/20 text-accent-light border-accent/30" : "bg-accent/10 text-accent-dark border-accent/20"}`}>
+            <span className={`sm:ml-auto px-3 py-1.5 text-xs font-semibold rounded-full border ${isDark ? "bg-accent/20 text-accent-light border-accent/30" : "bg-accent/10 text-accent-dark border-accent/20"}`}>
               {totalCount.toLocaleString()} channels
             </span>
           )}
@@ -220,7 +218,7 @@ export default function IPTVCatalog() {
 
       {/* Main Content */}
       {!loading && !error && (
-        <div className="flex flex-col xl:grid xl:grid-cols-[1fr_420px] gap-4 sm:gap-6 flex-1 min-h-0">
+        <div className="flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_420px] gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">
           {/* Channel List */}
           <div className="flex flex-col min-h-0 order-2 xl:order-1">
             {/* Search Bar */}
@@ -258,7 +256,7 @@ export default function IPTVCatalog() {
             </div>
 
             {/* Channel List */}
-            <div ref={channelListRef} className="flex-1 overflow-y-auto space-y-1.5 pr-1">
+            <div ref={channelListRef} className="max-h-[58vh] xl:max-h-none xl:flex-1 overflow-y-auto space-y-1.5 pr-1 pb-1">
               {grouped.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
@@ -329,7 +327,7 @@ export default function IPTVCatalog() {
                   </button>
 
                   {expandedCategories.has(category) && (
-                    <div className={`border-t max-h-96 overflow-y-auto ${isDark ? "border-white/5" : "border-slate-200"}`}>
+                    <div className={`border-t max-h-72 sm:max-h-96 overflow-y-auto ${isDark ? "border-white/5" : "border-slate-200"}`}>
                       {chs.slice(0, 200).map((ch) => {
                         const country = extractCountry(ch)
                         const isActive = activeChannel?.id === ch.id
@@ -412,7 +410,7 @@ export default function IPTVCatalog() {
                   {categories.length}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-1 max-h-44 overflow-y-auto pr-1">
+              <div className="flex flex-wrap gap-1 max-h-32 sm:max-h-44 overflow-y-auto pr-1">
                 <button
                   onClick={() => setSelectedCategory("All")}
                   className={`px-2 py-1.5 sm:py-1 text-[10px] font-medium rounded-md whitespace-nowrap transition-all duration-200 cursor-pointer min-h-[32px] ${
@@ -446,7 +444,7 @@ export default function IPTVCatalog() {
 
             {/* Player Section */}
             {activeChannel && (
-              <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex flex-col min-h-0 xl:flex-1">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="p-1.5 rounded-lg bg-sport-yellow/15">
                     <Sparkles className="w-3.5 h-3.5 text-sport-yellow" />
@@ -457,10 +455,11 @@ export default function IPTVCatalog() {
                     Now Playing
                   </h3>
                 </div>
-                <div className="flex-1 min-h-[280px] xl:min-h-0 rounded-2xl overflow-hidden bg-black border border-white/[0.06]">
+                <div className="aspect-video w-full min-h-0 rounded-2xl overflow-hidden bg-black border border-white/[0.06] xl:aspect-auto xl:flex-1 xl:min-h-0">
                   <VideoPlayer
                     src={activeChannel.url}
                     title={`${activeChannel.name} — ${activeChannel.category}`}
+                    fillContainer
                   />
                 </div>
               </div>
