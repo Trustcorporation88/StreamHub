@@ -56,9 +56,10 @@ function iptvProxy(): Plugin {
             for (const chunk of chunks) { buf.set(chunk, offset); offset += chunk.length }
             res.end(Buffer.from(buf))
           }
-        } catch (e: any) {
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e)
           res.statusCode = 502
-          res.end(`IPTV proxy error: ${e.message || e}`)
+          res.end(`IPTV proxy error: ${msg}`)
         }
       })
     },
