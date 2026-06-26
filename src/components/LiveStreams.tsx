@@ -77,35 +77,14 @@ const listVariants = {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" as const } },
 }
 
 const heroVariants = {
   hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
 }
 const heroExit = { opacity: 0, y: -8, transition: { duration: 0.2 } }
-
-function SkeletonChannel({ isDark }: { isDark: boolean }) {
-  return (
-    <div
-      className={`w-full p-3 sm:p-3.5 rounded-2xl border ${
-        isDark ? "border-white/5 bg-dark-300/30" : "border-slate-200 bg-white/80"
-      }`}
-    >
-      <div className="flex items-center gap-3">
-        <div className={`w-11 h-11 rounded-xl shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
-        <div className="flex-1 min-w-0">
-          <div className={`h-4 w-28 rounded ${isDark ? "bg-white/5" : "bg-slate-100"} mb-2`} />
-          <div className="flex items-center gap-2">
-            <div className={`h-3 w-14 rounded ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
-            <div className={`h-3 w-8 rounded ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function LiveStreams() {
   const { theme } = useTheme()
