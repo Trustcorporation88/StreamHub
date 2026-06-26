@@ -83,8 +83,8 @@ const cardVariants = {
 const heroVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
 }
+const heroExit = { opacity: 0, y: -8, transition: { duration: 0.2 } }
 
 function SkeletonChannel({ isDark }: { isDark: boolean }) {
   return (
@@ -201,7 +201,7 @@ export default function LiveStreams() {
             variants={heroVariants}
             initial="hidden"
             animate="visible"
-            exit="exit"
+            exit={heroExit}
             className={`mb-5 sm:mb-6 p-4 sm:p-5 rounded-2xl border transition-all duration-300 ${
               watchingLive
                 ? isDark
