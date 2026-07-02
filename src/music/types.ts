@@ -1,4 +1,4 @@
-export type MusicSource = "youtube" | "radio"
+﻿export type MusicSource = "youtube" | "radio"
 
 export interface Track {
   id: string
@@ -50,6 +50,7 @@ export interface MusicPlayerState {
   isShuffled: boolean
   repeatMode: "none" | "all" | "one"
   favorites: string[]
+  favoriteTracks: Track[]
   recentlyPlayed: Track[]
   playlists: MusicPlaylist[]
 }
@@ -70,9 +71,10 @@ export type MusicAction =
   | { type: "REMOVE_FROM_QUEUE"; index: number }
   | { type: "CLEAR_QUEUE" }
   | { type: "SET_QUEUE"; tracks: Track[]; startIndex?: number }
+  | { type: "SET_QUEUE_INDEX"; index: number }
   | { type: "TOGGLE_SHUFFLE" }
   | { type: "CYCLE_REPEAT" }
-  | { type: "TOGGLE_FAVORITE"; trackId: string }
+  | { type: "TOGGLE_FAVORITE"; trackId: string; track?: Track }
   | { type: "ADD_RECENTLY_PLAYED"; track: Track }
   | { type: "REMOVE_FROM_RECENTLY_PLAYED"; trackId: string }
   | { type: "CREATE_PLAYLIST"; name: string }

@@ -1,9 +1,10 @@
-import { useTheme } from "../../context/ThemeContext"
+﻿import { useTheme } from "../../context/ThemeContext"
 import { useMusic } from "../hooks/useMusic"
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Repeat, Repeat1, Shuffle, X, ListMusic, Heart, ChevronUp, Tv } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
 import YouTubeEmbed from "./YouTubeEmbed"
+import type { Track } from "../types"
 
 function formatTime(seconds: number): string {
   if (!seconds || !isFinite(seconds)) return "0:00"
@@ -19,17 +20,70 @@ function AudioVisualizer() {
         <motion.div
           key={i}
           className="w-[3px] bg-accent rounded-full"
-          animate={{
-            height: ["4px", "14px", "6px", "12px", "4px"],
-          }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            delay: i * 0.15,
-            ease: "easeInOut",
-          }}
+          animate={{ height: ["4px", "14px", "6px", "12px", "4px"] }}
+          transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
         />
       ))}
+    </div>
+  )
+}
+
+function QueueRow({
+  track,
+  active,
+  isDark,
+  onSelect,
+  onRemove,
+  compact = false,
+}: {
+  track: Track
+  active: boolean
+  isDark: boolean
+  onSelect: () => void
+  onRemove: () => void
+  compact?: boolean
+}) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onSelect()
+        }
+      }}
+      className={`w-full flex items-center gap-3 p-2 ${compact ? "rounded-lg" : "rounded-xl"} text-left transition-colors cursor-pointer ${
+        active ? (isDark ? "bg-accent/20" : "bg-accent/10") : isDark ? "hover:bg-white/5" : "hover:bg-slate-50"
+      }`}
+    >
+      <img
+        src={track.thumbnail}
+        alt=""
+        className={`shrink-0 object-cover ${compact ? "w-8 h-8 rounded-md" : "w-10 h-10 rounded-lg"}`}
+        onError={(e) => {
+          ;(e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
+        }}
+      />
+      <div className="min-w-0 flex-1">
+        <p className={`font-medium truncate ${compact ? "text-xs" : "text-sm"} ${active ? (isDark ? "text-accent-light" : "text-accent-dark") : isDark ? "text-white" : "text-slate-900"}`}>
+          {track.title}
+        </p>
+        <p className={`truncate text-[10px] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+          {track.artist}
+        </p>
+      </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          onRemove()
+        }}
+        className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg ${isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-400"}`}
+        aria-label="Remove from queue"
+      >
+        <X className="w-4 h-4" />
+      </button>
     </div>
   )
 }
@@ -37,7 +91,20 @@ function AudioVisualizer() {
 export default function MusicPlayer() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const { state, dispatch, togglePlay, nextTrack, prevTrack, seek, setVolume, toggleMute, toggleFavorite, isFavorite, registerYouTubeControls, unregisterYouTubeControls } = useMusic()
+  const {
+    state,
+    dispatch,
+    togglePlay,
+    nextTrack,
+    prevTrack,
+    seek,
+    setVolume,
+    toggleMute,
+    toggleFavorite,
+    isFavorite,
+    registerYouTubeControls,
+    unregisterYouTubeControls,
+  } = useMusic()
   const [showQueue, setShowQueue] = useState(false)
   const [showMobileControls, setShowMobileControls] = useState(false)
   const [showVideo, setShowVideo] = useState(false)
@@ -50,12 +117,24 @@ export default function MusicPlayer() {
   const isFav = isFavorite(currentTrack.id)
 
   const panelClass = isDark
-    ? "bg-dark-300/95 backdrop-blur-xl border-t border-white/[0.06]"
-    : "bg-white/95 backdrop-blur-xl border-t border-slate-200"
+    ? "bg-dark-300/95 backdrop-blur-xl border-t border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.18)]"
+    : "bg-white/95 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_40px_rgba(15,23,42,0.08)]"
+
+  const renderQueueRows = (compact = false) =>
+    queue.map((track, i) => (
+      <QueueRow
+        key={`${track.id}-${i}`}
+        track={track}
+        active={i === queueIndex}
+        isDark={isDark}
+        compact={compact}
+        onSelect={() => dispatch({ type: "SET_QUEUE_INDEX", index: i })}
+        onRemove={() => dispatch({ type: "REMOVE_FROM_QUEUE", index: i })}
+      />
+    ))
 
   return (
     <>
-      {/* YouTube Embed Overlay — always mounted when track is YouTube so controls stay active */}
       {isYoutube && (
         <YouTubeEmbed
           videoId={currentTrack.streamUrl}
@@ -66,7 +145,6 @@ export default function MusicPlayer() {
         />
       )}
 
-      {/* Queue Panel */}
       <AnimatePresence>
         {showQueue && (
           <motion.div
@@ -102,50 +180,13 @@ export default function MusicPlayer() {
                 </div>
               </div>
               <div className="space-y-1">
-                {queue.map((track, i) => (
-                  <button
-                    key={`${track.id}-${i}`}
-                    onClick={() => dispatch({ type: "SET_TRACK", track })}
-                    className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
-                      i === queueIndex
-                        ? isDark ? "bg-accent/20" : "bg-accent/10"
-                        : isDark ? "hover:bg-white/5" : "hover:bg-slate-50"
-                    }`}
-                  >
-                    <img
-                      src={track.thumbnail}
-                      alt=""
-                      className="w-8 h-8 rounded-md object-cover shrink-0"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
-                      }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className={`text-xs font-medium truncate ${i === queueIndex ? "text-accent-light" : isDark ? "text-white" : "text-slate-900"}`}>
-                        {track.title}
-                      </p>
-                      <p className={`text-[10px] truncate ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                        {track.artist}
-                      </p>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        dispatch({ type: "REMOVE_FROM_QUEUE", index: i })
-                      }}
-                      className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg ${isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-400"}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </button>
-                ))}
+                {renderQueueRows()}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Mobile Expanded Controls Bottom Sheet */}
       <AnimatePresence>
         {showMobileControls && (
           <motion.div
@@ -157,19 +198,19 @@ export default function MusicPlayer() {
               isDark ? "bg-dark-200/95 backdrop-blur-xl border-white/[0.06]" : "bg-white/95 backdrop-blur-xl border-slate-200"
             }`}
           >
-            {/* Drag Handle Indicator */}
             <div className="py-4 flex items-center justify-center shrink-0">
               <button
-                onClick={() => { setShowMobileControls(false); setShowQueue(false) }}
+                onClick={() => {
+                  setShowMobileControls(false)
+                  setShowQueue(false)
+                }}
                 className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-white/10 hover:bg-slate-400 dark:hover:bg-white/20 transition-colors"
                 aria-label="Close player"
               />
             </div>
 
-            {/* Inner Content */}
             <div className="flex-1 flex flex-col p-6 min-h-0 overflow-y-auto">
               {showQueue ? (
-                // Queue list inside sheet
                 <div className="flex-1 flex flex-col min-h-0">
                   <div className="flex items-center justify-between mb-4 shrink-0">
                     <h3 className={`text-base font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
@@ -183,63 +224,32 @@ export default function MusicPlayer() {
                     </button>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
-                    {queue.map((track, i) => (
-                      <button
-                        key={`${track.id}-${i}`}
-                        onClick={() => dispatch({ type: "SET_TRACK", track })}
-                        className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-colors ${
-                          i === queueIndex
-                            ? isDark ? "bg-accent/20 border border-accent/20" : "bg-accent/10 border border-accent/20"
-                            : isDark ? "hover:bg-white/5 border border-transparent" : "hover:bg-slate-50 border border-transparent"
-                        }`}
-                      >
-                        <img
-                          src={track.thumbnail}
-                          alt=""
-                          className="w-10 h-10 rounded-lg object-cover shrink-0"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
-                          }}
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className={`text-sm font-semibold truncate ${i === queueIndex ? "text-accent-light" : isDark ? "text-white" : "text-slate-900"}`}>
-                            {track.title}
-                          </p>
-                          <p className={`text-xs truncate ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                            {track.artist}
-                          </p>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            dispatch({ type: "REMOVE_FROM_QUEUE", index: i })
-                          }}
-                          className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg ${isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-400"}`}
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </button>
-                    ))}
+                    {renderQueueRows(true)}
                   </div>
                 </div>
               ) : (
-                // Album Art & Controls view inside sheet
                 <div className="flex-1 flex flex-col justify-around py-4">
-                  {/* Large Album Artwork */}
                   <div className="relative aspect-square w-64 max-w-full mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-black/40 shrink-0">
                     <img
                       src={currentTrack.thumbnail}
                       alt=""
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
+                        ;(e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
                       }}
                     />
                   </div>
 
-                  {/* Title & Artist & Favorite */}
                   <div className="flex items-center justify-between gap-4 mt-6">
                     <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+                          Now Playing
+                        </span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
+                          {currentTrack.source === "youtube" ? "YouTube Music" : "Internet Radio"}
+                        </span>
+                      </div>
                       <h2 className={`text-xl font-bold truncate ${isDark ? "text-white" : "text-slate-900"}`}>
                         {currentTrack.title}
                       </h2>
@@ -248,7 +258,7 @@ export default function MusicPlayer() {
                       </p>
                     </div>
                     <motion.button
-                      onClick={() => toggleFavorite(currentTrack.id)}
+                      onClick={() => toggleFavorite(currentTrack)}
                       className={`p-2.5 rounded-full transition-colors shrink-0 ${isFav ? "text-sport-red bg-sport-red/10" : isDark ? "bg-white/5 text-dark-100 hover:text-white" : "bg-slate-100 text-slate-400 hover:text-slate-700"}`}
                       whileTap={{ scale: 0.9 }}
                     >
@@ -256,7 +266,6 @@ export default function MusicPlayer() {
                     </motion.button>
                   </div>
 
-                  {/* Progress section */}
                   <div className="mt-6 space-y-2">
                     <div
                       className="relative w-full h-2 cursor-pointer rounded-full bg-slate-200 dark:bg-white/10"
@@ -266,7 +275,7 @@ export default function MusicPlayer() {
                         seek((x / rect.width) * duration)
                       }}
                     >
-                      <div className={`absolute top-0 left-0 h-full bg-gradient-to-r from-accent to-purple-500 rounded-full`} style={{ width: `${duration > 0 ? (progress / duration) * 100 : 0}%` }} />
+                      <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent to-purple-500 rounded-full" style={{ width: `${duration > 0 ? (progress / duration) * 100 : 0}%` }} />
                       <div className="absolute -top-1 w-4 h-4 bg-white rounded-full shadow-md" style={{ left: `calc(${duration > 0 ? (progress / duration) * 100 : 0}% - 8px)` }} />
                     </div>
                     <div className="flex justify-between text-xs text-slate-400 dark:text-dark-100 tabular-nums">
@@ -275,7 +284,6 @@ export default function MusicPlayer() {
                     </div>
                   </div>
 
-                  {/* Large Controls */}
                   <div className="flex items-center justify-center gap-6 mt-6">
                     <motion.button
                       onClick={() => dispatch({ type: "TOGGLE_SHUFFLE" })}
@@ -318,7 +326,6 @@ export default function MusicPlayer() {
                     </motion.button>
                   </div>
 
-                  {/* Volume Slider & Video toggle */}
                   <div className="flex items-center gap-4 mt-6">
                     <button onClick={toggleMute} className={`p-2 rounded-full ${isDark ? "text-dark-100" : "text-slate-400"}`}>
                       {isMuted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
@@ -332,7 +339,7 @@ export default function MusicPlayer() {
                       onChange={(e) => setVolume(parseFloat(e.target.value))}
                       className="flex-1 h-1.5 accent-accent cursor-pointer rounded-lg bg-slate-200 dark:bg-white/10"
                     />
-                    
+
                     <button
                       onClick={() => setShowQueue(true)}
                       className={`p-2.5 rounded-full ${isDark ? "text-dark-100 hover:text-white" : "text-slate-400 hover:text-slate-700"}`}
@@ -356,14 +363,12 @@ export default function MusicPlayer() {
         )}
       </AnimatePresence>
 
-      {/* Player Bar */}
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className={`fixed bottom-0 left-0 right-0 z-40 safe-area-bottom ${panelClass}`}
       >
-        {/* Progress bar — enlarged touch area (desktop only) */}
         <div
           className="relative w-full cursor-pointer group py-2 hidden md:block"
           onClick={(e) => {
@@ -377,19 +382,16 @@ export default function MusicPlayer() {
             className="absolute top-1/2 -translate-y-1/2 left-0 h-1 bg-gradient-to-r from-accent to-purple-500 rounded-full"
             style={{ width: `${duration > 0 ? (progress / duration) * 100 : 0}%` }}
           />
-          {/* Hover expand */}
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 h-1 bg-accent/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
             style={{ width: `${duration > 0 ? (progress / duration) * 100 : 0}%` }}
           />
-          {/* Thumb */}
           <div
             className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ left: `calc(${duration > 0 ? (progress / duration) * 100 : 0}% - 6px)` }}
           />
         </div>
 
-        {/* Progress bar — interactive on mobile (thin visual + large touch area) */}
         <div
           className="relative w-full md:hidden cursor-pointer py-1.5"
           onClick={(e) => {
@@ -410,7 +412,6 @@ export default function MusicPlayer() {
         </div>
 
         <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5">
-          {/* Track info — clickable to expand on mobile */}
           <div
             className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 cursor-pointer md:cursor-auto"
             onClick={() => setShowMobileControls(true)}
@@ -421,7 +422,7 @@ export default function MusicPlayer() {
                 alt=""
                 className="w-10 h-10 rounded-lg object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
+                  ;(e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
                 }}
               />
               {isPlaying && currentTrack.source === "radio" && (
@@ -431,6 +432,14 @@ export default function MusicPlayer() {
               )}
             </div>
             <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className={`text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+                  Now Playing
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
+                  {currentTrack.source === "youtube" ? "YT Music" : "Radio"}
+                </span>
+              </div>
               <p className={`text-xs sm:text-sm font-medium truncate ${isDark ? "text-white" : "text-slate-900"}`}>
                 {currentTrack.title}
               </p>
@@ -440,10 +449,12 @@ export default function MusicPlayer() {
             </div>
           </div>
 
-          {/* Mobile Only: Simple controls */}
           <div className="flex md:hidden items-center gap-1 shrink-0">
             <motion.button
-              onClick={(e) => { e.stopPropagation(); togglePlay() }}
+              onClick={(e) => {
+                e.stopPropagation()
+                togglePlay()
+              }}
               className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-white shadow-md shadow-accent/20 shrink-0"
               whileTap={{ scale: 0.9 }}
             >
@@ -457,10 +468,9 @@ export default function MusicPlayer() {
             </button>
           </div>
 
-          {/* Desktop controls */}
           <div className="hidden md:flex items-center gap-0.5 sm:gap-1 shrink-0">
             <motion.button
-              onClick={() => toggleFavorite(currentTrack.id)}
+              onClick={() => toggleFavorite(currentTrack)}
               className={`hidden sm:flex p-2 min-w-[44px] min-h-[44px] items-center justify-center rounded-lg transition-colors ${isFav ? "text-sport-red" : isDark ? "text-dark-100 hover:text-white" : "text-slate-400 hover:text-slate-700"}`}
               whileTap={{ scale: 0.85 }}
             >
@@ -520,7 +530,6 @@ export default function MusicPlayer() {
             )}
           </div>
 
-          {/* Desktop: Time & Volume & Queue */}
           <div className="hidden md:flex items-center gap-3 flex-1 justify-end">
             <span className={`text-xs tabular-nums ${isDark ? "text-dark-100" : "text-slate-500"}`}>
               {formatTime(progress)} / {formatTime(duration)}
@@ -551,6 +560,5 @@ export default function MusicPlayer() {
         </div>
       </motion.div>
     </>
-
   )
 }

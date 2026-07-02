@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react"
+﻿import { useRef, useState, useCallback, useEffect } from "react"
 
 interface AudioPlayerOptions {
   onTrackEnd?: () => void
@@ -56,7 +56,7 @@ export function useAudioPlayer(options?: AudioPlayerOptions) {
             msg = "Playback aborted"
             break
           case MediaError.MEDIA_ERR_NETWORK:
-            msg = "Network error — stream may be offline"
+            msg = "Network error - stream may be offline"
             break
           case MediaError.MEDIA_ERR_DECODE:
             msg = "Audio decode error"
@@ -105,7 +105,7 @@ export function useAudioPlayer(options?: AudioPlayerOptions) {
     try {
       await audio.play()
     } catch {
-      // Autoplay blocked — user interaction needed
+      // Autoplay blocked - user interaction needed
     }
   }, [])
 

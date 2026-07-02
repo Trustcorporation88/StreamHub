@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+﻿import { useState, useMemo } from "react"
 import { useTheme } from "../../context/ThemeContext"
 import { useRadioBrowser } from "../hooks/useRadioBrowser"
 import { useMusic } from "../hooks/useMusic"
@@ -23,8 +23,16 @@ const GENRES = [
 ]
 
 const COUNTRIES = [
-  "United States", "United Kingdom", "Germany", "France", "Japan",
-  "India", "Brazil", "Canada", "Australia", "Netherlands",
+  "United States",
+  "United Kingdom",
+  "Germany",
+  "France",
+  "Japan",
+  "India",
+  "Brazil",
+  "Canada",
+  "Australia",
+  "Netherlands",
 ]
 
 const INITIAL_VISIBLE = 6
@@ -34,7 +42,9 @@ function stationToTrack(station: RadioStation): Track {
     id: `radio-${station.stationuuid}`,
     title: station.name,
     artist: station.tags ? station.tags.split(",").slice(0, 3).join(", ") : "Internet Radio",
-    thumbnail: station.favicon || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E",
+    thumbnail:
+      station.favicon ||
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E",
     source: "radio",
     streamUrl: station.url_resolved,
     platformUrl: station.homepage || undefined,
@@ -90,7 +100,6 @@ export default function InternetRadio() {
 
   return (
     <div className="space-y-5">
-      {/* Search */}
       <form onSubmit={handleSearch} className="relative">
         <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${mutedText}`} />
         <input
@@ -106,7 +115,6 @@ export default function InternetRadio() {
         />
       </form>
 
-      {/* Quick Load Top Stations */}
       <motion.button
         onClick={handleLoadTop}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
@@ -120,9 +128,7 @@ export default function InternetRadio() {
         Top Voted Stations
       </motion.button>
 
-      {/* Filters — compact two-column on desktop, stacked on mobile */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Genre Chips */}
         <FilterSection
           icon={<Music2 className={`w-3.5 h-3.5 ${mutedText}`} />}
           label="Genres"
@@ -139,7 +145,6 @@ export default function InternetRadio() {
           activeKey={activeGenre}
         />
 
-        {/* Country Chips */}
         <FilterSection
           icon={<Globe className={`w-3.5 h-3.5 ${mutedText}`} />}
           label="Countries"
@@ -157,7 +162,6 @@ export default function InternetRadio() {
         />
       </div>
 
-      {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-accent" />
@@ -165,7 +169,6 @@ export default function InternetRadio() {
         </div>
       )}
 
-      {/* Error */}
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -177,7 +180,6 @@ export default function InternetRadio() {
         </motion.div>
       )}
 
-      {/* Results */}
       {!loading && tracks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
@@ -201,7 +203,6 @@ export default function InternetRadio() {
         </div>
       )}
 
-      {/* Empty State */}
       {!loading && tracks.length === 0 && !error && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -250,7 +251,6 @@ function FilterSection({
   const visibleItems = useMemo(() => {
     if (expanded) return items
     const shown = items.slice(0, visibleCount)
-    // If active item is hidden, prepend it so user can see what's selected
     if (activeKey && !shown.find((i) => i.key === activeKey)) {
       const activeItem = items.find((i) => i.key === activeKey)
       if (activeItem) return [activeItem, ...shown]

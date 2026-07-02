@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useTheme } from "../../context/ThemeContext"
 import { useMusic } from "../hooks/useMusic"
 import { Plus, ListMusic, Trash2, PlayCircle, Music, X, Edit3, Check, Heart } from "lucide-react"
@@ -8,7 +8,15 @@ import TrackCard from "./TrackCard"
 export default function MyPlaylists() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const { state, createPlaylist, deletePlaylist, renamePlaylist, playQueue, removeFromPlaylist, removeFromRecentlyPlayed } = useMusic()
+  const {
+    state,
+    createPlaylist,
+    deletePlaylist,
+    renamePlaylist,
+    playQueue,
+    removeFromPlaylist,
+    removeFromRecentlyPlayed,
+  } = useMusic()
   const [showCreate, setShowCreate] = useState(false)
   const [newName, setNewName] = useState("")
   const [activePlaylist, setActivePlaylist] = useState<string | null>(null)
@@ -19,9 +27,12 @@ export default function MyPlaylists() {
   const strongText = isDark ? "text-white" : "text-slate-900"
   const panelClass = isDark ? "bg-dark-300/30 border-white/[0.06]" : "bg-white border-slate-200"
 
-  const favoriteTracks = state.recentlyPlayed.filter((t) => state.favorites.includes(t.id))
-  const queueFavorites = state.queue.filter((t) => state.favorites.includes(t.id) && !favoriteTracks.find((f) => f.id === t.id))
-  const allFavoriteTracks = [...favoriteTracks, ...queueFavorites]
+  const recentFavorites = state.recentlyPlayed.filter((t) => state.favorites.includes(t.id))
+  const queueFavorites = state.queue.filter((t) => state.favorites.includes(t.id))
+  const savedFavorites = state.favoriteTracks.filter((t) => state.favorites.includes(t.id))
+  const allFavoriteTracks = [...savedFavorites, ...recentFavorites, ...queueFavorites].filter(
+    (track, index, array) => array.findIndex((item) => item.id === track.id) === index
+  )
 
   const handleCreate = () => {
     if (!newName.trim()) return
@@ -40,7 +51,6 @@ export default function MyPlaylists() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ListMusic className={`w-4 h-4 ${mutedText}`} />
@@ -56,7 +66,6 @@ export default function MyPlaylists() {
         </motion.button>
       </div>
 
-      {/* Create Playlist Input */}
       <AnimatePresence>
         {showCreate && (
           <motion.div
@@ -86,13 +95,8 @@ export default function MyPlaylists() {
         )}
       </AnimatePresence>
 
-      {/* Active Playlist View */}
       {activePl && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-3"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <button onClick={() => setActivePlaylist(null)} className={`text-xs shrink-0 ${isDark ? "text-dark-100 hover:text-white" : "text-slate-500 hover:text-slate-700"}`}>
@@ -139,7 +143,6 @@ export default function MyPlaylists() {
         </motion.div>
       )}
 
-      {/* Playlist List */}
       {!activePl && (
         <div className="space-y-2">
           {state.playlists.length === 0 ? (
@@ -213,7 +216,6 @@ export default function MyPlaylists() {
         </div>
       )}
 
-      {/* Favorites Section */}
       {!activePl && state.favorites.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -234,7 +236,6 @@ export default function MyPlaylists() {
         </div>
       )}
 
-      {/* Recently Played */}
       {!activePl && state.recentlyPlayed.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">

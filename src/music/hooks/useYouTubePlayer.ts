@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react"
+﻿import { useRef, useState, useCallback, useEffect } from "react"
 
 declare global {
   interface Window {
@@ -38,6 +38,9 @@ interface YTPlayerInstance {
   getPlayerState: () => number
   setVolume: (volume: number) => void
   getVolume: () => number
+  mute: () => void
+  unMute: () => void
+  isMuted: () => boolean
   loadVideoById: (videoId: string) => void
   destroy: () => void
 }
@@ -50,6 +53,8 @@ export interface YouTubeControls {
   getDuration: () => number
   getState: () => number
   setVolume: (vol: number) => void
+  mute: () => void
+  unMute: () => void
 }
 
 interface UseYouTubePlayerOptions {
@@ -105,7 +110,6 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
   const containerRef = useRef<HTMLDivElement | null>(null)
   const playerRef = useRef<YTPlayerInstance | null>(null)
   const [isReady, setIsReady] = useState(false)
-  const currentVideoIdRef = useRef(videoId)
   const callbacksRef = useRef({ onStateChange, onReady, onError })
 
   useEffect(() => {
@@ -120,9 +124,7 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
         await loadYTApi()
       } catch (err) {
         if (!cancelled) {
-          callbacksRef.current.onError?.(
-            err instanceof Error ? err : new Error("YouTube API failed to load")
-          )
+          callbacksRef.current.onError?.(err instanceof Error ? err : new Error("YouTube API failed to load"))
         }
         return
       }
@@ -130,7 +132,6 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
 
       if (playerRef.current) {
         playerRef.current.loadVideoById(videoId)
-        currentVideoIdRef.current = videoId
         return
       }
 
@@ -161,18 +162,14 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
             },
             onError: (event) => {
               if (!cancelled) {
-                callbacksRef.current.onError?.(
-                  new Error(`YouTube player error (code ${event.data})`)
-                )
+                callbacksRef.current.onError?.(new Error(`YouTube player error (code ${event.data})`))
               }
             },
           },
         })
       } catch (err) {
         if (!cancelled) {
-          callbacksRef.current.onError?.(
-            err instanceof Error ? err : new Error("Failed to create YouTube player")
-          )
+          callbacksRef.current.onError?.(err instanceof Error ? err : new Error("Failed to create YouTube player"))
         }
       }
     }
@@ -189,38 +186,84 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
       if (playerRef.current) {
         try {
           playerRef.current.destroy()
-        } catch { /* ignore */ }
+        } catch {
+          // ignore
+        }
         playerRef.current = null
       }
     }
   }, [])
 
   const play = useCallback(() => {
-    try { playerRef.current?.playVideo() } catch { /* ignore */ }
+    try {
+      playerRef.current?.playVideo()
+    } catch {
+      // ignore
+    }
   }, [])
 
   const pause = useCallback(() => {
-    try { playerRef.current?.pauseVideo() } catch { /* ignore */ }
+    try {
+      playerRef.current?.pauseVideo()
+    } catch {
+      // ignore
+    }
   }, [])
 
   const seekTo = useCallback((seconds: number) => {
-    try { playerRef.current?.seekTo(seconds, true) } catch { /* ignore */ }
+    try {
+      playerRef.current?.seekTo(seconds, true)
+    } catch {
+      // ignore
+    }
   }, [])
 
   const getCurrentTime = useCallback(() => {
-    try { return playerRef.current?.getCurrentTime() ?? 0 } catch { return 0 }
+    try {
+      return playerRef.current?.getCurrentTime() ?? 0
+    } catch {
+      return 0
+    }
   }, [])
 
   const getDuration = useCallback(() => {
-    try { return playerRef.current?.getDuration() ?? 0 } catch { return 0 }
+    try {
+      return playerRef.current?.getDuration() ?? 0
+    } catch {
+      return 0
+    }
   }, [])
 
   const getState = useCallback(() => {
-    try { return playerRef.current?.getPlayerState() ?? -1 } catch { return -1 }
+    try {
+      return playerRef.current?.getPlayerState() ?? -1
+    } catch {
+      return -1
+    }
   }, [])
 
   const setVolume = useCallback((vol: number) => {
-    try { playerRef.current?.setVolume(Math.round(vol * 100)) } catch { /* ignore */ }
+    try {
+      playerRef.current?.setVolume(Math.round(vol * 100))
+    } catch {
+      // ignore
+    }
+  }, [])
+
+  const mute = useCallback(() => {
+    try {
+      playerRef.current?.mute()
+    } catch {
+      // ignore
+    }
+  }, [])
+
+  const unMute = useCallback(() => {
+    try {
+      playerRef.current?.unMute()
+    } catch {
+      // ignore
+    }
   }, [])
 
   const controls: YouTubeControls = {
@@ -231,6 +274,8 @@ export function useYouTubePlayer({ videoId, onStateChange, onReady, onError }: U
     getDuration,
     getState,
     setVolume,
+    mute,
+    unMute,
   }
 
   return { containerRef, isReady, controls }

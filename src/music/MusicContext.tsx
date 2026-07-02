@@ -1,4 +1,4 @@
-import { createContext, useReducer, useRef, useEffect, useCallback, type ReactNode } from "react"
+﻿import { createContext, useReducer, useRef, useEffect, useCallback, type ReactNode } from "react"
 import type { MusicPlayerState, MusicAction, Track } from "./types"
 import { useAudioPlayer } from "./hooks/useAudioPlayer"
 import type { YouTubeControls } from "./hooks/useYouTubePlayer"
@@ -13,6 +13,7 @@ function loadPersistedState(): Partial<MusicPlayerState> {
     return {
       volume: data.volume ?? 0.8,
       favorites: data.favorites ?? [],
+      favoriteTracks: data.favoriteTracks ?? [],
       recentlyPlayed: data.recentlyPlayed ?? [],
       playlists: data.playlists ?? [],
     }
@@ -31,11 +32,14 @@ function debouncedPersistState(state: MusicPlayerState) {
         JSON.stringify({
           volume: state.volume,
           favorites: state.favorites,
+          favoriteTracks: state.favoriteTracks,
           recentlyPlayed: state.recentlyPlayed,
           playlists: state.playlists,
         })
       )
-    } catch { /* ignore */ }
+    } catch {
+      // ignore
+    }
   }, 300)
 }
 
@@ -53,6 +57,7 @@ const initialState: MusicPlayerState = {
   isShuffled: false,
   repeatMode: "none",
   favorites: persisted.favorites ?? [],
+  favoriteTracks: persisted.favoriteTracks ?? [],
   recentlyPlayed: persisted.recentlyPlayed ?? [],
   playlists: persisted.playlists ?? [],
 }
@@ -90,13 +95,25 @@ function musicReducer(state: MusicPlayerState, action: MusicAction): MusicPlayer
       const nextIndex = state.isShuffled
         ? Math.floor(Math.random() * state.queue.length)
         : (state.queueIndex + 1) % state.queue.length
-      next = { ...state, queueIndex: nextIndex, currentTrack: state.queue[nextIndex], isPlaying: true, progress: 0 }
+      next = {
+        ...state,
+        queueIndex: nextIndex,
+        currentTrack: state.queue[nextIndex],
+        isPlaying: true,
+        progress: 0,
+      }
       break
     }
     case "PREV_TRACK": {
       if (state.queue.length === 0) return state
       const prevIndex = state.queueIndex <= 0 ? state.queue.length - 1 : state.queueIndex - 1
-      next = { ...state, queueIndex: prevIndex, currentTrack: state.queue[prevIndex], isPlaying: true, progress: 0 }
+      next = {
+        ...state,
+        queueIndex: prevIndex,
+        currentTrack: state.queue[prevIndex],
+        isPlaying: true,
+        progress: 0,
+      }
       break
     }
     case "ADD_TO_QUEUE": {
@@ -124,7 +141,14 @@ function musicReducer(state: MusicPlayerState, action: MusicAction): MusicPlayer
     case "REMOVE_FROM_QUEUE": {
       const newQueue = state.queue.filter((_, i) => i !== action.index)
       if (newQueue.length === 0) {
-        next = { ...initialState, favorites: state.favorites, recentlyPlayed: state.recentlyPlayed, playlists: state.playlists, volume: state.volume }
+        next = {
+          ...initialState,
+          favorites: state.favorites,
+          favoriteTracks: state.favoriteTracks,
+          recentlyPlayed: state.recentlyPlayed,
+          playlists: state.playlists,
+          volume: state.volume,
+        }
         break
       }
       let newIndex = state.queueIndex
@@ -134,11 +158,37 @@ function musicReducer(state: MusicPlayerState, action: MusicAction): MusicPlayer
       break
     }
     case "CLEAR_QUEUE":
-      next = { ...initialState, favorites: state.favorites, recentlyPlayed: state.recentlyPlayed, playlists: state.playlists, volume: state.volume }
+      next = {
+        ...initialState,
+        favorites: state.favorites,
+        favoriteTracks: state.favoriteTracks,
+        recentlyPlayed: state.recentlyPlayed,
+        playlists: state.playlists,
+        volume: state.volume,
+      }
       break
     case "SET_QUEUE": {
       const startIndex = action.startIndex ?? 0
-      next = { ...state, queue: action.tracks, queueIndex: startIndex, currentTrack: action.tracks[startIndex], isPlaying: true, progress: 0 }
+      next = {
+        ...state,
+        queue: action.tracks,
+        queueIndex: startIndex,
+        currentTrack: action.tracks[startIndex],
+        isPlaying: true,
+        progress: 0,
+      }
+      break
+    }
+    case "SET_QUEUE_INDEX": {
+      if (state.queue.length === 0) return state
+      const index = Math.max(0, Math.min(action.index, state.queue.length - 1))
+      next = {
+        ...state,
+        queueIndex: index,
+        currentTrack: state.queue[index],
+        isPlaying: true,
+        progress: 0,
+      }
       break
     }
     case "TOGGLE_SHUFFLE":
@@ -152,9 +202,15 @@ function musicReducer(state: MusicPlayerState, action: MusicAction): MusicPlayer
     }
     case "TOGGLE_FAVORITE": {
       const isFav = state.favorites.includes(action.trackId)
+      const trackToStore = action.track ?? state.currentTrack ?? state.recentlyPlayed.find((t) => t.id === action.trackId) ?? state.queue.find((t) => t.id === action.trackId)
       next = {
         ...state,
         favorites: isFav ? state.favorites.filter((id) => id !== action.trackId) : [...state.favorites, action.trackId],
+        favoriteTracks: isFav
+          ? state.favoriteTracks.filter((track) => track.id !== action.trackId)
+          : trackToStore && !state.favoriteTracks.some((track) => track.id === action.trackId)
+            ? [...state.favoriteTracks, trackToStore]
+            : state.favoriteTracks,
       }
       break
     }
@@ -231,7 +287,7 @@ interface MusicContextValue {
   addToQueue: (track: Track) => void
   addToQueueNext: (track: Track) => void
   playQueue: (tracks: Track[], startIndex?: number) => void
-  toggleFavorite: (trackId: string) => void
+  toggleFavorite: (track: Track) => void
   isFavorite: (trackId: string) => boolean
   createPlaylist: (name: string) => void
   deletePlaylist: (id: string) => void
@@ -259,11 +315,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     youTubeControlsRef.current = null
   }, [])
 
-  // Persist to localStorage on state changes (debounced)
   useEffect(() => {
     debouncedPersistState(state)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.volume, state.favorites, state.recentlyPlayed, state.playlists])
+  }, [state.volume, state.favorites, state.favoriteTracks, state.recentlyPlayed, state.playlists])
 
   const handleTrackEnd = useCallback(() => {
     if (state.repeatMode === "one") return
@@ -274,29 +328,39 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     }
   }, [state.repeatMode, state.queueIndex, state.queue.length])
 
-  const { isPlaying: audioIsPlaying, isMuted: audioMuted, loadAndPlay, togglePlay: audioToggle, seek: audioSeek, setVolume: audioSetVolume, toggleMute: audioToggleMute } = useAudioPlayer({
+  const {
+    isPlaying: audioIsPlaying,
+    isMuted: audioMuted,
+    loadAndPlay,
+    togglePlay: audioToggle,
+    seek: audioSeek,
+    setVolume: audioSetVolume,
+    toggleMute: audioToggleMute,
+  } = useAudioPlayer({
     onTrackEnd: handleTrackEnd,
     onTimeUpdate: (time) => dispatch({ type: "SET_PROGRESS", progress: time }),
     onDurationChange: (dur) => dispatch({ type: "SET_DURATION", duration: dur }),
-    onError: () => { dispatch({ type: "PAUSE" }) },
+    onError: () => {
+      dispatch({ type: "PAUSE" })
+    },
   })
 
-  // Keep handleTrackEnd ref current for YouTube state change handler
   useEffect(() => {
     handleTrackEndRef.current = handleTrackEnd
   })
 
-  // Wrapper seek that handles both audio and YouTube
-  const seek = useCallback((time: number) => {
-    if (state.currentTrack?.source === "youtube" && youTubeControlsRef.current) {
-      youTubeControlsRef.current.seekTo(time)
-      dispatch({ type: "SET_PROGRESS", progress: time })
-    } else {
-      audioSeek(time)
-    }
-  }, [state.currentTrack, audioSeek])
+  const seek = useCallback(
+    (time: number) => {
+      if (state.currentTrack?.source === "youtube" && youTubeControlsRef.current) {
+        youTubeControlsRef.current.seekTo(time)
+        dispatch({ type: "SET_PROGRESS", progress: time })
+      } else {
+        audioSeek(time)
+      }
+    },
+    [state.currentTrack, audioSeek]
+  )
 
-  // Sync YouTube player progress
   useEffect(() => {
     if (state.currentTrack?.source !== "youtube" || !state.isPlaying || !youTubeControlsRef.current) return
 
@@ -309,7 +373,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       if (dur > 0) dispatch({ type: "SET_DURATION", duration: dur })
 
       const playerState = controls.getState()
-      // YT.PlayerState.ENDED = 0
       if (playerState === 0) {
         handleTrackEndRef.current?.()
       }
@@ -318,7 +381,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval)
   }, [state.currentTrack, state.isPlaying])
 
-  // Media Session API — enables background playback on mobile + lock screen controls
   useEffect(() => {
     if (!("mediaSession" in navigator)) return
 
@@ -358,17 +420,13 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
     navigator.mediaSession.setActionHandler("seekbackward", (details) => {
       const offset = details.seekOffset ?? 10
-      const time = track.source === "youtube" && youTubeControlsRef.current
-        ? youTubeControlsRef.current.getCurrentTime()
-        : state.progress
+      const time = track.source === "youtube" && youTubeControlsRef.current ? youTubeControlsRef.current.getCurrentTime() : state.progress
       seek(Math.max(time - offset, 0))
     })
 
     navigator.mediaSession.setActionHandler("seekforward", (details) => {
       const offset = details.seekOffset ?? 10
-      const time = track.source === "youtube" && youTubeControlsRef.current
-        ? youTubeControlsRef.current.getCurrentTime()
-        : state.progress
+      const time = track.source === "youtube" && youTubeControlsRef.current ? youTubeControlsRef.current.getCurrentTime() : state.progress
       seek(Math.min(time + offset, state.duration))
     })
 
@@ -388,23 +446,19 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       navigator.mediaSession.setActionHandler("seekforward", null)
       navigator.mediaSession.setActionHandler("seekto", null)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.currentTrack, state.progress, state.duration])
 
-  // Update Media Session playback state
   useEffect(() => {
     if (!("mediaSession" in navigator)) return
     navigator.mediaSession.playbackState = state.isPlaying ? "playing" : "paused"
   }, [state.isPlaying])
 
-  // Sync audio state with context
   useEffect(() => {
     if (state.currentTrack && state.currentTrack !== prevTrackRef.current) {
       prevTrackRef.current = state.currentTrack
       if (state.currentTrack.source === "radio") {
         loadAndPlay(state.currentTrack.streamUrl)
       }
-      // Track recently played
       dispatch({ type: "ADD_RECENTLY_PLAYED", track: state.currentTrack })
     }
   }, [state.currentTrack, loadAndPlay])
@@ -416,13 +470,26 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     }
   }, [state.isPlaying, audioIsPlaying, state.currentTrack, audioToggle])
 
-  useEffect(() => { audioSetVolume(state.volume) }, [state.volume, audioSetVolume])
-  useEffect(() => { if (audioMuted !== state.isMuted) audioToggleMute() }, [state.isMuted, audioMuted, audioToggleMute])
+  useEffect(() => {
+    audioSetVolume(state.volume)
+  }, [state.volume, audioSetVolume])
+
+  useEffect(() => {
+    if (state.currentTrack?.source === "radio" && audioMuted !== state.isMuted) {
+      audioToggleMute()
+    }
+  }, [state.isMuted, audioMuted, audioToggleMute, state.currentTrack])
+
+  useEffect(() => {
+    if (state.currentTrack?.source === "youtube" && youTubeControlsRef.current) {
+      if (state.isMuted) youTubeControlsRef.current.mute()
+      else youTubeControlsRef.current.unMute()
+    }
+  }, [state.isMuted, state.currentTrack])
 
   const nextTrack = useCallback(() => dispatch({ type: "NEXT_TRACK" }), [])
   const prevTrack = useCallback(() => dispatch({ type: "PREV_TRACK" }), [])
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
@@ -470,7 +537,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
           break
         }
         case "KeyM":
-          audioToggleMute()
+          dispatch({ type: "TOGGLE_MUTE" })
           break
         case "KeyS":
           dispatch({ type: "TOGGLE_SHUFFLE" })
@@ -482,7 +549,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     }
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
-  }, [state, audioToggle, nextTrack, prevTrack, seek, audioSetVolume, audioToggleMute])
+  }, [state, audioToggle, nextTrack, prevTrack, seek, audioSetVolume])
 
   const playTrack = useCallback((track: Track, queue?: Track[]) => {
     if (queue) {
@@ -492,10 +559,11 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_TRACK", track })
     }
   }, [])
+
   const addToQueue = useCallback((track: Track) => dispatch({ type: "ADD_TO_QUEUE", track }), [])
   const addToQueueNext = useCallback((track: Track) => dispatch({ type: "ADD_TO_QUEUE_NEXT", track }), [])
   const playQueue = useCallback((tracks: Track[], startIndex?: number) => dispatch({ type: "SET_QUEUE", tracks, startIndex }), [])
-  const toggleFavorite = useCallback((trackId: string) => dispatch({ type: "TOGGLE_FAVORITE", trackId }), [])
+  const toggleFavorite = useCallback((track: Track) => dispatch({ type: "TOGGLE_FAVORITE", trackId: track.id, track }), [])
   const isFavorite = useCallback((trackId: string) => state.favorites.includes(trackId), [state.favorites])
   const createPlaylist = useCallback((name: string) => dispatch({ type: "CREATE_PLAYLIST", name }), [])
   const deletePlaylist = useCallback((id: string) => dispatch({ type: "DELETE_PLAYLIST", id }), [])
@@ -548,5 +616,3 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     </MusicContext.Provider>
   )
 }
-
-

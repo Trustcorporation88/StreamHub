@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+﻿import { useState, useCallback, useRef } from "react"
 import type { RadioStation } from "../types"
 
 const RADIO_API_BASE = "https://de1.api.radio-browser.info"
@@ -18,19 +18,26 @@ export function useRadioBrowser(): UseRadioBrowserReturn {
   const [stations, setStations] = useState<RadioStation[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestIdRef = useRef(0)
 
   const fetchStations = useCallback(async (url: string) => {
+    const requestId = ++requestIdRef.current
     setLoading(true)
     setError(null)
     try {
       const res = await fetch(url)
+      if (requestId !== requestIdRef.current) return
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: RadioStation[] = await res.json()
+      if (requestId !== requestIdRef.current) return
       setStations(data)
     } catch (err) {
+      if (requestId !== requestIdRef.current) return
       setError(err instanceof Error ? err.message : "Failed to fetch stations")
     } finally {
-      setLoading(false)
+      if (requestId === requestIdRef.current) {
+        setLoading(false)
+      }
     }
   }, [])
 

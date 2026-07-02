@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+﻿import { useState, useCallback, useRef } from "react"
 import type { Track } from "../types"
 
 interface UseYouTubeSearchReturn {
@@ -27,7 +27,9 @@ function recordSuccess(instance: string) {
   scores[instance] = (scores[instance] || 0) + 1
   try {
     localStorage.setItem(HEALTH_KEY, JSON.stringify(scores))
-  } catch { /* ignore */ }
+  } catch {
+    // ignore
+  }
 }
 
 function recordFailure(instance: string) {
@@ -35,7 +37,9 @@ function recordFailure(instance: string) {
   scores[instance] = Math.max((scores[instance] || 0) - 1, -5)
   try {
     localStorage.setItem(HEALTH_KEY, JSON.stringify(scores))
-  } catch { /* ignore */ }
+  } catch {
+    // ignore
+  }
 }
 
 function sortByHealth(instances: string[]): string[] {
@@ -53,10 +57,11 @@ function getCachedResults(query: string): Track[] | null {
     const raw = localStorage.getItem(CACHE_KEY)
     if (!raw) return null
     const cache: Record<string, CachedResult> = JSON.parse(raw)
-    const entry = cache[query.toLowerCase().trim()]
+    const key = query.toLowerCase().trim()
+    const entry = cache[key]
     if (!entry) return null
     if (Date.now() - entry.timestamp > CACHE_TTL) {
-      delete cache[query.toLowerCase().trim()]
+      delete cache[key]
       localStorage.setItem(CACHE_KEY, JSON.stringify(cache))
       return null
     }
@@ -70,7 +75,8 @@ function setCachedResults(query: string, data: Track[]) {
   try {
     const raw = localStorage.getItem(CACHE_KEY)
     const cache: Record<string, CachedResult> = raw ? JSON.parse(raw) : {}
-    cache[query.toLowerCase().trim()] = { data, timestamp: Date.now() }
+    const key = query.toLowerCase().trim()
+    cache[key] = { data, timestamp: Date.now() }
     const keys = Object.keys(cache)
     if (keys.length > 50) {
       const oldest = keys.sort((a, b) => cache[a].timestamp - cache[b].timestamp)
@@ -79,7 +85,9 @@ function setCachedResults(query: string, data: Track[]) {
       }
     }
     localStorage.setItem(CACHE_KEY, JSON.stringify(cache))
-  } catch { /* ignore */ }
+  } catch {
+    // ignore
+  }
 }
 
 const INVIDIOUS_INSTANCES = [
@@ -94,9 +102,12 @@ export function useYouTubeSearch(): UseYouTubeSearchReturn {
   const [results, setResults] = useState<Track[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestIdRef = useRef(0)
 
   const search = useCallback(async (query: string) => {
     if (!query.trim()) return
+
+    const requestId = ++requestIdRef.current
 
     const cached = getCachedResults(query)
     if (cached) {
@@ -111,10 +122,13 @@ export function useYouTubeSearch(): UseYouTubeSearchReturn {
     const sorted = sortByHealth(INVIDIOUS_INSTANCES)
 
     for (const instance of sorted) {
+      if (requestId !== requestIdRef.current) return
+
       try {
         const res = await fetch(
           `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video&sort_by=relevance`
         )
+        if (requestId !== requestIdRef.current) return
         if (!res.ok) {
           recordFailure(instance)
           continue
@@ -142,6 +156,7 @@ export function useYouTubeSearch(): UseYouTubeSearchReturn {
         if (tracks.length > 0) {
           recordSuccess(instance)
           setCachedResults(query, tracks)
+          if (requestId !== requestIdRef.current) return
           setResults(tracks)
           setLoading(false)
           return
@@ -152,6 +167,7 @@ export function useYouTubeSearch(): UseYouTubeSearchReturn {
       }
     }
 
+    if (requestId !== requestIdRef.current) return
     setResults([])
     setError("Search temporarily unavailable. All instances are down. Try again later.")
     setLoading(false)

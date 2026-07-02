@@ -1,6 +1,6 @@
-import { useTheme } from "../../context/ThemeContext"
+﻿import { useTheme } from "../../context/ThemeContext"
 import { useMusic } from "../hooks/useMusic"
-import { Play, Plus, Clock, Heart, ListPlus } from "lucide-react"
+import { Play, Plus, Clock, Heart, ListPlus, Waves } from "lucide-react"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import type { Track } from "../types"
@@ -20,88 +20,98 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
   const [showMenu, setShowMenu] = useState(false)
 
   const isRadio = track.source === "radio"
+  const isYoutube = track.source === "youtube"
   const isFav = isFavorite(track.id)
+  const sourceLabel = isRadio ? "Live Radio" : isYoutube ? "YouTube" : "Stream"
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index ? Math.min(index * 0.03, 0.3) : 0 }}
-      className={`group relative flex items-center gap-3 p-3 rounded-xl transition-colors ${
+      className={`group relative overflow-hidden flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 ${
         isDark
-          ? "bg-dark-300/30 border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/10"
-          : "bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+          ? "bg-dark-300/40 border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10 hover:shadow-lg hover:shadow-black/10"
+          : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
       }`}
     >
-      {/* Index / Thumbnail */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
       <div className="relative shrink-0">
         {showIndex && index !== undefined ? (
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xs font-bold ring-1 ring-inset ${isDark ? "bg-white/5 text-dark-100 ring-white/[0.06]" : "bg-slate-100 text-slate-500 ring-slate-200"}`}>
             {index + 1}
           </div>
         ) : (
-          <img
-            src={track.thumbnail}
-            alt=""
-            className="w-10 h-10 rounded-lg object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
-            }}
-          />
+          <div className="relative">
+            <img
+              src={track.thumbnail}
+              alt=""
+              className="w-11 h-11 rounded-xl object-cover"
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E"
+              }}
+            />
+            <motion.button
+              onClick={() => playTrack(track, queue)}
+              className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/45 opacity-0 transition-opacity md:group-hover:opacity-100"
+              whileTap={{ scale: 0.92 }}
+            >
+              <Play className="w-4 h-4 text-white ml-0.5" />
+            </motion.button>
+          </div>
         )}
-        {/* Play overlay — always visible on mobile */}
-        <motion.button
-          onClick={() => playTrack(track, queue)}
-          className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-          whileTap={{ scale: 0.9 }}
-        >
-          <Play className="w-4 h-4 text-white ml-0.5" />
-        </motion.button>
+        {!showIndex && isRadio && (
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-sport-green/20 border border-sport-green/30 flex items-center justify-center">
+            <Waves className="w-2.5 h-2.5 text-sport-green" />
+          </div>
+        )}
       </div>
 
-      {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className={`text-sm font-medium truncate ${isDark ? "text-white" : "text-slate-900"}`}>
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className={`text-[9px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+            {sourceLabel}
+          </span>
+          {isRadio ? (
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-sport-green/15 text-sport-green border border-sport-green/20">
+              LIVE
+            </span>
+          ) : null}
+        </div>
+        <p className={`text-sm font-semibold truncate ${isDark ? "text-white" : "text-slate-900"}`}>
           {track.title}
         </p>
-        <p className={`text-xs truncate ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+        <p className={`text-xs truncate mt-0.5 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
           {track.artist}
         </p>
         {showMetadata && isRadio && (track.codec || track.bitrate) && (
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {track.codec && (
-              <span className={`text-[9px] font-medium ${isDark ? "text-dark-100" : "text-slate-400"}`}>
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
                 {track.codec}
               </span>
             )}
             {track.bitrate && track.bitrate > 0 && (
-              <span className={`text-[9px] font-medium ${isDark ? "text-dark-100" : "text-slate-400"}`}>
-                {track.bitrate}kbps
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
+                {track.bitrate} kbps
               </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Meta & Actions */}
       <div className="flex items-center gap-1 shrink-0">
         {track.duration && (
-          <span className={`hidden sm:flex items-center gap-1 text-[10px] ${isDark ? "text-dark-100" : "text-slate-400"}`}>
+          <span className={`hidden sm:flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
             <Clock className="w-3 h-3" />
             {track.duration}
           </span>
         )}
-        {isRadio && (
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sport-green/20 text-sport-green">
-            LIVE
-          </span>
-        )}
 
-        {/* Favorite button — always visible on mobile */}
         <motion.button
           onClick={(e) => {
             e.stopPropagation()
-            toggleFavorite(track.id)
+            toggleFavorite(track)
           }}
           className={`p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all ${isFav ? "text-sport-red opacity-100" : isDark ? "text-dark-100 md:opacity-0 md:group-hover:opacity-100 hover:text-sport-red" : "text-slate-400 md:opacity-0 md:group-hover:opacity-100 hover:text-sport-red"}`}
           whileTap={{ scale: 0.85 }}
@@ -110,7 +120,6 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
           <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
         </motion.button>
 
-        {/* Add to queue — always visible on mobile, hover on desktop */}
         <motion.button
           onClick={(e) => {
             e.stopPropagation()
@@ -123,7 +132,6 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
           <Plus className="w-4 h-4" />
         </motion.button>
 
-        {/* More menu — always visible on mobile */}
         <div className="relative">
           <motion.button
             onClick={(e) => {

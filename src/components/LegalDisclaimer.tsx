@@ -18,7 +18,7 @@ const sections = [
       },
       {
         heading: "Third-Party Content",
-        text: "StreamHub aggregates and displays content from third-party sources, including but not limited to iptv-org/iptv (community IPTV playlists) and SportSRC API (sports match data and stream embeds). StreamHub does not own, control, host, generate, or distribute any of the streamed content. All stream URLs and embedded players are sourced directly from these third-party services. The availability, quality, legality, and copyright status of any stream may vary by jurisdiction and is the sole responsibility of the originating source.",
+        text: "StreamHub aggregates and displays content from third-party sources, including but not limited to iptv-org/iptv (community IPTV playlists) and EmbedSportex API (sports match data and stream embeds). StreamHub does not own, control, host, generate, or distribute any of the streamed content. All stream URLs and embedded players are sourced directly from these third-party services. The availability, quality, legality, and copyright status of any stream may vary by jurisdiction and is the sole responsibility of the originating source.",
       },
       {
         heading: "No Endorsement",
@@ -103,7 +103,7 @@ const sections = [
       },
       {
         heading: "Content Sources",
-        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the SportSRC API. StreamHub does not claim ownership of any third-party content displayed within the Application.",
+        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. StreamHub does not claim ownership of any third-party content displayed within the Application.",
       },
       {
         heading: "Counter-Notification",
@@ -126,7 +126,7 @@ const sections = [
       },
       {
         heading: "Third-Party Requests",
-        text: "When you use StreamHub, your browser may make direct requests to third-party APIs (iptv-org, SportSRC, stream CDN servers) to fetch channel lists, match data, and stream content. These requests are made directly from your browser and are not routed through or logged by StreamHub. Third-party services may collect standard HTTP request data (IP address, user agent, referrer) in accordance with their own privacy policies.",
+        text: "When you use StreamHub, your browser may make direct requests to third-party APIs (iptv-org, EmbedSportex, stream CDN servers) to fetch channel lists, match data, and stream content. These requests are made directly from your browser and are not routed through or logged by StreamHub. Third-party services may collect standard HTTP request data (IP address, user agent, referrer) in accordance with their own privacy policies.",
       },
       {
         heading: "Children's Privacy",
@@ -145,7 +145,7 @@ const sections = [
     content: [
       {
         heading: "Third-Party Links",
-        text: "StreamHub may contain links to third-party websites, APIs, or services that are not owned or controlled by StreamHub. These include, but are not limited to: iptv-org/iptv, SportSRC API, embed.st, and various CDN/streaming servers. StreamHub has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
+        text: "StreamHub may contain links to third-party websites, APIs, or services that are not owned or controlled by StreamHub. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, and various CDN/streaming servers. StreamHub has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
       },
       {
         heading: "No Responsibility",
@@ -153,7 +153,7 @@ const sections = [
       },
       {
         heading: "Embed Player Disclaimer",
-        text: "Sports streams are displayed via embedded iframe players provided by embed.st. The quality, availability, and legality of these streams are determined by the embedding service and the originating sources. StreamHub does not control the content of embedded players.",
+        text: "Sports streams are displayed via embedded iframe players provided by EmbedSportex (streams.esportex.site). The quality, availability, and legality of these streams are determined by the embedding service and the originating sources. StreamHub does not control the content of embedded players.",
       },
     ],
   },
