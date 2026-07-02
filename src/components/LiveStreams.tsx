@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Tv,
@@ -10,12 +10,12 @@ import {
   Clock,
   Calendar,
   X,
-  WifiOff,
-  RefreshCw,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useLiveStream } from "../context/LiveStreamContext"
 import VideoPlayer from "./VideoPlayer"
+import SportsPlayer from "./SportsPlayer"
+import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
 
 const channels: Channel[] = [
@@ -90,14 +90,10 @@ export default function LiveStreams() {
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
   const [dismissedNotification, setDismissedNotification] = useState(false)
-  const [iframeLoaded, setIframeLoaded] = useState(false)
-  const [iframeError, setIframeError] = useState(false)
-  const iframeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [activeSource, setActiveSource] = useState<StreamSource | null>(null)
   const [, setTick] = useState(0)
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoPlayRef = useRef(false)
-
-  const IFRAME_TIMEOUT_MS = 15000
 
   useEffect(() => {
     tickRef.current = setInterval(() => setTick((t) => t + 1), 60000)
@@ -121,44 +117,9 @@ export default function LiveStreams() {
     if (liveMatch && liveMatch.id !== prevMatchIdRef.current) {
       prevMatchIdRef.current = liveMatch.id
       setDismissedNotification(false)
-      setIframeLoaded(false)
-      setIframeError(false)
+      setActiveSource(liveMatch.sources[0] || null)
     }
   }, [liveMatch])
-
-  const startIframeTimer = useCallback(() => {
-    if (iframeTimerRef.current) clearTimeout(iframeTimerRef.current)
-    iframeTimerRef.current = setTimeout(() => {
-      if (!iframeLoaded) setIframeError(true)
-    }, IFRAME_TIMEOUT_MS) as unknown as ReturnType<typeof setTimeout>
-  }, [iframeLoaded])
-
-  const handleIframeLoad = useCallback(() => {
-    if (iframeTimerRef.current) clearTimeout(iframeTimerRef.current)
-    setIframeLoaded(true)
-    setIframeError(false)
-  }, [])
-
-  const handleIframeError = useCallback(() => {
-    if (iframeTimerRef.current) clearTimeout(iframeTimerRef.current)
-    setIframeError(true)
-  }, [])
-
-  const handleRetryStream = useCallback(() => {
-    setIframeLoaded(false)
-    setIframeError(false)
-    setWatchingLive(false)
-    setTimeout(() => setWatchingLive(true), 100)
-  }, [])
-
-  useEffect(() => {
-    if (watchingLive && liveMatch && !iframeLoaded && !iframeError) {
-      startIframeTimer()
-    }
-    return () => {
-      if (iframeTimerRef.current) clearTimeout(iframeTimerRef.current)
-    }
-  }, [watchingLive, liveMatch, iframeLoaded, iframeError, startIframeTimer])
 
   const now = useMemo(() => Date.now(), []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -219,54 +180,25 @@ export default function LiveStreams() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">
         {/* Player Section */}
         <div className="xl:col-span-2 flex flex-col min-h-0">
-          <div className="aspect-video sm:aspect-[16/10] w-full rounded-2xl overflow-hidden bg-black border border-white/5 xl:aspect-auto xl:flex-1 xl:min-h-0 relative">
+          <div className="aspect-video sm:aspect-[16/9] md:aspect-[3/2] w-full rounded-2xl overflow-hidden bg-black border border-white/5 xl:aspect-auto xl:flex-1 xl:min-h-0 relative">
             {watchingLive && liveMatch ? (
-              <>
-                <iframe
+              liveMatch.sources.length > 0 ? (
+                <SportsPlayer
+                  key={liveMatch.id}
+                  sources={liveMatch.sources}
+                  activeSource={activeSource}
+                  onSourceChange={setActiveSource}
+                  title={liveMatch.title}
+                  fillContainer
+                />
+              ) : (
+                <VideoPlayer
                   key={liveMatch.id}
                   src={liveMatch.embedUrl}
-                  className="w-full h-full border-0"
                   title={liveMatch.title}
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  onLoad={handleIframeLoad}
-                  onError={handleIframeError}
+                  fillContainer
                 />
-                {!iframeLoaded && !iframeError && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
-                    <div className="text-center">
-                      <div className="w-8 h-8 border-2 border-accent-light border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                      <p className="text-xs text-dark-100">Loading stream...</p>
-                    </div>
-                  </div>
-                )}
-                {iframeError && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
-                    <div className="text-center px-6 max-w-sm">
-                      <WifiOff className="w-10 h-10 text-sport-red mx-auto mb-3" />
-                      <p className="text-sm font-semibold text-white mb-1">Stream Unavailable</p>
-                      <p className="text-xs text-dark-100 mb-4">The stream source is not responding.</p>
-                      <div className="flex items-center justify-center gap-2">
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={handleRetryStream}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-accent hover:bg-accent-dark rounded-lg transition-colors"
-                        >
-                          <RefreshCw className="w-3 h-3" />
-                          Retry
-                        </motion.button>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => { setWatchingLive(false); setIframeLoaded(false); setIframeError(false) }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white/70 bg-white/10 hover:bg-white/15 rounded-lg transition-colors"
-                        >
-                          Back to Channels
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
+              )
             ) : (
               <VideoPlayer
                 src={activeChannel.url}
