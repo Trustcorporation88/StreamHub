@@ -114,15 +114,17 @@ app.get("/api/iptv-proxy", async (req, res) => {
 
   const targetUrl = decodeURIComponent(urlStr)
 
-  const doFetch = (ua) =>
-    fetch(targetUrl, {
+  // Timeout apenas para estabelecer conexão/receber cabeçalhos.
+  // O corpo pode demorar o quanto precisar (playlists de 20+ MB, VOD etc.)
+  const doFetch = (ua) => {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 20000)
+    return fetch(targetUrl, {
       redirect: "follow",
-      signal: AbortSignal.timeout(20000),
-      headers: {
-        "User-Agent": ua,
-        Accept: "*/*",
-      },
-    })
+      signal: controller.signal,
+      headers: { "User-Agent": ua, Accept: "*/*" },
+    }).finally(() => clearTimeout(timer))
+  }
 
   try {
     let proxyRes = await doFetch(
@@ -138,18 +140,21 @@ app.get("/api/iptv-proxy", async (req, res) => {
       return res.status(proxyRes.status).end(`Origin server returned ${proxyRes.status}`)
     }
 
-    // Base correta para reescrever links relativos: a URL FINAL (pós-redirect)
     const finalUrl = proxyRes.url || targetUrl
     const contentType = proxyRes.headers.get("content-type") || ""
-    const looksM3U8 =
+    const contentLength = Number(proxyRes.headers.get("content-length") || 0)
+    const maybeM3U8 =
       /\.m3u8/i.test(finalUrl) ||
       /\.m3u8/i.test(targetUrl) ||
       /mpegurl/i.test(contentType)
 
-    if (looksM3U8) {
+    // Só vale a pena inspecionar/reescrever manifestos pequenos.
+    // Playlists de catálogo (get.php) têm dezenas de MB e NÃO devem ser reescritas.
+    if (maybeM3U8 && (contentLength === 0 || contentLength < 2_000_000)) {
       const body = await proxyRes.text()
-      // Confirma pelo conteúdo (evita reescrever algo que não é playlist)
-      if (body.trimStart().startsWith("#EXTM3U") || body.includes("#EXTINF")) {
+      // Reescreve apenas manifestos HLS de verdade (têm tags #EXT-X-...).
+      // Playlists de canais (só #EXTINF) passam intactas para o cliente.
+      if (body.trimStart().startsWith("#EXTM3U") && body.includes("#EXT-X-")) {
         res.setHeader("Content-Type", "application/vnd.apple.mpegurl")
         return res.end(rewritePlaylist(body, finalUrl))
       }
@@ -157,14 +162,14 @@ app.get("/api/iptv-proxy", async (req, res) => {
       return res.end(body)
     }
 
-    // Segmentos de vídeo e demais conteúdos: repassar em streaming, sem
-    // carregar tudo na memória (essencial para VOD e segmentos grandes)
+    // Todo o resto (segmentos, VOD, playlists gigantes): repassar em streaming
     res.setHeader("Content-Type", contentType || "video/MP2T")
-    const length = proxyRes.headers.get("content-length")
-    if (length) res.setHeader("Content-Length", length)
+    if (contentLength) res.setHeader("Content-Length", String(contentLength))
     Readable.fromWeb(proxyRes.body).pipe(res)
   } catch (e) {
-    const msg = e?.name === "TimeoutError" ? "Upstream timeout (20s)" : e.message || String(e)
+    const msg = e?.name === "AbortError" || e?.name === "TimeoutError"
+      ? "Upstream connection timeout (20s)"
+      : e.message || String(e)
     if (!res.headersSent) res.status(502).end(`IPTV proxy error: ${msg}`)
     else res.end()
   }
