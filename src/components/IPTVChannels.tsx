@@ -21,11 +21,29 @@ import type { M3UChannel } from "../types"
 
 const BRAZIL_CATEGORY = "🇧🇷 Brasil"
 
+// Ordem de exibição das categorias no catálogo
+const CATEGORY_ORDER = [
+  BRAZIL_CATEGORY,
+  "🇺🇸 EUA",
+  "🇮🇹 Itália",
+  "🎬 Filmes",
+  "📺 Séries",
+  "🏆 Esportes",
+]
+
 const M3U_SOURCES = [
   { url: "https://iptv-org.github.io/iptv/countries/br.m3u", label: "Brasil", forceCategory: BRAZIL_CATEGORY },
-  { url: "https://iptv-org.github.io/iptv/index.category.m3u", label: "iptv-org", forceCategory: null },
-  { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", label: "Free-TV", forceCategory: null },
+  { url: "https://iptv-org.github.io/iptv/countries/us.m3u", label: "EUA", forceCategory: "🇺🇸 EUA" },
+  { url: "https://iptv-org.github.io/iptv/countries/it.m3u", label: "Itália", forceCategory: "🇮🇹 Itália" },
+  { url: "https://iptv-org.github.io/iptv/categories/movies.m3u", label: "Filmes", forceCategory: "🎬 Filmes" },
+  { url: "https://iptv-org.github.io/iptv/categories/series.m3u", label: "Séries", forceCategory: "📺 Séries" },
+  { url: "https://iptv-org.github.io/iptv/categories/sports.m3u", label: "Esportes", forceCategory: "🏆 Esportes" },
 ]
+
+function categoryRank(cat: string): number {
+  const idx = CATEGORY_ORDER.indexOf(cat)
+  return idx === -1 ? CATEGORY_ORDER.length : idx
+}
 
 function parseM3U(m3u: string, forceCategory: string | null = null): M3UChannel[] {
   const channels: M3UChannel[] = []
@@ -153,11 +171,7 @@ export default function IPTVChannels() {
       cats.set(ch.category, (cats.get(ch.category) || 0) + 1)
     }
     return Array.from(cats.entries())
-      .sort(([ca, a], [cb, b]) => {
-        if (ca === BRAZIL_CATEGORY) return -1
-        if (cb === BRAZIL_CATEGORY) return 1
-        return b - a
-      })
+      .sort(([ca], [cb]) => categoryRank(ca) - categoryRank(cb))
   }, [channels])
 
   const countries = useMemo(() => {
@@ -201,11 +215,9 @@ export default function IPTVChannels() {
       if (!map.has(ch.category)) map.set(ch.category, [])
       map.get(ch.category)!.push(ch)
     }
-    return Array.from(map.entries()).sort(([a], [b]) => {
-      if (a === BRAZIL_CATEGORY) return -1
-      if (b === BRAZIL_CATEGORY) return 1
-      return a.localeCompare(b)
-    })
+    return Array.from(map.entries()).sort(
+      ([a], [b]) => categoryRank(a) - categoryRank(b)
+    )
   }, [filtered])
 
   const toggleCategory = (cat: string) => {
@@ -243,7 +255,7 @@ export default function IPTVChannels() {
               Catálogo de Canais IPTV
             </h2>
             <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Navegue por canais do iptv-org & Free-TV
+              Brasil, EUA, Itália + Filmes, Séries e Esportes
             </p>
           </div>
           {totalCount > 0 && (
