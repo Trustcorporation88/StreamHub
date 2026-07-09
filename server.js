@@ -1,6 +1,7 @@
 import express from "express"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { Readable } from "node:stream"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -32,30 +33,60 @@ app.get("/api/iptv-proxy", async (req, res) => {
   if (!urlStr) return res.status(400).end("Missing url")
 
   const targetUrl = decodeURIComponent(urlStr)
-  const isM3U8 = /\.m3u8/i.test(targetUrl)
 
-  try {
-    const proxyRes = await fetch(targetUrl, {
+  const doFetch = (ua) =>
+    fetch(targetUrl, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(20000),
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "User-Agent": ua,
         Accept: "*/*",
       },
     })
+
+  try {
+    let proxyRes = await doFetch(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    )
+
+    // Alguns provedores IPTV só aceitam User-Agent de players conhecidos
+    if (!proxyRes.ok && [401, 403, 451, 456, 458].includes(proxyRes.status)) {
+      proxyRes = await doFetch("VLC/3.0.20 LibVLC/3.0.20")
+    }
 
     if (!proxyRes.ok) {
       return res.status(proxyRes.status).end(`Origin server returned ${proxyRes.status}`)
     }
 
-    if (isM3U8) {
+    // Base correta para reescrever links relativos: a URL FINAL (pós-redirect)
+    const finalUrl = proxyRes.url || targetUrl
+    const contentType = proxyRes.headers.get("content-type") || ""
+    const looksM3U8 =
+      /\.m3u8/i.test(finalUrl) ||
+      /\.m3u8/i.test(targetUrl) ||
+      /mpegurl/i.test(contentType)
+
+    if (looksM3U8) {
       const body = await proxyRes.text()
-      res.setHeader("Content-Type", "application/vnd.apple.mpegurl")
-      res.end(rewritePlaylist(body, targetUrl))
-    } else {
-      res.setHeader("Content-Type", proxyRes.headers.get("content-type") || "video/MP2T")
-      res.end(Buffer.from(await proxyRes.arrayBuffer()))
+      // Confirma pelo conteúdo (evita reescrever algo que não é playlist)
+      if (body.trimStart().startsWith("#EXTM3U") || body.includes("#EXTINF")) {
+        res.setHeader("Content-Type", "application/vnd.apple.mpegurl")
+        return res.end(rewritePlaylist(body, finalUrl))
+      }
+      res.setHeader("Content-Type", contentType || "text/plain")
+      return res.end(body)
     }
+
+    // Segmentos de vídeo e demais conteúdos: repassar em streaming, sem
+    // carregar tudo na memória (essencial para VOD e segmentos grandes)
+    res.setHeader("Content-Type", contentType || "video/MP2T")
+    const length = proxyRes.headers.get("content-length")
+    if (length) res.setHeader("Content-Length", length)
+    Readable.fromWeb(proxyRes.body).pipe(res)
   } catch (e) {
-    res.status(502).end(`IPTV proxy error: ${e.message || e}`)
+    const msg = e?.name === "TimeoutError" ? "Upstream timeout (20s)" : e.message || String(e)
+    if (!res.headersSent) res.status(502).end(`IPTV proxy error: ${msg}`)
+    else res.end()
   }
 })
 
