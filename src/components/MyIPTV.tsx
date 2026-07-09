@@ -124,17 +124,46 @@ export default function MyIPTV() {
       const res = await fetch(toProxyUrl(buildPlaylistUrl(cfg)), {
         signal: controller.signal,
       })
-      if (!res.ok) throw new Error(`O servidor respondeu ${res.status} — confira a URL e as credenciais`)
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          throw new Error(
+            cfg.mode === "m3u"
+              ? "Acesso negado (login ou senha na URL incorretos, ou conta expirada)."
+              : "Login ou senha incorretos, ou conta expirada."
+          )
+        }
+        if (res.status === 404) {
+          throw new Error("Servidor não encontrado — verifique o endereço do servidor.")
+        }
+        if (res.status === 512 || res.status === 456) {
+          throw new Error(
+            "Conta bloqueada ou já em uso em outro dispositivo (limite de conexões atingido)."
+          )
+        }
+        if (res.status === 502 || res.status === 504) {
+          throw new Error("O provedor não respondeu a tempo. Tente novamente em instantes.")
+        }
+        throw new Error(`Não foi possível conectar (código ${res.status}). Confira o servidor e as credenciais.`)
+      }
       const text = await res.text()
       if (!text.includes("#EXTINF")) {
-        throw new Error("A resposta não é uma playlist M3U válida — confira a URL e as credenciais")
+        // Provedor respondeu 200 mas sem playlist: quase sempre credenciais inválidas
+        const lower = text.toLowerCase()
+        if (lower.includes("auth") || lower.includes("expired") || lower.includes("banned") || text.trim().length < 200) {
+          throw new Error("Login ou senha incorretos, ou conta expirada.")
+        }
+        throw new Error("A resposta não é uma playlist válida — confira a URL e as credenciais.")
       }
       const parsed = parseM3U(text)
-      if (parsed.length === 0) throw new Error("Nenhum canal encontrado na playlist")
+      if (parsed.length === 0) throw new Error("Sua conta está ativa, mas não há canais disponíveis nela.")
       setChannels(parsed)
     } catch (err) {
       if ((err as Error).name === "AbortError") return
-      setError((err as Error).message || "Falha ao carregar a playlist")
+      const raw = (err as Error).message || ""
+      const msg = /failed to fetch|network|load failed/i.test(raw)
+        ? "Não foi possível alcançar o servidor. Verifique o endereço e sua conexão."
+        : raw || "Falha ao carregar a playlist."
+      setError(msg)
       setChannels([])
     } finally {
       setLoading(false)
