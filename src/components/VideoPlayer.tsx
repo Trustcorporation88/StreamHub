@@ -51,9 +51,12 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
     hlsRef.current?.destroy()
     hlsRef.current = null
 
-    const playableSrc = src.endsWith(".m3u8") ? toProxyUrl(src) : src
+    // Arquivos de vídeo diretos (VOD) tocam no <video>; todo o resto é tratado como HLS.
+    // Tudo passa pelo proxy: resolve CORS e conteúdo http:// em página https://.
+    const isDirectFile = /\.(mp4|webm|mov|mkv|avi)(\?|$)/i.test(src)
+    const playableSrc = toProxyUrl(src)
 
-    if (src.endsWith(".m3u8")) {
+    if (!isDirectFile) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: true,

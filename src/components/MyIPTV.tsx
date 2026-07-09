@@ -43,7 +43,14 @@ function loadConfig(): MyIPTVConfig | null {
 }
 
 function buildPlaylistUrl(cfg: MyIPTVConfig): string {
-  if (cfg.mode === "m3u") return cfg.m3uUrl.trim()
+  if (cfg.mode === "m3u") {
+    // Normaliza links "ts" para "m3u8" — o player funciona com HLS
+    return cfg.m3uUrl
+      .trim()
+      .replace(/output=ts\b/i, "output=m3u8")
+      .replace(/\/m3u-ts\//i, "/m3u-m3u8/")
+      .replace(/\/ss-ts\//i, "/m3u-m3u8/")
+  }
   const host = cfg.host.trim().replace(/\/+$/, "")
   const base = /^https?:\/\//i.test(host) ? host : `http://${host}`
   return `${base}/get.php?username=${encodeURIComponent(cfg.username.trim())}&password=${encodeURIComponent(cfg.password.trim())}&type=m3u_plus&output=m3u8`

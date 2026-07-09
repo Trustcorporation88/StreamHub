@@ -28,6 +28,86 @@ app.use("/api/iptv-proxy", (req, res, next) => {
   next()
 })
 
+// ---- Diagnóstico IPTV: testa playlist -> manifesto -> segmento ----
+app.get("/api/iptv-debug", async (req, res) => {
+  const urlStr = req.query?.url
+  if (!urlStr) return res.status(400).json({ erro: "Faltou ?url=<link da playlist>" })
+
+  const report = { etapas: [] }
+  const ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  const mask = (u) => String(u).replace(/(username|password)=[^&]*/gi, "$1=***").replace(/\/\d{4,}\/\d{4,}\//g, "/***/***/")
+
+  async function step(nome, url, readMode) {
+    const entry = { etapa: nome, url: mask(url).slice(0, 140) }
+    try {
+      const r = await fetch(url, {
+        redirect: "follow",
+        signal: AbortSignal.timeout(20000),
+        headers: { "User-Agent": ua, Accept: "*/*" },
+      })
+      entry.status = r.status
+      entry.redirecionou_para = r.url !== url ? mask(r.url).slice(0, 140) : "(sem redirect)"
+      entry.content_type = r.headers.get("content-type") || "(vazio)"
+      let text = ""
+      if (readMode === "partial") {
+        const reader = r.body.getReader()
+        const dec = new TextDecoder()
+        while (text.length < 200000) {
+          const { done, value } = await reader.read()
+          if (done) break
+          text += dec.decode(value, { stream: true })
+        }
+        reader.cancel().catch(() => {})
+        entry.parcial = true
+      } else {
+        text = await r.text()
+      }
+      entry.amostra = mask(text.slice(0, 300))
+      return { entry, body: text, finalUrl: r.url }
+    } catch (e) {
+      entry.erro = e?.name === "TimeoutError" ? "TIMEOUT 20s" : String(e?.cause?.code || e.message || e)
+      return { entry, body: null, finalUrl: url }
+    } finally {
+      report.etapas.push(entry)
+    }
+  }
+
+  try {
+    const playlistUrl = decodeURIComponent(urlStr)
+    const p = await step("1-playlist", playlistUrl, "partial")
+    if (!p.body || !p.body.includes("#EXTINF")) {
+      report.conclusao = "A playlist não veio ou não é M3U — veja status/erro da etapa 1."
+      return res.json(report)
+    }
+    const urls = p.body.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"))
+    report.canais_na_amostra = urls.length
+    if (urls.length === 0) {
+      report.conclusao = "Playlist veio mas sem URLs de canais na amostra."
+      return res.json(report)
+    }
+    const m = await step("2-manifesto-canal", urls[0])
+    if (!m.body || !m.body.trimStart().startsWith("#EXTM3U")) {
+      report.conclusao = "O canal não retornou um manifesto HLS — provável bloqueio do provedor (IP de datacenter ou limite de conexões) ou canal fora do ar. Veja a etapa 2."
+      return res.json(report)
+    }
+    const segLine = m.body.split("\n").map((l) => l.trim()).find((l) => l && !l.startsWith("#"))
+    if (!segLine) {
+      report.conclusao = "Manifesto veio vazio (sem segmentos) — canal possivelmente fora do ar."
+      return res.json(report)
+    }
+    const segUrl = new URL(segLine, m.finalUrl).href
+    const sg = await step("3-segmento", segUrl)
+    report.conclusao =
+      sg.entry.status === 200
+        ? "TUDO OK do lado do servidor — playlist, manifesto e segmento respondem. O problema estaria no navegador/player."
+        : "Manifesto OK, mas o segmento falhou — veja a etapa 3."
+    res.json(report)
+  } catch (e) {
+    report.erro_geral = String(e.message || e)
+    res.status(500).json(report)
+  }
+})
+
 app.get("/api/iptv-proxy", async (req, res) => {
   const urlStr = req.query?.url
   if (!urlStr) return res.status(400).end("Missing url")
