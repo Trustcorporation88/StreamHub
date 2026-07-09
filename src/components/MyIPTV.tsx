@@ -470,8 +470,8 @@ export default function MyIPTV() {
             </div>
           </div>
 
-          {/* Player */}
-          <div className="min-h-0">
+          {/* Player — inline no desktop */}
+          <div className="hidden min-h-0 xl:block">
             {activeChannel ? (
               <div className="flex flex-col gap-3">
                 <VideoPlayer src={activeChannel.url} title={activeChannel.name} />
@@ -486,6 +486,35 @@ export default function MyIPTV() {
                 <p className={`text-sm ${mutedText}`}>Selecione uma série para começar a assistir</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Player — modal em tela cheia no mobile/tablet */}
+      {activeChannel && (
+        <div
+          className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-sm xl:hidden"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="flex items-center justify-between gap-3 px-4 py-3 safe-area-top">
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white truncate">{activeChannel.name}</p>
+              <p className="text-xs text-white/60 truncate">{activeChannel.category}</p>
+            </div>
+            <button
+              onClick={() => setActiveChannel(null)}
+              aria-label="Fechar player"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+            >
+              <X className="w-4 h-4" />
+              Voltar
+            </button>
+          </div>
+          <div className="flex flex-1 items-center justify-center px-2 pb-4 min-h-0">
+            <div className="w-full">
+              <VideoPlayer src={activeChannel.url} title={activeChannel.name} />
+            </div>
           </div>
         </div>
       )}
