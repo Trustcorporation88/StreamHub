@@ -171,6 +171,12 @@ app.get("/api/iptv-proxy", async (req, res) => {
     // Content-Length só faz sentido para conteúdo finito (segmentos, VOD).
     // Streams ao vivo (video/mp2t contínuo) não têm tamanho definido.
     if (contentLength && !isVideoStream) res.setHeader("Content-Length", String(contentLength))
+    if (isVideoStream) {
+      // Evita que camadas intermediárias segurem o buffer do stream ao vivo
+      res.setHeader("Cache-Control", "no-cache, no-store")
+      res.setHeader("X-Accel-Buffering", "no")
+      res.flushHeaders?.()
+    }
 
     const upstream = Readable.fromWeb(proxyRes.body)
 

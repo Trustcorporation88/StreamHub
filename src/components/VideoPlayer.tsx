@@ -205,9 +205,16 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
       }
     }
 
+    // Canais ao vivo de provedores Xtream seguem o padrão /live/user/pass/id.
+    // Eles entregam MPEG-TS bruto (mesmo em URLs ".m3u8") — vão direto ao mpegts.js,
+    // sem sondagem (que consumiria uma conexão simultânea e às vezes classifica errado).
+    const isXtreamLive = /\/live\//i.test(src) || /[?&]type=live/i.test(src)
+
     if (isDirectFile) {
       media.src = playableSrc
       media.addEventListener("loadedmetadata", () => setLoading(false))
+    } else if (isXtreamLive) {
+      startMpegts()
     } else {
       probeAndStart()
     }
