@@ -168,8 +168,25 @@ app.get("/api/iptv-proxy", async (req, res) => {
 
     // Todo o resto (segmentos, VOD, playlists gigantes): repassar em streaming
     res.setHeader("Content-Type", contentType || "video/MP2T")
-    if (contentLength) res.setHeader("Content-Length", String(contentLength))
-    Readable.fromWeb(proxyRes.body).pipe(res)
+    // Content-Length só faz sentido para conteúdo finito (segmentos, VOD).
+    // Streams ao vivo (video/mp2t contínuo) não têm tamanho definido.
+    if (contentLength && !isVideoStream) res.setHeader("Content-Length", String(contentLength))
+
+    const upstream = Readable.fromWeb(proxyRes.body)
+
+    // Se o cliente (navegador) fechar a conexão — troca de canal, reconexão do
+    // player, fechar aba — abortamos a leitura do upstream sem derrubar o processo.
+    const cleanup = () => {
+      upstream.destroy()
+    }
+    res.on("close", cleanup)
+    res.on("error", cleanup)
+    upstream.on("error", () => {
+      if (!res.headersSent) res.status(502).end("Upstream stream error")
+      else res.end()
+    })
+
+    upstream.pipe(res)
   } catch (e) {
     const msg = e?.name === "AbortError" || e?.name === "TimeoutError"
       ? "Upstream connection timeout (20s)"

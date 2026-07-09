@@ -112,53 +112,96 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
         setLoading(false)
         return
       }
-      const player = mpegts.createPlayer(
-        { type: "mpegts", isLive: true, url: playableSrc },
-        {
-          enableWorker: true,
-          liveBufferLatencyChasing: true,
-          lazyLoad: false,
-        }
-      )
-      mpegtsRef.current = player
-      player.attachMediaElement(media)
-      player.load()
-      player.on(mpegts.Events.ERROR, (type: string, detail: string) => {
-        setError(`Stream failed: ${type} ${detail || ""}`.trim())
-        setLoading(false)
-      })
-      media.addEventListener("loadeddata", () => setLoading(false), { once: true })
-      player.play()?.catch(() => {})
-      setPlaying(true)
+      let retries = 0
+      const buildPlayer = () => {
+        const player = mpegts.createPlayer(
+          { type: "mpegts", isLive: true, url: playableSrc },
+          {
+            enableWorker: true,
+            liveBufferLatencyChasing: true,
+            lazyLoad: false,
+            reuseRedirectedURL: true,
+          }
+        )
+        mpegtsRef.current = player
+        player.attachMediaElement(media)
+        player.load()
+        player.on(mpegts.Events.ERROR, (type: string, detail: string) => {
+          // Streams ao vivo caem de vez em quando; tenta reconectar até 3x
+          if (retries < 3 && !cancelled) {
+            retries++
+            try {
+              player.destroy()
+            } catch {
+              /* ignore */
+            }
+            setTimeout(() => {
+              if (!cancelled) buildPlayer()
+            }, 1200)
+            return
+          }
+          const legivel =
+            /network/i.test(type)
+              ? "Canal indisponível ou fora do ar no momento."
+              : `${type}${detail ? ` — ${detail}` : ""}`
+          setError(`Falha na transmissão: ${legivel}`)
+          setLoading(false)
+        })
+        media.addEventListener("loadeddata", () => setLoading(false), { once: true })
+        player.play()?.catch(() => {})
+        setPlaying(true)
+      }
+      buildPlayer()
     }
 
     async function probeAndStart() {
       // Sonda os primeiros bytes: playlist HLS começa com "#EXTM3U";
       // MPEG-TS bruto começa com o sync byte 0x47. Provedores Xtream
       // costumam responder TS cru mesmo em URLs ".m3u8".
+      // A sondagem fecha a conexão imediatamente após ler o primeiro chunk,
+      // para não ocupar uma das (poucas) conexões simultâneas da conta.
       try {
         const controller = new AbortController()
         const timer = setTimeout(() => controller.abort(), 15000)
         const res = await fetch(playableSrc, { signal: controller.signal })
+        if (!res.ok) {
+          clearTimeout(timer)
+          controller.abort()
+          if (!cancelled) {
+            setError(
+              res.status === 502 || res.status === 504
+                ? "Falha na transmissão: canal indisponível ou fora do ar."
+                : `Falha na transmissão: HTTP ${res.status}`
+            )
+            setLoading(false)
+          }
+          return
+        }
+        const ct = res.headers.get("content-type") || ""
         const reader = res.body?.getReader()
         const { value } = (await reader?.read()) ?? {}
-        reader?.cancel().catch(() => {})
+        // Encerra a conexão de sondagem antes de abrir a de reprodução
+        await reader?.cancel().catch(() => {})
         controller.abort()
         clearTimeout(timer)
         if (cancelled) return
 
-        if (!res.ok) {
-          setError(`Stream failed: HTTP ${res.status}`)
-          setLoading(false)
-          return
-        }
         const head = value ? new TextDecoder().decode(value.slice(0, 16)) : ""
-        const isTs = value && (value[0] === 0x47 || /video\/mp2t/i.test(res.headers.get("content-type") || ""))
+        const isTs = (value && value[0] === 0x47) || /video\/mp2t/i.test(ct)
+        // Pequena pausa para o provedor liberar a conexão de sondagem
+        await new Promise((r) => setTimeout(r, 300))
+        if (cancelled) return
         if (head.startsWith("#EXTM3U")) startHls()
         else if (isTs) startMpegts()
         else startHls() // fallback: deixa o HLS.js tentar e reportar o erro
-      } catch {
-        if (!cancelled) startHls()
+      } catch (e) {
+        if (cancelled) return
+        if ((e as Error)?.name === "AbortError") {
+          setError("Falha na transmissão: tempo esgotado ao conectar ao canal.")
+          setLoading(false)
+        } else {
+          startHls()
+        }
       }
     }
 
