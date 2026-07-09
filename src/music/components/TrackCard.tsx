@@ -22,7 +22,7 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
   const isRadio = track.source === "radio"
   const isYoutube = track.source === "youtube"
   const isFav = isFavorite(track.id)
-  const sourceLabel = isRadio ? "Live Radio" : isYoutube ? "YouTube" : "Stream"
+  const sourceLabel = isRadio ? "Rádio ao Vivo" : isYoutube ? "YouTube" : "Stream"
 
   return (
     <motion.div
@@ -115,7 +115,7 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
           }}
           className={`p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all ${isFav ? "text-sport-red opacity-100" : isDark ? "text-dark-100 md:opacity-0 md:group-hover:opacity-100 hover:text-sport-red" : "text-slate-400 md:opacity-0 md:group-hover:opacity-100 hover:text-sport-red"}`}
           whileTap={{ scale: 0.85 }}
-          title={isFav ? "Remove from favorites" : "Add to favorites"}
+          title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
         >
           <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
         </motion.button>
@@ -127,7 +127,7 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
           }}
           className={`flex p-2.5 min-w-[44px] min-h-[44px] items-center justify-center rounded-lg transition-all ${isDark ? "text-dark-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-white/10" : "text-slate-400 md:opacity-0 md:group-hover:opacity-100 hover:bg-slate-100"}`}
           whileTap={{ scale: 0.9 }}
-          title="Add to queue"
+          title="Adicionar à fila"
         >
           <Plus className="w-4 h-4" />
         </motion.button>
@@ -159,7 +159,7 @@ export default function TrackCard({ track, index, queue, showIndex = false, show
                   className={`w-full flex items-center gap-2 px-3 py-3 text-xs font-medium ${isDark ? "text-white hover:bg-white/5" : "text-slate-700 hover:bg-slate-50"}`}
                 >
                   <Play className="w-3.5 h-3.5" />
-                  Play Next
+                  Tocar a Seguir
                 </button>
                 {state.playlists.map((pl) => (
                   <button

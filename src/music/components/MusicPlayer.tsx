@@ -80,7 +80,7 @@ function QueueRow({
           onRemove()
         }}
         className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg ${isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-400"}`}
-        aria-label="Remove from queue"
+        aria-label="Remover da fila"
       >
         <X className="w-4 h-4" />
       </button>
@@ -205,7 +205,7 @@ export default function MusicPlayer() {
                   setShowQueue(false)
                 }}
                 className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-white/10 hover:bg-slate-400 dark:hover:bg-white/20 transition-colors"
-                aria-label="Close player"
+                aria-label="Fechar player"
               />
             </div>
 
@@ -220,7 +220,7 @@ export default function MusicPlayer() {
                       onClick={() => setShowQueue(false)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${isDark ? "bg-white/10 text-white" : "bg-slate-100 text-slate-700"}`}
                     >
-                      Back to Song
+                      Voltar à Música
                     </button>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
@@ -244,10 +244,10 @@ export default function MusicPlayer() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                          Now Playing
+                          Tocando Agora
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
-                          {currentTrack.source === "youtube" ? "YouTube Music" : "Internet Radio"}
+                          {currentTrack.source === "youtube" ? "YouTube Music" : "Rádio Online"}
                         </span>
                       </div>
                       <h2 className={`text-xl font-bold truncate ${isDark ? "text-white" : "text-slate-900"}`}>
@@ -434,7 +434,7 @@ export default function MusicPlayer() {
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
                 <span className={`text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                  Now Playing
+                  Tocando Agora
                 </span>
                 <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold ${isDark ? "bg-white/5 text-dark-100" : "bg-slate-100 text-slate-500"}`}>
                   {currentTrack.source === "youtube" ? "YT Music" : "Radio"}
@@ -523,7 +523,7 @@ export default function MusicPlayer() {
                 onClick={() => setShowVideo(!showVideo)}
                 className={`hidden sm:flex p-2 min-w-[44px] min-h-[44px] items-center justify-center rounded-lg transition-colors ${showVideo ? "text-accent-light bg-accent/10" : isDark ? "text-dark-100 hover:text-white" : "text-slate-400 hover:text-slate-700"}`}
                 whileTap={{ scale: 0.9 }}
-                title="Toggle Video Player"
+                title="Alternar Player de Vídeo"
               >
                 <Tv className="w-4 h-4" />
               </motion.button>

@@ -23,7 +23,7 @@ export default function YouTubeSearch() {
   const panelClass = isDark ? "bg-dark-300/30 border-white/[0.06]" : "bg-white border-slate-200"
 
   const quickSearches = [
-    "Trending Music",
+    "Músicas em Alta",
     "Lo-fi Beats",
     "Jazz Classics",
     "EDM Mix",
@@ -42,7 +42,7 @@ export default function YouTubeSearch() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search YouTube Music..."
+          placeholder="Buscar no YouTube Music..."
           className={`w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-colors outline-none ${
             isDark
               ? "bg-dark-300/50 border border-white/[0.06] text-white placeholder:text-dark-100 focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
@@ -51,9 +51,9 @@ export default function YouTubeSearch() {
         />
       </form>
 
-      {/* Quick Searches */}
+      {/* Busca Rápidaes */}
       <div>
-        <p className={`text-xs font-semibold uppercase tracking-wider mb-2 ${mutedText}`}>Quick Search</p>
+        <p className={`text-xs font-semibold uppercase tracking-wider mb-2 ${mutedText}`}>Busca Rápida</p>
         <div className="flex flex-wrap gap-2">
           {quickSearches.map((q) => (
             <motion.button
@@ -79,7 +79,7 @@ export default function YouTubeSearch() {
       {loading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-accent" />
-          <span className={`ml-2 text-sm ${mutedText}`}>Searching...</span>
+          <span className={`ml-2 text-sm ${mutedText}`}>Buscando...</span>
         </div>
       )}
 
@@ -108,7 +108,7 @@ export default function YouTubeSearch() {
               whileTap={{ scale: 0.95 }}
             >
               <PlayCircle className="w-3.5 h-3.5" />
-              Play All
+              Tocar Tudo
             </motion.button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -128,10 +128,10 @@ export default function YouTubeSearch() {
         >
           <MonitorPlay className={`w-12 h-12 mx-auto mb-3 ${mutedText}`} />
           <p className={`text-sm font-medium ${mutedText}`}>
-            Search for your favorite music or pick a quick search above
+            Busque sua música favorita ou use uma busca rápida acima
           </p>
           <p className={`text-xs mt-1 ${mutedText}`}>
-            Press Space to play/pause, arrows to seek
+            Espaço para reproduzir/pausar, setas para avançar/voltar
           </p>
         </motion.div>
       )}

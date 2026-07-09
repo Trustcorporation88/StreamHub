@@ -201,15 +201,15 @@ const sportCategories: {
   label: string
   icon: React.ComponentType<{ className?: string }>
 }[] = [
-  { id: "football", label: "Football", icon: CircleDot },
-  { id: "cricket", label: "Cricket", icon: Trophy },
-  { id: "basketball", label: "Basketball", icon: Volleyball },
+  { id: "football", label: "Futebol", icon: CircleDot },
+  { id: "cricket", label: "Críquete", icon: Trophy },
+  { id: "basketball", label: "Basquete", icon: Volleyball },
   { id: "american-football", label: "NFL", icon: Shield },
-  { id: "hockey", label: "Hockey", icon: Timer },
-  { id: "baseball", label: "Baseball", icon: Target },
-  { id: "motor-sports", label: "Motorsport", icon: Car },
+  { id: "hockey", label: "Hóquei", icon: Timer },
+  { id: "baseball", label: "Beisebol", icon: Target },
+  { id: "motor-sports", label: "Automobilismo", icon: Car },
   { id: "fight", label: "UFC / Boxing", icon: Swords },
-  { id: "tennis", label: "Tennis", icon: Zap },
+  { id: "tennis", label: "Tênis", icon: Zap },
 ]
 
 const listVariants = {
@@ -299,7 +299,7 @@ export default function LiveSports() {
       setMatches(result.matches)
     } catch (err: unknown) {
       if (requestId !== requestIdRef.current) return
-      setError(err instanceof Error ? err.message : "Failed to fetch matches")
+      setError(err instanceof Error ? err.message : "Falha ao buscar as partidas")
     } finally {
       if (requestId === requestIdRef.current) setLoading(false)
     }
@@ -318,12 +318,12 @@ export default function LiveSports() {
     setActiveSource(null)
     try {
       const meta = matchMetaRef.current.get(match.id)
-      if (!meta) throw new Error("Match metadata not found")
+      if (!meta) throw new Error("Metadados da partida não encontrados")
 
       let sources: Source[] = []
 
       if (meta.source === "streamfree") {
-        if (!meta.embedUrl) throw new Error("No embed URL available")
+        if (!meta.embedUrl) throw new Error("Nenhuma URL de player disponível")
         sources = [{
           id: match.id,
           streamNo: 1,
@@ -335,7 +335,7 @@ export default function LiveSports() {
         }]
       } else {
         const iframes = meta.iframes
-        if (!iframes?.length) throw new Error("No stream data available")
+        if (!iframes?.length) throw new Error("Nenhum dado de transmissão disponível")
         sources = iframes.map((iframe: any, index: number) => ({
           id: match.id,
           streamNo: index + 1,
@@ -357,7 +357,7 @@ export default function LiveSports() {
       if (sources.length) setActiveSource(sources[0])
     } catch (err: unknown) {
       if (requestId !== detailRequestIdRef.current) return
-      setDetailError(err instanceof Error ? err.message : "Failed to load stream")
+      setDetailError(err instanceof Error ? err.message : "Falha ao carregar a transmissão")
     } finally {
       if (requestId === detailRequestIdRef.current) setDetailLoading(false)
     }
@@ -381,12 +381,12 @@ export default function LiveSports() {
             <h2
               className={`text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}
             >
-              Live Sports
+              Esportes ao Vivo
             </h2>
             <p
               className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
             >
-              Match schedules &amp; live stream embeds
+              Agenda de partidas &amp; players ao vivo
             </p>
           </div>
           {liveCount > 0 && (
@@ -471,7 +471,7 @@ export default function LiveSports() {
             <h3
               className={`text-base font-semibold mb-1.5 ${isDark ? "text-white" : "text-slate-900"}`}
             >
-              Failed to Load
+              Falha ao Carregar
             </h3>
             <p
               className={`text-sm mb-4 ${isDark ? "text-dark-100" : "text-slate-500"}`}
@@ -528,12 +528,12 @@ export default function LiveSports() {
                   <p
                     className={`text-sm font-medium mb-0.5 ${isDark ? "text-white" : "text-slate-900"}`}
                   >
-                    No matches found
+                    Nenhuma partida encontrada
                   </p>
                   <p
                     className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
                   >
-                    Try a different sport category
+                    Tente outra categoria de esporte
                   </p>
                 </div>
               )}
@@ -754,7 +754,7 @@ export default function LiveSports() {
                   <p
                     className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
                   >
-                    Loading stream...
+                    Carregando transmissão...
                   </p>
                 </div>
               </div>
@@ -802,7 +802,7 @@ export default function LiveSports() {
                         <div className="text-center">
                           <Play className="w-10 h-10 text-dark-100 mx-auto mb-2" />
                           <p className="text-xs text-dark-100">
-                            No stream available
+                            Nenhuma transmissão disponível
                           </p>
                         </div>
                       </div>
@@ -882,14 +882,14 @@ export default function LiveSports() {
                   <p
                     className={`text-sm font-medium mb-0.5 ${isDark ? "text-white" : "text-slate-900"}`}
                   >
-                    No match selected
+                    Nenhuma partida selecionada
                   </p>
                   <p
                     className={`text-xs max-w-[180px] mx-auto ${isDark ? "text-dark-100" : "text-slate-500"}`}
                   >
                     {matches.length > 0
-                      ? "Select a match from the list to start streaming"
-                      : "Matches will appear once data loads"}
+                      ? "Selecione uma partida na lista para começar a assistir"
+                      : "As partidas aparecerão quando os dados carregarem"}
                   </p>
                   {matches.length > 0 && (
                     <div className="mt-4 flex items-center justify-center gap-1.5">

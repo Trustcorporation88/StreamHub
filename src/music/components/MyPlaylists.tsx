@@ -54,7 +54,7 @@ export default function MyPlaylists() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ListMusic className={`w-4 h-4 ${mutedText}`} />
-          <span className={`text-xs font-semibold uppercase tracking-wider ${mutedText}`}>My Playlists</span>
+          <span className={`text-xs font-semibold uppercase tracking-wider ${mutedText}`}>Minhas Playlists</span>
         </div>
         <motion.button
           onClick={() => setShowCreate(true)}
@@ -62,7 +62,7 @@ export default function MyPlaylists() {
           whileTap={{ scale: 0.95 }}
         >
           <Plus className="w-3.5 h-3.5" />
-          New Playlist
+          Nova Playlist
         </motion.button>
       </div>
 
@@ -80,7 +80,7 @@ export default function MyPlaylists() {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                placeholder="Playlist name..."
+                placeholder="Nome da playlist..."
                 autoFocus
                 className={`flex-1 bg-transparent text-sm outline-none ${isDark ? "text-white placeholder:text-dark-100" : "text-slate-900 placeholder:text-slate-400"}`}
               />
@@ -100,7 +100,7 @@ export default function MyPlaylists() {
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <button onClick={() => setActivePlaylist(null)} className={`text-xs shrink-0 ${isDark ? "text-dark-100 hover:text-white" : "text-slate-500 hover:text-slate-700"}`}>
-                All Playlists
+                Todas as Playlists
               </button>
               <span className={mutedText}>/</span>
               <h3 className={`text-sm font-bold truncate ${strongText}`}>{activePl.name}</h3>
@@ -113,7 +113,7 @@ export default function MyPlaylists() {
                 whileTap={{ scale: 0.95 }}
               >
                 <PlayCircle className="w-3.5 h-3.5" />
-                Play All
+                Tocar Tudo
               </motion.button>
             )}
           </div>
@@ -121,7 +121,7 @@ export default function MyPlaylists() {
           {activePl.tracks.length === 0 ? (
             <div className={`text-center py-12 rounded-2xl border ${panelClass}`}>
               <Music className={`w-10 h-10 mx-auto mb-2 ${mutedText}`} />
-              <p className={`text-sm ${mutedText}`}>No tracks yet. Search and add songs to this playlist.</p>
+              <p className={`text-sm ${mutedText}`}>Nenhuma faixa ainda. Busque e adicione músicas a esta playlist.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -152,8 +152,8 @@ export default function MyPlaylists() {
               className={`text-center py-16 rounded-2xl border ${panelClass}`}
             >
               <ListMusic className={`w-12 h-12 mx-auto mb-3 ${mutedText}`} />
-              <p className={`text-sm font-medium ${mutedText}`}>No playlists yet</p>
-              <p className={`text-xs mt-1 ${mutedText}`}>Create a playlist to save your favorite tracks</p>
+              <p className={`text-sm font-medium ${mutedText}`}>Nenhuma playlist ainda</p>
+              <p className={`text-xs mt-1 ${mutedText}`}>Crie uma playlist para guardar suas faixas favoritas</p>
             </motion.div>
           ) : (
             state.playlists.map((pl) => (
@@ -230,7 +230,7 @@ export default function MyPlaylists() {
             </div>
           ) : (
             <p className={`text-xs ${mutedText}`}>
-              Favorited tracks are saved across sessions. Click the heart icon on any track to add it here.
+              As faixas favoritas ficam salvas entre sessões. Clique no coração de qualquer faixa para adicioná-la aqui.
             </p>
           )}
         </div>

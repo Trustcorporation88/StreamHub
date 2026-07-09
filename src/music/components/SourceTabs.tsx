@@ -8,7 +8,7 @@ interface SourceTabsProps {
 
 const sources: { id: MusicSource; label: string; emoji: string }[] = [
   { id: "youtube", label: "YouTube Music", emoji: "\uD83C\uDFA5" },
-  { id: "radio", label: "Internet Radio", emoji: "\uD83D\uDCFB" },
+  { id: "radio", label: "Rádio Online", emoji: "\uD83D\uDCFB" },
 ]
 
 export default function SourceTabs({ activeSource, onSourceChange }: SourceTabsProps) {

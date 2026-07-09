@@ -11,28 +11,28 @@ const GENRES = [
   { tag: "pop", label: "Pop" },
   { tag: "rock", label: "Rock" },
   { tag: "jazz", label: "Jazz" },
-  { tag: "classical", label: "Classical" },
-  { tag: "electronic", label: "Electronic" },
+  { tag: "classical", label: "Clássica" },
+  { tag: "electronic", label: "Eletrônica" },
   { tag: "hiphop", label: "Hip Hop" },
   { tag: "rnb", label: "R&B" },
-  { tag: "country", label: "Country" },
+  { tag: "country", label: "País" },
   { tag: "reggae", label: "Reggae" },
   { tag: "metal", label: "Metal" },
   { tag: "ambient", label: "Ambient" },
-  { tag: "news", label: "News" },
+  { tag: "news", label: "Notícias" },
 ]
 
 const COUNTRIES = [
-  "United States",
-  "United Kingdom",
-  "Germany",
-  "France",
-  "Japan",
-  "India",
-  "Brazil",
-  "Canada",
-  "Australia",
-  "Netherlands",
+  "Estados Unidos",
+  "Reino Unido",
+  "Alemanha",
+  "França",
+  "Japão",
+  "Índia",
+  "Brasil",
+  "Canadá",
+  "Austrália",
+  "Holanda",
 ]
 
 const INITIAL_VISIBLE = 6
@@ -41,7 +41,7 @@ function stationToTrack(station: RadioStation): Track {
   return {
     id: `radio-${station.stationuuid}`,
     title: station.name,
-    artist: station.tags ? station.tags.split(",").slice(0, 3).join(", ") : "Internet Radio",
+    artist: station.tags ? station.tags.split(",").slice(0, 3).join(", ") : "Rádio Online",
     thumbnail:
       station.favicon ||
       "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E",
@@ -106,7 +106,7 @@ export default function InternetRadio() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search 45,000+ radio stations..."
+          placeholder="Buscar entre 45.000+ estações de rádio..."
           className={`w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-colors outline-none ${
             isDark
               ? "bg-dark-300/50 border border-white/[0.06] text-white placeholder:text-dark-100 focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
@@ -125,13 +125,13 @@ export default function InternetRadio() {
         whileTap={{ scale: 0.97 }}
       >
         <Radio className="w-4 h-4" />
-        Top Voted Stations
+        Estações Mais Votadas
       </motion.button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FilterSection
           icon={<Music2 className={`w-3.5 h-3.5 ${mutedText}`} />}
-          label="Genres"
+          label="Gêneros"
           isDark={isDark}
           expanded={showAllGenres}
           onToggle={() => setShowAllGenres(!showAllGenres)}
@@ -147,7 +147,7 @@ export default function InternetRadio() {
 
         <FilterSection
           icon={<Globe className={`w-3.5 h-3.5 ${mutedText}`} />}
-          label="Countries"
+          label="Países"
           isDark={isDark}
           expanded={showAllCountries}
           onToggle={() => setShowAllCountries(!showAllCountries)}
@@ -165,7 +165,7 @@ export default function InternetRadio() {
       {loading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-accent" />
-          <span className={`ml-2 text-sm ${mutedText}`}>Loading stations...</span>
+          <span className={`ml-2 text-sm ${mutedText}`}>Carregando estações...</span>
         </div>
       )}
 
@@ -192,7 +192,7 @@ export default function InternetRadio() {
               whileTap={{ scale: 0.95 }}
             >
               <PlayCircle className="w-3.5 h-3.5" />
-              Play All
+              Tocar Tudo
             </motion.button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -211,10 +211,10 @@ export default function InternetRadio() {
         >
           <Radio className={`w-12 h-12 mx-auto mb-3 ${mutedText}`} />
           <p className={`text-sm font-medium ${mutedText}`}>
-            Search for a station or pick a genre to get started
+            Busque uma estação ou escolha um gênero para começar
           </p>
           <p className={`text-xs mt-1 ${mutedText}`}>
-            Press Space to play/pause, arrows to seek
+            Espaço para reproduzir/pausar, setas para avançar/voltar
           </p>
         </motion.div>
       )}
@@ -297,7 +297,7 @@ function FilterSection({
             }`}
             whileTap={{ scale: 0.95 }}
           >
-            {expanded ? "Less" : `+${items.length - visibleCount}`}
+            {expanded ? "Menos" : `+${items.length - visibleCount}`}
             <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </motion.button>
         )}

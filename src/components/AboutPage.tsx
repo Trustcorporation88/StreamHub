@@ -28,46 +28,46 @@ const destinations = [
   {
     id: "iptv" as Tab,
     icon: Tv,
-    title: "IPTV Player",
-    description: "Curated channels with HLS playback and quick category filters.",
+    title: "Player IPTV",
+    description: "Canais selecionados com reprodução HLS e filtros rápidos por categoria.",
     color: "text-accent-light",
     metric: "4+",
-    metricLabel: "curated",
+    metricLabel: "selecionados",
   },
   {
     id: "catalog" as Tab,
     icon: List,
-    title: "IPTV Catalog",
-    description: "Search & browse channels from iptv-org and Free-TV sources.",
+    title: "Catálogo IPTV",
+    description: "Busque e navegue por canais das fontes iptv-org e Free-TV.",
     color: "text-sport-green",
     metric: "14000+",
-    metricLabel: "channels",
+    metricLabel: "canais",
   },
   {
     id: "sports" as Tab,
     icon: Trophy,
-    title: "Live Sports",
-    description: "Dual-API engine: StreamFree (live, real badges) with auto-fallback to ESportex.",
+    title: "Esportes ao Vivo",
+    description: "Motor com API dupla: StreamFree (ao vivo, selos reais) com reserva automática para ESportex.",
     color: "text-sport-yellow",
     metric: "9",
-    metricLabel: "sports",
+    metricLabel: "esportes",
   },
   {
     id: "music" as Tab,
     icon: Music,
-    title: "Stream Music",
-    description: "YouTube Music search, 45K+ radio stations, playlists & more.",
+    title: "Música",
+    description: "Busca no YouTube Music, 45 mil+ rádios, playlists e mais.",
     color: "text-purple-400",
     metric: "45K+",
-    metricLabel: "stations",
+    metricLabel: "estações",
   },
 ]
 
 const stats = [
   { label: "IPTV channels", value: "14000+", icon: Radio, color: "text-accent-light" },
-  { label: "Radio stations", value: "45K+", icon: Headphones, color: "text-purple-400" },
-  { label: "Sports categories", value: "9", icon: Trophy, color: "text-sport-yellow" },
-  { label: "Open source", value: "100%", icon: Heart, color: "text-sport-red" },
+  { label: "Estações de rádio", value: "45K+", icon: Headphones, color: "text-purple-400" },
+  { label: "Categorias de esporte", value: "9", icon: Trophy, color: "text-sport-yellow" },
+  { label: "Código aberto", value: "100%", icon: Heart, color: "text-sport-red" },
 ]
 
 const sourceCards = [
@@ -75,48 +75,48 @@ const sourceCards = [
     title: "iptv-org/iptv",
     href: "https://github.com/iptv-org/iptv",
     icon: Globe,
-    description: "Community-maintained M3U playlists with category-based grouping.",
-    tags: ["M3U", "Open source", "Global"],
+    description: "Playlists M3U mantidas pela comunidade, agrupadas por categoria.",
+    tags: ["M3U", "Código aberto", "Global"],
     tone: "text-sport-green",
   },
   {
     title: "Free-TV/IPTV",
     href: "https://github.com/Free-TV/IPTV",
     icon: Globe,
-    description: "Country-organized IPTV channels with 80+ countries and region tags.",
-    tags: ["M3U", "Country-based", "1800+ channels"],
+    description: "Canais IPTV organizados por país, com 80+ países e etiquetas de região.",
+    tags: ["M3U", "Por país", "1800+ canais"],
     tone: "text-accent-light",
   },
   {
     title: "StreamFree API",
     href: "https://streamfree.top/api/v1",
     icon: Trophy,
-    description: "Primary sports source — live-only streams with real team badges and viewer counts.",
-    tags: ["REST API", "Live streams", "Real viewers", "Badges"],
+    description: "Fonte esportiva principal — só transmissões ao vivo, com escudos reais dos times e contagem de espectadores.",
+    tags: ["REST API", "Transmissões ao vivo", "Espectadores reais", "Selos"],
     tone: "text-sport-green",
   },
   {
     title: "ESportex API",
     href: "https://api.esportex.site",
     icon: Trophy,
-    description: "Fallback sports source — used when StreamFree returns no live events.",
-    tags: ["REST API", "Fallback", "Upcoming + live"],
+    description: "Fonte esportiva reserva — usada quando o StreamFree não retorna eventos ao vivo.",
+    tags: ["REST API", "Reserva", "Próximos + ao vivo"],
     tone: "text-sport-yellow",
   },
   {
     title: "Radio Browser API",
     href: "https://www.radio-browser.info",
     icon: Headphones,
-    description: "Free, open-source database of 45,000+ internet radio stations worldwide.",
-    tags: ["REST API", "45K+ stations", "No auth"],
+    description: "Banco de dados gratuito e de código aberto com 45.000+ rádios online do mundo todo.",
+    tags: ["REST API", "45K+ stations", "Sem autenticação"],
     tone: "text-purple-400",
   },
   {
     title: "Invidious API",
     href: "https://invidious.io",
     icon: Music,
-    description: "Privacy-friendly YouTube frontend for music search without API keys.",
-    tags: ["YouTube", "No auth", "Privacy"],
+    description: "Interface do YouTube focada em privacidade para buscar músicas sem chave de API.",
+    tags: ["YouTube", "Sem autenticação", "Privacidade"],
     tone: "text-pink-400",
   },
 ]
@@ -124,23 +124,23 @@ const sourceCards = [
 const musicFeatures = [
   {
     icon: Headphones,
-    title: "Internet Radio",
-    desc: "45,000+ stations from 200+ countries. Browse by genre, country, or search.",
+    title: "Rádio Online",
+    desc: "45.000+ estações de 200+ países. Navegue por gênero, país ou busca.",
   },
   {
     icon: Music,
     title: "YouTube Music",
-    desc: "Search and play YouTube music directly in the browser via Invidious.",
+    desc: "Busque e toque músicas do YouTube direto no navegador via Invidious.",
   },
   {
     icon: ListMusic,
-    title: "Playlists & Queue",
-    desc: "Create playlists, manage queue, play next, shuffle & repeat.",
+    title: "Playlists e Fila",
+    desc: "Crie playlists, gerencie a fila, toque a seguir, aleatório e repetição.",
   },
   {
     icon: Heart,
-    title: "Favorites & History",
-    desc: "Save favorites and recently played tracks. All persisted locally.",
+    title: "Favoritos e Histórico",
+    desc: "Salve favoritos e faixas tocadas recentemente. Tudo guardado localmente.",
   },
 ]
 
@@ -166,10 +166,10 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             </div>
             <div className="min-w-0">
               <h1 className={`text-2xl sm:text-3xl font-extrabold ${strongText}`}>
-                About StreamHub
+                Sobre o StreamHub
               </h1>
               <p className={`mt-1 max-w-2xl text-sm sm:text-base ${mutedText}`}>
-                IPTV, channel discovery, live sports, and music streaming — all in one focused dashboard.
+                IPTV, descoberta de canais, esportes ao vivo e música — tudo em um painel só.
               </p>
             </div>
           </div>
@@ -180,14 +180,14 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light"
             >
               <Play className="w-4 h-4" />
-              Watch
+              Assistir
             </button>
             <button
               onClick={() => onNavigate("music")}
               className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all hover:from-purple-600 hover:to-pink-600"
             >
               <Music className="w-4 h-4" />
-              Listen
+              Ouvir
             </button>
             <button
               onClick={() => onNavigate("catalog")}
@@ -198,7 +198,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
               }`}
             >
               <Search className="w-4 h-4" />
-              Search
+              Buscar
             </button>
           </div>
         </div>
@@ -226,12 +226,12 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         ))}
       </section>
 
-      {/* Open A Section */}
+      {/* Abrir uma Seção */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <Zap className={`w-4 h-4 ${mutedText}`} />
           <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
-            Open A Section
+            Abrir uma Seção
           </h2>
         </div>
 
@@ -267,21 +267,21 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                 {item.description}
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-accent-light transition-all group-hover:gap-2">
-                Open <ArrowRight className="w-3 h-3" />
+                Abrir <ArrowRight className="w-3 h-3" />
               </span>
             </button>
           ))}
         </div>
       </section>
 
-      {/* Stream Music Features */}
+      {/* Música Features */}
       <section className={`rounded-2xl border p-4 sm:p-5 ${panelClass}`}>
         <div className="flex items-center gap-2 mb-4">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
             <Music className="w-4 h-4 text-white" />
           </div>
           <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
-            Stream Music — Free Music Portal
+            Música — Portal de Música Gratuito
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -300,17 +300,17 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold shadow-lg shadow-purple-500/20 transition-all hover:from-purple-600 hover:to-pink-600"
         >
           <Headphones className="w-4 h-4" />
-          Open Stream Music
+          Abrir Música
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </section>
 
-      {/* Data Sources */}
+      {/* Fontes de Dados */}
       <section>
         <div className="flex items-center gap-2 mb-3">
           <Heart className={`w-4 h-4 ${mutedText}`} />
           <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
-            Data Sources
+            Fontes de Dados
           </h2>
         </div>
 
@@ -378,9 +378,9 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             <Scale className="w-5 h-5 text-accent-light" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className={`text-sm font-bold ${strongText}`}>Legal & Terms</p>
+            <p className={`text-sm font-bold ${strongText}`}>Jurídico e Termos</p>
             <p className={`text-xs ${mutedText}`}>
-              Disclaimer, terms and conditions, privacy policy, and liability information.
+              Aviso legal, termos e condições, política de privacidade e informações de responsabilidade.
             </p>
           </div>
           <ArrowRight className="w-4 h-4 shrink-0 text-accent-light" />

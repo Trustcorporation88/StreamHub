@@ -9,12 +9,12 @@ interface HomePageProps {
 }
 
 const QUICK_LINKS: { id: Tab; title: string; description: string; icon: typeof Tv; accent: string }[] = [
-  { id: "iptv", title: "Live Streams", description: "Browse the latest live channels and quick picks.", icon: Tv, accent: "text-accent-light" },
-  { id: "catalog", title: "IPTV Channels", description: "Explore curated channel collections by category.", icon: Monitor, accent: "text-sport-green" },
-  { id: "sports", title: "Live Sports", description: "Jump into match streams and upcoming fixtures.", icon: Trophy, accent: "text-sport-yellow" },
-  { id: "music", title: "Stream Music", description: "Open YouTube search, radio stations, and playlists.", icon: Music, accent: "text-purple-400" },
-  { id: "about", title: "About", description: "See what StreamHub offers and how it is built.", icon: Zap, accent: "text-accent-light" },
-  { id: "legal", title: "Legal", description: "Read the disclaimer, terms, and privacy notes.", icon: Radio, accent: "text-sport-red" },
+  { id: "iptv", title: "Transmissões ao Vivo", description: "Navegue pelos canais ao vivo mais recentes e seleções rápidas.", icon: Tv, accent: "text-accent-light" },
+  { id: "catalog", title: "Canais IPTV", description: "Explore coleções de canais organizadas por categoria.", icon: Monitor, accent: "text-sport-green" },
+  { id: "sports", title: "Esportes ao Vivo", description: "Acompanhe transmissões de partidas e os próximos jogos.", icon: Trophy, accent: "text-sport-yellow" },
+  { id: "music", title: "Música", description: "Abra a busca do YouTube, estações de rádio e playlists.", icon: Music, accent: "text-purple-400" },
+  { id: "about", title: "Sobre", description: "Veja o que o StreamHub oferece e como foi construído.", icon: Zap, accent: "text-accent-light" },
+  { id: "legal", title: "Jurídico", description: "Leia o aviso legal, os termos e as notas de privacidade.", icon: Radio, accent: "text-sport-red" },
 ]
 
 export default function HomePage({ onNavigate }: HomePageProps) {
@@ -37,13 +37,13 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className="p-5 sm:p-7 lg:p-8">
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] bg-accent/10 text-accent-light border border-accent/20">
               <Headphones className="w-3.5 h-3.5" />
-              Unified streaming dashboard
+              Painel de streaming unificado
             </div>
             <h1 className={`mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight ${strongText}`}>
-              TV, Sports, and Music in one focused place.
+              TV, Esportes e Música em um só lugar.
             </h1>
             <p className={`mt-4 max-w-2xl text-sm sm:text-base leading-relaxed ${mutedText}`}>
-              Jump between live streams, IPTV catalog browsing, sports discovery, and music playback without changing apps.
+              Alterne entre transmissões ao vivo, catálogo de IPTV, esportes e música sem trocar de aplicativo.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -51,7 +51,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                 onClick={() => onNavigate("iptv")}
                 className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light min-h-[44px]"
               >
-                Start Watching
+                Começar a Assistir
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button
@@ -60,7 +60,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                   isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
-                Open Music
+                Abrir Música
               </button>
             </div>
           </div>
@@ -68,10 +68,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className={`relative flex items-center justify-center p-6 sm:p-8 ${isDark ? "bg-gradient-to-br from-white/[0.04] to-transparent" : "bg-gradient-to-br from-slate-50 to-white"}`}>
             <div className="grid w-full max-w-sm grid-cols-2 gap-3 sm:gap-4">
               {[
-                { label: "14K+ channels", icon: Tv },
-                { label: "45K+ radio stations", icon: Radio },
-                { label: "Live sports", icon: Trophy },
-                { label: "Music search", icon: Music },
+                { label: "14 mil+ canais", icon: Tv },
+                { label: "45 mil+ rádios", icon: Radio },
+                { label: "Esportes ao vivo", icon: Trophy },
+                { label: "Busca de músicas", icon: Music },
               ].map((item) => (
                 <div key={item.label} className={`rounded-2xl border p-4 text-center ${isDark ? "bg-dark-200/70 border-white/[0.06]" : "bg-white border-slate-200 shadow-sm"}`}>
                   <item.icon className="mx-auto mb-2 h-5 w-5 text-accent-light" />
@@ -86,7 +86,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       <section>
         <div className="mb-3 flex items-center gap-2">
           <Zap className={`w-4 h-4 ${mutedText}`} />
-          <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>Quick Access</h2>
+          <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>Acesso Rápido</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {QUICK_LINKS.map((item, index) => (

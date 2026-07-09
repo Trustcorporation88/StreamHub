@@ -75,15 +75,15 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
               reason = data.response?.code
                 ? `HTTP ${data.response.code}`
-                : "Network error — server unreachable or CORS blocked"
+                : "Erro de rede — servidor inacessível ou bloqueado por CORS"
             } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
               if (isHEVC) {
                 reason = "HEVC (H.265) codec not supported by this browser"
               } else {
-                reason = "Media decode error"
+                reason = "Erro de decodificação de mídia"
               }
             } else {
-              reason = data.details || "Unknown error"
+              reason = data.details || "Erro desconhecido"
             }
             setError(`Stream failed: ${reason}`)
             setLoading(false)
@@ -200,7 +200,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
         <div className="absolute inset-0 flex items-center justify-center bg-black/60">
           <div className="text-center">
             <Loader2 className="w-10 h-10 text-accent-light animate-spin mx-auto mb-3" />
-            <p className="text-sm text-dark-100">Loading stream...</p>
+            <p className="text-sm text-dark-100">Carregando transmissão...</p>
           </div>
         </div>
       )}
@@ -213,7 +213,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
             ) : (
               <WifiOff className="w-8 h-8 text-sport-red mx-auto mb-4" />
             )}
-            <p className="text-lg font-semibold text-white mb-2">Stream Error</p>
+            <p className="text-lg font-semibold text-white mb-2">Erro na Transmissão</p>
             <p className="text-sm text-dark-100 break-words">{error}</p>
           </div>
         </div>

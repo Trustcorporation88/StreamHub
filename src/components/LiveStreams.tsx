@@ -158,10 +158,10 @@ export default function LiveStreams() {
           </div>
           <div>
             <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              Live Streaming IPTV Channels
+              Canais IPTV ao Vivo
             </h2>
             <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Select a channel to start streaming
+              Selecione um canal para começar a assistir
             </p>
           </div>
           {liveMatch && matchStatus?.isLive && (
@@ -229,7 +229,7 @@ export default function LiveStreams() {
                           <CircleDot className={`w-3 h-3 ${matchStatus.isLive ? "text-sport-red" : "text-sport-yellow"}`} />
                         </div>
                         <span className={`text-[10px] font-bold uppercase tracking-wider ${matchStatus.isLive ? "text-sport-red" : "text-sport-yellow"}`}>
-                          {matchStatus.isLive ? "Live Football" : "Upcoming Football"}
+                          {matchStatus.isLive ? "Futebol ao Vivo" : "Próximos Jogos de Futebol"}
                         </span>
                         {matchStatus.isLive && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[8px] font-bold bg-sport-red/20 text-sport-red rounded">
@@ -264,7 +264,7 @@ export default function LiveStreams() {
                         }`}
                       >
                         <Play className="w-3 h-3" />
-                        {matchStatus.isLive ? "Watch Now" : "Set Reminder"}
+                        {matchStatus.isLive ? "Assistir Agora" : "Criar Lembrete"}
                       </motion.button>
                       {!matchStatus.isLive && matchStatus.countdown && (
                         <span className="inline-flex items-center gap-1 text-[10px] text-white/50">
@@ -279,7 +279,7 @@ export default function LiveStreams() {
             </AnimatePresence>
           </div>
 
-          {/* Now Playing Bar */}
+          {/* Tocando Agora Bar */}
           <AnimatePresence mode="wait">
             <motion.div
               key={watchingLive ? `live-${liveMatch?.id}` : `channel-${activeChannel.id}`}
@@ -325,7 +325,7 @@ export default function LiveStreams() {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs shrink-0">
                   <Signal className="w-3.5 h-3.5 text-sport-green" />
-                  <span className="text-sport-green font-medium hidden sm:inline">Connected</span>
+                  <span className="text-sport-green font-medium hidden sm:inline">Conectado</span>
                 </div>
               </div>
             </motion.div>
@@ -338,7 +338,7 @@ export default function LiveStreams() {
             <div className="flex items-center gap-2 mb-3">
               <Zap className={`w-4 h-4 ${isDark ? "text-dark-100" : "text-slate-400"}`} />
               <h3 className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                Channels
+                Canais
               </h3>
               <span className={`text-xs ${isDark ? "text-dark-100" : "text-slate-400"}`}>
                 ({channels.length})
@@ -398,7 +398,7 @@ export default function LiveStreams() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                      No live matches right now
+                      Nenhuma partida ao vivo no momento
                     </p>
                     {nextUpcoming ? (
                       <p className={`text-xs mt-0.5 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
@@ -412,7 +412,7 @@ export default function LiveStreams() {
                       </p>
                     ) : (
                       <p className={`text-xs mt-0.5 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                        Football matches will appear here when they go live.
+                        As partidas de futebol aparecerão aqui quando estiverem ao vivo.
                       </p>
                     )}
                   </div>

@@ -14,12 +14,12 @@ interface SidebarProps {
 }
 
 const navItems: { id: Tab; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "iptv", label: "Live Streams", icon: Tv },
-  { id: "catalog", label: "IPTV Channels", icon: TvMinimalPlay },
-  { id: "sports", label: "Live Sports", icon: Trophy },
-  { id: "music", label: "Stream Music", icon: Music },
-  { id: "about", label: "About", icon: Info },
+  { id: "home", label: "Início", icon: Home },
+  { id: "iptv", label: "Transmissões ao Vivo", icon: Tv },
+  { id: "catalog", label: "Canais IPTV", icon: TvMinimalPlay },
+  { id: "sports", label: "Esportes ao Vivo", icon: Trophy },
+  { id: "music", label: "Música", icon: Music },
+  { id: "about", label: "Sobre", icon: Info },
 ]
 
 const SPRING_CONFIG = { type: "spring" as const, stiffness: 380, damping: 30 }
@@ -83,7 +83,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
                 StreamHub
               </h1>
               <p className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                IPTV Dashboard
+                Painel IPTV
               </p>
             </div>
           </motion.div>
@@ -93,7 +93,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
             className={`lg:hidden p-2 rounded-xl transition-colors ${
               isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-400"
             }`}
-            aria-label="Close menu"
+            aria-label="Fechar menu"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -184,7 +184,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </motion.div>
             </AnimatePresence>
-            <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+            <span>{isDark ? "Modo Claro" : "Modo Escuro"}</span>
           </motion.button>
 
           {/* Status */}
@@ -206,7 +206,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
               }}
             />
             <span className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              System Ready
+              Sistema Pronto
             </span>
           </div>
         </div>

@@ -39,9 +39,9 @@ function parseM3U(m3u: string): M3UChannel[] {
       const tvgLogo = (currentExtinf.match(/tvg-logo="([^"]*)"/) || [])[1] || ""
       const groupTitle = (
         currentExtinf.match(/group-title="([^"]*)"/) || []
-      )[1] || "Uncategorized"
+      )[1] || "Sem categoria"
       const name =
-        currentExtinf.split(",").pop()?.trim() || "Unknown Channel"
+        currentExtinf.split(",").pop()?.trim() || "Canal Desconhecido"
 
       channels.push({
         id: tvgId || `ch-${channels.length}`,
@@ -127,7 +127,7 @@ export default function IPTVChannels() {
         }
 
         if (merged.length === 0) {
-          throw new Error("No channels found in any source")
+          throw new Error("Nenhum canal encontrado em nenhuma fonte")
         }
 
         setChannels(merged)
@@ -135,7 +135,7 @@ export default function IPTVChannels() {
         setLoading(false)
       } catch (err) {
         if (cancelled) return
-        setError((err as Error).message || "Failed to load channel list")
+        setError((err as Error).message || "Falha ao carregar a lista de canais")
         setLoading(false)
       }
     }
@@ -225,10 +225,10 @@ export default function IPTVChannels() {
           </div>
           <div>
             <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              IPTV Channels Catalog
+              Catálogo de Canais IPTV
             </h2>
             <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Browse channels from iptv-org & Free-TV
+              Navegue por canais do iptv-org & Free-TV
             </p>
           </div>
           {totalCount > 0 && (
@@ -248,7 +248,7 @@ export default function IPTVChannels() {
               <div className="absolute inset-0 w-12 h-12 border-2 border-accent/20 rounded-full mx-auto" />
             </div>
             <p className={`text-sm font-medium mb-1 ${isDark ? "text-white" : "text-slate-900"}`}>
-              Loading channels
+              Carregando canais
             </p>
             <p className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
               Fetching playlists ({sourcesLoaded}/{M3U_SOURCES.length} sources)...
@@ -265,7 +265,7 @@ export default function IPTVChannels() {
               <AlertTriangle className="w-8 h-8 text-sport-red" />
             </div>
             <h3 className={`text-lg font-semibold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-              Failed to Load
+              Falha ao Carregar
             </h3>
             <p className={`text-sm mb-4 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
               {error}
@@ -292,7 +292,7 @@ export default function IPTVChannels() {
                 <input
                   ref={searchRef}
                   type="text"
-                  placeholder="Search channels or categories..."
+                  placeholder="Buscar canais ou categorias..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className={`w-full pl-11 pr-10 py-3 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all min-h-[48px] ${
@@ -305,7 +305,7 @@ export default function IPTVChannels() {
                   <button
                     type="button"
                     onClick={clearSearch}
-                    aria-label="Clear search"
+                    aria-label="Limpar busca"
                     className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors ${
                       isDark ? "hover:bg-white/10 text-dark-100 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-600"
                     }`}
@@ -340,10 +340,10 @@ export default function IPTVChannels() {
                     <Radio className={`w-8 h-8 ${isDark ? "text-dark-100" : "text-slate-400"}`} />
                   </div>
                   <p className={`text-sm font-medium mb-1 ${isDark ? "text-white" : "text-slate-900"}`}>
-                    No channels found
+                    Nenhum canal encontrado
                   </p>
                   <p className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                    Try adjusting your search or filters
+                    Tente ajustar sua busca ou os filtros
                   </p>
                 </div>
               )}
@@ -487,7 +487,7 @@ export default function IPTVChannels() {
                   <h3
                     className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-dark-100" : "text-slate-500"}`}
                   >
-                    Now Playing
+                    Tocando Agora
                   </h3>
                 </div>
                 <div className="aspect-video w-full min-h-0 rounded-2xl overflow-hidden bg-black border border-white/[0.06] xl:aspect-auto xl:flex-1 xl:min-h-0">
@@ -513,12 +513,12 @@ export default function IPTVChannels() {
                   <p
                     className={`text-sm font-medium mb-0.5 ${isDark ? "text-white" : "text-slate-900"}`}
                   >
-                    No channel selected
+                    Nenhum canal selecionado
                   </p>
                   <p
                     className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
                   >
-                    Click a channel to preview
+                    Clique em um canal para visualizar
                   </p>
                 </div>
               </div>
@@ -669,7 +669,7 @@ function FilterPanel({
                 <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 ${isDark ? "text-dark-100" : "text-slate-400"}`} />
                 <input
                   type="text"
-                  placeholder="Search countries..."
+                  placeholder="Buscar países..."
                   value={countrySearch}
                   onChange={(e) => setCountrySearch(e.target.value)}
                   className={`w-full pl-7 pr-3 py-1.5 rounded-lg text-[11px] focus:outline-none focus:ring-1 focus:ring-accent/30 transition-all ${

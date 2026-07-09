@@ -96,7 +96,7 @@ function AppShell() {
             className={`p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
               isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-500"
             }`}
-            aria-label="Open menu"
+            aria-label="Abrir menu"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

@@ -153,18 +153,18 @@ export default function SportsPlayer({
           <div className="text-center px-6 max-w-sm">
             <WifiOff className="w-10 h-10 text-sport-red mx-auto mb-3" />
             <p className="text-base font-semibold text-white mb-1">
-              All stream sources unavailable
+              Todas as fontes de transmissão estão indisponíveis
             </p>
             <p className="text-xs text-dark-100 mb-4 leading-relaxed">
               All {sources.length} source{sources.length > 1 ? "s" : ""} failed to respond.
-              The upstream provider may be temporarily down.
+              O provedor de origem pode estar temporariamente fora do ar.
             </p>
             <button
               onClick={handleRetry}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent-light text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
-              Retry All Sources
+              Tentar Todas as Fontes Novamente
             </button>
             {firstSourceUrl && (
               <a
@@ -174,7 +174,7 @@ export default function SportsPlayer({
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white text-sm font-semibold rounded-xl transition-colors ml-2"
               >
                 <ExternalLink className="w-4 h-4" />
-                Open in Tab
+                Abrir em Nova Aba
               </a>
             )}
           </div>
@@ -185,7 +185,7 @@ export default function SportsPlayer({
         ref={iframeRef}
         src={currentSource?.embedUrl || ""}
         className={`w-full h-full border-0 ${loading || allSourcesFailed ? "invisible" : ""}`}
-        title={title || "Sports Stream"}
+        title={title || "Transmissão Esportiva"}
         allow="autoplay; encrypted-media; fullscreen"
         allowFullScreen
         onLoad={handleIframeLoad}

@@ -12,15 +12,15 @@ import type { MusicSource } from "../types"
 type MusicTab = MusicSource | "playlists"
 
 const TABS: { id: MusicTab; label: string; icon: typeof Music; hint: string }[] = [
-  { id: "youtube", label: "YouTube Music", icon: Headphones, hint: "Search and play" },
-  { id: "radio", label: "Internet Radio", icon: Radio, hint: "Global stations" },
-  { id: "playlists", label: "My Playlists", icon: ListMusic, hint: "Saved queues" },
+  { id: "youtube", label: "YouTube Music", icon: Headphones, hint: "Busque e toque" },
+  { id: "radio", label: "Rádio Online", icon: Radio, hint: "Estações globais" },
+  { id: "playlists", label: "Minhas Playlists", icon: ListMusic, hint: "Filas salvas" },
 ]
 
 const stats = [
-  { label: "Radio Stations", value: "45K+", icon: Radio, gradient: "from-cyan-500/20 to-blue-500/20", iconColor: "text-cyan-400", glow: "shadow-cyan-500/10" },
-  { label: "Countries", value: "200+", icon: Globe, gradient: "from-emerald-500/20 to-teal-500/20", iconColor: "text-emerald-400", glow: "shadow-emerald-500/10" },
-  { label: "Free Forever", value: "100%", icon: Heart, gradient: "from-pink-500/20 to-rose-500/20", iconColor: "text-pink-400", glow: "shadow-pink-500/10" },
+  { label: "Estações de Rádio", value: "45K+", icon: Radio, gradient: "from-cyan-500/20 to-blue-500/20", iconColor: "text-cyan-400", glow: "shadow-cyan-500/10" },
+  { label: "Países", value: "200+", icon: Globe, gradient: "from-emerald-500/20 to-teal-500/20", iconColor: "text-emerald-400", glow: "shadow-emerald-500/10" },
+  { label: "Grátis para Sempre", value: "100%", icon: Heart, gradient: "from-pink-500/20 to-rose-500/20", iconColor: "text-pink-400", glow: "shadow-pink-500/10" },
 ]
 
 function MusicPortalContent() {
@@ -73,14 +73,14 @@ function MusicPortalContent() {
               <div className="flex items-center gap-2 mb-1">
                 <AudioLines className="w-4 h-4 text-purple-400" />
                 <span className={`text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] ${mutedText}`}>
-                  StreamHub Music
+                  StreamHub Música
                 </span>
               </div>
               <h1
                 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent"
                 style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
               >
-                Stream Music
+                Música
               </h1>
               <p className={`mt-2 max-w-xl text-sm sm:text-base leading-relaxed ${mutedText}`}>
                 Search YouTube Music, browse 45,000+ internet radio stations worldwide — all free, no login required.
@@ -116,12 +116,12 @@ function MusicPortalContent() {
                   ? "bg-white/[0.06] text-slate-300 hover:bg-white/[0.1] border border-white/[0.08]"
                   : "bg-slate-100/80 text-slate-500 hover:bg-slate-200/80 border border-slate-200/80"
               }`}
-              title="Keyboard shortcuts"
+              title="Atalhos de teclado"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <Keyboard className="w-3.5 h-3.5" />
-              Shortcuts
+              Atalhos
             </motion.button>
           </div>
         </div>
@@ -143,7 +143,7 @@ function MusicPortalContent() {
           </div>
         </div>
 
-        {/* Keyboard Shortcuts Panel */}
+        {/* Atalhos de Teclado Panel */}
         <AnimatePresence>
           {showShortcuts && (
             <motion.div
@@ -155,18 +155,18 @@ function MusicPortalContent() {
               <div className={`p-4 rounded-2xl border backdrop-blur-xl ${
                 isDark ? "bg-white/[0.04] border-white/[0.06]" : "bg-slate-50/80 border-slate-200/80"
               }`}>
-                <p className={`text-xs font-bold mb-3 uppercase tracking-wider ${mutedText}`}>Keyboard Shortcuts</p>
+                <p className={`text-xs font-bold mb-3 uppercase tracking-wider ${mutedText}`}>Atalhos de Teclado</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {[
-                    { key: "Space", action: "Play / Pause" },
-                    { key: "←", action: "Seek -10s" },
-                    { key: "→", action: "Seek +10s" },
-                    { key: "Shift+←", action: "Previous" },
-                    { key: "Shift+→", action: "Next" },
+                    { key: "Space", action: "Reproduzir / Pausar" },
+                    { key: "←", action: "Voltar 10s" },
+                    { key: "→", action: "Avançar 10s" },
+                    { key: "Shift+←", action: "Anterior" },
+                    { key: "Shift+→", action: "Próxima" },
                     { key: "↑↓", action: "Volume" },
-                    { key: "M", action: "Mute" },
-                    { key: "S", action: "Shuffle" },
-                    { key: "R", action: "Repeat" },
+                    { key: "M", action: "Mudo" },
+                    { key: "S", action: "Aleatório" },
+                    { key: "R", action: "Repetir" },
                   ].map((s) => (
                     <div key={s.key} className="flex items-center gap-2">
                       <kbd className={`inline-flex items-center justify-center min-w-[28px] h-6 px-1.5 rounded-md text-[10px] font-mono font-bold ${
