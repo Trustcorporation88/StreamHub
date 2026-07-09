@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import Hls from "hls.js"
+import mpegts from "mpegts.js"
 import {
   Play,
   Pause,
@@ -39,24 +40,28 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   const [showControls, setShowControls] = useState(true)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const hlsRef = useRef<Hls | null>(null)
+  const mpegtsRef = useRef<ReturnType<typeof mpegts.createPlayer> | null>(null)
 
   const isHEVC = src.toLowerCase().includes("hvc1") || src.toLowerCase().includes("hev1")
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const videoMaybe = videoRef.current
+    if (!videoMaybe) return
+    const media: HTMLVideoElement = videoMaybe
 
     setLoading(true)
     setError(null)
     hlsRef.current?.destroy()
     hlsRef.current = null
+    mpegtsRef.current?.destroy()
+    mpegtsRef.current = null
 
-    // Arquivos de vídeo diretos (VOD) tocam no <video>; todo o resto é tratado como HLS.
     // Tudo passa pelo proxy: resolve CORS e conteúdo http:// em página https://.
     const isDirectFile = /\.(mp4|webm|mov|mkv|avi)(\?|$)/i.test(src)
     const playableSrc = toProxyUrl(src)
+    let cancelled = false
 
-    if (!isDirectFile) {
+    function startHls() {
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: true,
@@ -64,11 +69,11 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
         })
         hlsRef.current = hls
         hls.loadSource(playableSrc)
-        hls.attachMedia(video)
+        hls.attachMedia(media)
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           setLoading(false)
-          video.play().catch(() => {})
+          media.play().catch(() => {})
           setPlaying(true)
         })
 
@@ -92,19 +97,85 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
             setLoading(false)
           }
         })
-        return () => hls.destroy()
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = playableSrc
-        video.addEventListener("loadedmetadata", () => setLoading(false))
-        return () => { video.src = "" }
+      } else if (media.canPlayType("application/vnd.apple.mpegurl")) {
+        media.src = playableSrc
+        media.addEventListener("loadedmetadata", () => setLoading(false))
       } else {
         setError("HLS playback not supported in this browser.")
         setLoading(false)
       }
+    }
+
+    function startMpegts() {
+      if (!mpegts.isSupported()) {
+        setError("Este navegador não suporta reprodução de MPEG-TS ao vivo.")
+        setLoading(false)
+        return
+      }
+      const player = mpegts.createPlayer(
+        { type: "mpegts", isLive: true, url: playableSrc },
+        {
+          enableWorker: true,
+          liveBufferLatencyChasing: true,
+          lazyLoad: false,
+        }
+      )
+      mpegtsRef.current = player
+      player.attachMediaElement(media)
+      player.load()
+      player.on(mpegts.Events.ERROR, (type: string, detail: string) => {
+        setError(`Stream failed: ${type} ${detail || ""}`.trim())
+        setLoading(false)
+      })
+      media.addEventListener("loadeddata", () => setLoading(false), { once: true })
+      player.play()?.catch(() => {})
+      setPlaying(true)
+    }
+
+    async function probeAndStart() {
+      // Sonda os primeiros bytes: playlist HLS começa com "#EXTM3U";
+      // MPEG-TS bruto começa com o sync byte 0x47. Provedores Xtream
+      // costumam responder TS cru mesmo em URLs ".m3u8".
+      try {
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 15000)
+        const res = await fetch(playableSrc, { signal: controller.signal })
+        const reader = res.body?.getReader()
+        const { value } = (await reader?.read()) ?? {}
+        reader?.cancel().catch(() => {})
+        controller.abort()
+        clearTimeout(timer)
+        if (cancelled) return
+
+        if (!res.ok) {
+          setError(`Stream failed: HTTP ${res.status}`)
+          setLoading(false)
+          return
+        }
+        const head = value ? new TextDecoder().decode(value.slice(0, 16)) : ""
+        const isTs = value && (value[0] === 0x47 || /video\/mp2t/i.test(res.headers.get("content-type") || ""))
+        if (head.startsWith("#EXTM3U")) startHls()
+        else if (isTs) startMpegts()
+        else startHls() // fallback: deixa o HLS.js tentar e reportar o erro
+      } catch {
+        if (!cancelled) startHls()
+      }
+    }
+
+    if (isDirectFile) {
+      media.src = playableSrc
+      media.addEventListener("loadedmetadata", () => setLoading(false))
     } else {
-      video.src = src
-      video.addEventListener("loadedmetadata", () => setLoading(false))
-      return () => { video.src = "" }
+      probeAndStart()
+    }
+
+    return () => {
+      cancelled = true
+      hlsRef.current?.destroy()
+      hlsRef.current = null
+      mpegtsRef.current?.destroy()
+      mpegtsRef.current = null
+      media.src = ""
     }
   }, [src, isHEVC])
 

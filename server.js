@@ -143,10 +143,14 @@ app.get("/api/iptv-proxy", async (req, res) => {
     const finalUrl = proxyRes.url || targetUrl
     const contentType = proxyRes.headers.get("content-type") || ""
     const contentLength = Number(proxyRes.headers.get("content-length") || 0)
+    // Streams de vídeo (ex.: Xtream devolvendo MPEG-TS cru em URL ".m3u8")
+    // jamais entram no caminho de texto — corpo é infinito.
+    const isVideoStream = /^video\//i.test(contentType)
     const maybeM3U8 =
-      /\.m3u8/i.test(finalUrl) ||
-      /\.m3u8/i.test(targetUrl) ||
-      /mpegurl/i.test(contentType)
+      !isVideoStream &&
+      (/\.m3u8/i.test(finalUrl) ||
+        /\.m3u8/i.test(targetUrl) ||
+        /mpegurl/i.test(contentType))
 
     // Só vale a pena inspecionar/reescrever manifestos pequenos.
     // Playlists de catálogo (get.php) têm dezenas de MB e NÃO devem ser reescritas.
