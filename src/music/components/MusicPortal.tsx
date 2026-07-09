@@ -73,7 +73,7 @@ function MusicPortalContent() {
               <div className="flex items-center gap-2 mb-1">
                 <AudioLines className="w-4 h-4 text-purple-400" />
                 <span className={`text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] ${mutedText}`}>
-                  StreamHub Música
+                  SeligaAqui Música
                 </span>
               </div>
               <h1

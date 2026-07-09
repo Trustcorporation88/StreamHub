@@ -110,7 +110,7 @@ function AppShell() {
               <Monitor className="w-4 h-4 text-white" />
             </div>
             <span className={`text-base font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              StreamHub
+              SeligaAqui
             </span>
           </div>
         </header>

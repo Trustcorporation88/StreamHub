@@ -166,7 +166,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             </div>
             <div className="min-w-0">
               <h1 className={`text-2xl sm:text-3xl font-extrabold ${strongText}`}>
-                Sobre o StreamHub
+                Sobre o SeligaAqui
               </h1>
               <p className={`mt-1 max-w-2xl text-sm sm:text-base ${mutedText}`}>
                 IPTV, descoberta de canais, esportes ao vivo e música — tudo em um painel só.

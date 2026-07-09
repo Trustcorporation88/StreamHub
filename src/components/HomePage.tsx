@@ -13,7 +13,7 @@ const QUICK_LINKS: { id: Tab; title: string; description: string; icon: typeof T
   { id: "catalog", title: "Canais IPTV", description: "Explore coleções de canais organizadas por categoria.", icon: Monitor, accent: "text-sport-green" },
   { id: "sports", title: "Esportes ao Vivo", description: "Acompanhe transmissões de partidas e os próximos jogos.", icon: Trophy, accent: "text-sport-yellow" },
   { id: "music", title: "Música", description: "Abra a busca do YouTube, estações de rádio e playlists.", icon: Music, accent: "text-purple-400" },
-  { id: "about", title: "Sobre", description: "Veja o que o StreamHub oferece e como foi construído.", icon: Zap, accent: "text-accent-light" },
+  { id: "about", title: "Sobre", description: "Veja o que o SeligaAqui oferece e como foi construído.", icon: Zap, accent: "text-accent-light" },
   { id: "legal", title: "Jurídico", description: "Leia o aviso legal, os termos e as notas de privacidade.", icon: Radio, accent: "text-sport-red" },
 ]
 

@@ -350,7 +350,7 @@ export default function MyIPTV() {
 
           <div className={`mt-4 flex items-start gap-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed ${isDark ? "bg-white/5" : "bg-slate-50"} ${mutedText}`}>
             <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-sport-green" />
-            Suas credenciais ficam salvas apenas neste navegador (localStorage) e nunca são enviadas ou armazenadas no servidor do StreamHub.
+            Suas credenciais ficam salvas apenas neste navegador (localStorage) e nunca são enviadas ou armazenadas no servidor do SeligaAqui.
           </div>
 
           <div className="mt-4 flex gap-2">

@@ -10,23 +10,23 @@ const sections = [
     content: [
       {
         heading: "General Information",
-        text: 'StreamHub ("the Application") is an open-source IPTV dashboard provided free of charge for informational and personal entertainment purposes. The Application is provided "as is" and "as available" without any warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.',
+        text: 'SeligaAqui ("the Application") is an open-source IPTV dashboard provided free of charge for informational and personal entertainment purposes. The Application is provided "as is" and "as available" without any warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.',
       },
       {
         heading: "No Guarantee of Accuracy",
-        text: "The information, including but not limited to channel listings, stream URLs, sports schedules, match data, and third-party content presented through StreamHub, is sourced from publicly available APIs and community-maintained repositories. While we strive to keep information current and accurate, we make no representation or warranty of any kind about the completeness, accuracy, reliability, suitability, or availability of the Application or the information, products, services, or related graphics contained on the Application for any purpose.",
+        text: "The information, including but not limited to channel listings, stream URLs, sports schedules, match data, and third-party content presented through SeligaAqui, is sourced from publicly available APIs and community-maintained repositories. While we strive to keep information current and accurate, we make no representation or warranty of any kind about the completeness, accuracy, reliability, suitability, or availability of the Application or the information, products, services, or related graphics contained on the Application for any purpose.",
       },
       {
         heading: "Third-Party Content",
-        text: "StreamHub aggregates and displays content from third-party sources, including but not limited to iptv-org/iptv (community IPTV playlists) and EmbedSportex API (sports match data and stream embeds). StreamHub does not own, control, host, generate, or distribute any of the streamed content. All stream URLs and embedded players are sourced directly from these third-party services. The availability, quality, legality, and copyright status of any stream may vary by jurisdiction and is the sole responsibility of the originating source.",
+        text: "SeligaAqui aggregates and displays content from third-party sources, including but not limited to iptv-org/iptv (community IPTV playlists) and EmbedSportex API (sports match data and stream embeds). SeligaAqui does not own, control, host, generate, or distribute any of the streamed content. All stream URLs and embedded players are sourced directly from these third-party services. The availability, quality, legality, and copyright status of any stream may vary by jurisdiction and is the sole responsibility of the originating source.",
       },
       {
         heading: "No Endorsement",
-        text: "The inclusion of any third-party content, stream sources, channel listings, or links within StreamHub does not imply endorsement, recommendation, or affiliation by or with the respective content owners, broadcasters, or rights holders. StreamHub is an aggregator and viewer tool only.",
+        text: "The inclusion of any third-party content, stream sources, channel listings, or links within SeligaAqui does not imply endorsement, recommendation, or affiliation by or with the respective content owners, broadcasters, or rights holders. SeligaAqui is an aggregator and viewer tool only.",
       },
       {
         heading: "Professional Advice",
-        text: "The Application does not constitute legal, financial, professional, or any other type of advice. You should not rely on any information obtained through StreamHub as a substitute for professional advice. Always consult with qualified professionals for decisions related to your specific circumstances.",
+        text: "The Application does not constitute legal, financial, professional, or any other type of advice. You should not rely on any information obtained through SeligaAqui as a substitute for professional advice. Always consult with qualified professionals for decisions related to your specific circumstances.",
       },
     ],
   },
@@ -37,31 +37,31 @@ const sections = [
     content: [
       {
         heading: "Acceptance of Terms",
-        text: 'By accessing or using StreamHub, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must discontinue use of the Application immediately.',
+        text: 'By accessing or using SeligaAqui, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must discontinue use of the Application immediately.',
       },
       {
         heading: "Eligibility",
-        text: "You must be at least 18 years of age, or the age of majority in your jurisdiction, to use StreamHub. By using the Application, you represent and warrant that you meet the minimum age requirement and have the legal capacity to enter into these Terms.",
+        text: "You must be at least 18 years of age, or the age of majority in your jurisdiction, to use SeligaAqui. By using the Application, you represent and warrant that you meet the minimum age requirement and have the legal capacity to enter into these Terms.",
       },
       {
         heading: "License to Use",
-        text: 'StreamHub is released under the MIT License. Subject to the terms of the MIT License, you are granted a limited, non-exclusive, non-transferable, revocable license to use the Application for personal, non-commercial purposes. You may not modify, distribute, transmit, display, perform, reproduce, publish, license, create derivative works from, or sell any information, software, products, or services obtained from the Application without prior written consent.',
+        text: 'SeligaAqui is released under the MIT License. Subject to the terms of the MIT License, you are granted a limited, non-exclusive, non-transferable, revocable license to use the Application for personal, non-commercial purposes. You may not modify, distribute, transmit, display, perform, reproduce, publish, license, create derivative works from, or sell any information, software, products, or services obtained from the Application without prior written consent.',
       },
       {
         heading: "Prohibited Conduct",
-        text: "When using StreamHub, you agree not to: (a) use the Application for any unlawful purpose or in violation of any applicable local, state, national, or international law; (b) attempt to gain unauthorized access to any portion of the Application, other user accounts, or any systems or networks connected to the Application; (c) use automated systems, bots, scrapers, or similar tools to access or interact with the Application; (d) interfere with or disrupt the Application, servers, or networks; (e) reverse engineer, decompile, or disassemble any aspect of the Application; (f) use the Application to redistribute, re-broadcast, or commercially exploit any third-party content accessed through the Application; (g) remove, alter, or obscure any copyright, trademark, or other proprietary rights notices.",
+        text: "When using SeligaAqui, you agree not to: (a) use the Application for any unlawful purpose or in violation of any applicable local, state, national, or international law; (b) attempt to gain unauthorized access to any portion of the Application, other user accounts, or any systems or networks connected to the Application; (c) use automated systems, bots, scrapers, or similar tools to access or interact with the Application; (d) interfere with or disrupt the Application, servers, or networks; (e) reverse engineer, decompile, or disassemble any aspect of the Application; (f) use the Application to redistribute, re-broadcast, or commercially exploit any third-party content accessed through the Application; (g) remove, alter, or obscure any copyright, trademark, or other proprietary rights notices.",
       },
       {
         heading: "User Responsibilities",
-        text: "You are solely responsible for your use of StreamHub and any consequences arising from such use. You acknowledge that stream availability, quality, and content are determined by third-party sources and may change without notice. It is your responsibility to ensure that your use of the Application complies with all applicable laws and regulations in your jurisdiction.",
+        text: "You are solely responsible for your use of SeligaAqui and any consequences arising from such use. You acknowledge that stream availability, quality, and content are determined by third-party sources and may change without notice. It is your responsibility to ensure that your use of the Application complies with all applicable laws and regulations in your jurisdiction.",
       },
       {
         heading: "Intellectual Property",
-        text: "StreamHub and its original content, features, functionality, design, and code are owned by the StreamHub developers and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws. The MIT License governs the use of the Application's source code.",
+        text: "SeligaAqui and its original content, features, functionality, design, and code are owned by the SeligaAqui developers and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws. The MIT License governs the use of the Application's source code.",
       },
       {
         heading: "Modifications and Termination",
-        text: "We reserve the right to modify, suspend, or discontinue StreamHub (or any part thereof) at any time, with or without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuation of the Application. We may also revise these Terms at any time by updating this page. Continued use of the Application after any changes constitutes acceptance of the revised Terms.",
+        text: "We reserve the right to modify, suspend, or discontinue SeligaAqui (or any part thereof) at any time, with or without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuation of the Application. We may also revise these Terms at any time by updating this page. Continued use of the Application after any changes constitutes acceptance of the revised Terms.",
       },
     ],
   },
@@ -72,15 +72,15 @@ const sections = [
     content: [
       {
         heading: "Disclaimer of Warranties",
-        text: 'To the maximum extent permitted by applicable law, StreamHub is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express, implied, statutory, or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non-infringement, and any warranties arising from course of performance, course of dealing, or usage of trade. We do not warrant that the Application will be uninterrupted, timely, secure, error-free, or free of viruses or other harmful components.',
+        text: 'To the maximum extent permitted by applicable law, SeligaAqui is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express, implied, statutory, or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non-infringement, and any warranties arising from course of performance, course of dealing, or usage of trade. We do not warrant that the Application will be uninterrupted, timely, secure, error-free, or free of viruses or other harmful components.',
       },
       {
         heading: "Limitation of Damages",
-        text: "In no event shall StreamHub, its developers, contributors, affiliates, or any third-party service providers be liable for any indirect, incidental, special, consequential, punitive, or exemplary damages, including but not limited to damages for loss of profits, goodwill, data, or other intangible losses, arising out of or relating to: (a) your use of or inability to use the Application; (b) any content obtained from the Application; (c) unauthorized access to or alteration of your data or transmissions; or (d) any conduct of any third party on or related to the Application, even if advised of the possibility of such damages.",
+        text: "In no event shall SeligaAqui, its developers, contributors, affiliates, or any third-party service providers be liable for any indirect, incidental, special, consequential, punitive, or exemplary damages, including but not limited to damages for loss of profits, goodwill, data, or other intangible losses, arising out of or relating to: (a) your use of or inability to use the Application; (b) any content obtained from the Application; (c) unauthorized access to or alteration of your data or transmissions; or (d) any conduct of any third party on or related to the Application, even if advised of the possibility of such damages.",
       },
       {
         heading: "Total Liability Cap",
-        text: "To the fullest extent permitted by applicable law, in no event shall the aggregate liability of StreamHub exceed the amount you paid, if any, to StreamHub during the twelve (12) months preceding the claim. Since StreamHub is provided free of charge, this liability cap is zero dollars ($0.00 USD).",
+        text: "To the fullest extent permitted by applicable law, in no event shall the aggregate liability of SeligaAqui exceed the amount you paid, if any, to SeligaAqui during the twelve (12) months preceding the claim. Since SeligaAqui is provided free of charge, this liability cap is zero dollars ($0.00 USD).",
       },
       {
         heading: "Jurisdictional Limitations",
@@ -95,19 +95,19 @@ const sections = [
     content: [
       {
         heading: "Copyright Policy",
-        text: "StreamHub respects the intellectual property rights of others and expects users of the Application to do the same. StreamHub does not host, store, or distribute any copyrighted media content. All streams and embedded content are served directly from third-party sources. StreamHub acts solely as a viewer interface to publicly accessible streams.",
+        text: "SeligaAqui respects the intellectual property rights of others and expects users of the Application to do the same. SeligaAqui does not host, store, or distribute any copyrighted media content. All streams and embedded content are served directly from third-party sources. SeligaAqui acts solely as a viewer interface to publicly accessible streams.",
       },
       {
         heading: "DMCA Compliance",
-        text: "If you believe that content accessible through StreamHub infringes your copyright, please contact the original content host or the third-party service providing the stream directly. StreamHub does not have the ability to remove or modify third-party content. For DMCA-related inquiries, you should contact the respective IPTV providers, hosting services, or the relevant rights holders.",
+        text: "If you believe that content accessible through SeligaAqui infringes your copyright, please contact the original content host or the third-party service providing the stream directly. SeligaAqui does not have the ability to remove or modify third-party content. For DMCA-related inquiries, you should contact the respective IPTV providers, hosting services, or the relevant rights holders.",
       },
       {
         heading: "Content Sources",
-        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. StreamHub does not claim ownership of any third-party content displayed within the Application.",
+        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. SeligaAqui does not claim ownership of any third-party content displayed within the Application.",
       },
       {
         heading: "Counter-Notification",
-        text: "If you are a content owner and believe a stream listed in StreamHub should be removed, please contact the hosting provider of that stream directly, as StreamHub does not control or host any streaming content.",
+        text: "If you are a content owner and believe a stream listed in SeligaAqui should be removed, please contact the hosting provider of that stream directly, as SeligaAqui does not control or host any streaming content.",
       },
     ],
   },
@@ -118,7 +118,7 @@ const sections = [
     content: [
       {
         heading: "Data Collection",
-        text: "StreamHub is designed with privacy in mind. The Application does not collect, store, or transmit any personal data. No user accounts, registration, login, or personally identifiable information (PII) is required or collected. StreamHub does not use cookies, tracking pixels, analytics services, or any third-party tracking technologies.",
+        text: "SeligaAqui is designed with privacy in mind. The Application does not collect, store, or transmit any personal data. No user accounts, registration, login, or personally identifiable information (PII) is required or collected. SeligaAqui does not use cookies, tracking pixels, analytics services, or any third-party tracking technologies.",
       },
       {
         heading: "Local Storage",
@@ -126,15 +126,15 @@ const sections = [
       },
       {
         heading: "Third-Party Requests",
-        text: "When you use StreamHub, your browser may make direct requests to third-party APIs (iptv-org, EmbedSportex, stream CDN servers) to fetch channel lists, match data, and stream content. These requests are made directly from your browser and are not routed through or logged by StreamHub. Third-party services may collect standard HTTP request data (IP address, user agent, referrer) in accordance with their own privacy policies.",
+        text: "When you use SeligaAqui, your browser may make direct requests to third-party APIs (iptv-org, EmbedSportex, stream CDN servers) to fetch channel lists, match data, and stream content. These requests are made directly from your browser and are not routed through or logged by SeligaAqui. Third-party services may collect standard HTTP request data (IP address, user agent, referrer) in accordance with their own privacy policies.",
       },
       {
         heading: "Children's Privacy",
-        text: "StreamHub does not knowingly collect any personal information from children under the age of 13. If you are a parent or guardian and believe your child has provided personal information through the Application, please contact us immediately so that we can take appropriate action.",
+        text: "SeligaAqui does not knowingly collect any personal information from children under the age of 13. If you are a parent or guardian and believe your child has provided personal information through the Application, please contact us immediately so that we can take appropriate action.",
       },
       {
         heading: "Changes to This Policy",
-        text: "We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date. Your continued use of StreamHub after any changes constitutes acceptance of the revised policy.",
+        text: "We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date. Your continued use of SeligaAqui after any changes constitutes acceptance of the revised policy.",
       },
     ],
   },
@@ -145,15 +145,15 @@ const sections = [
     content: [
       {
         heading: "Third-Party Links",
-        text: "StreamHub may contain links to third-party websites, APIs, or services that are not owned or controlled by StreamHub. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, and various CDN/streaming servers. StreamHub has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
+        text: "SeligaAqui may contain links to third-party websites, APIs, or services that are not owned or controlled by SeligaAqui. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, and various CDN/streaming servers. SeligaAqui has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
       },
       {
         heading: "No Responsibility",
-        text: "We strongly advise you to read the terms and conditions and privacy policies of any third-party website or service that you visit or interact with through StreamHub. StreamHub shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any third-party content, goods, or services available on or through any third-party site or service.",
+        text: "We strongly advise you to read the terms and conditions and privacy policies of any third-party website or service that you visit or interact with through SeligaAqui. SeligaAqui shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any third-party content, goods, or services available on or through any third-party site or service.",
       },
       {
         heading: "Embed Player Disclaimer",
-        text: "Sports streams are displayed via embedded iframe players provided by EmbedSportex (streams.esportex.site). The quality, availability, and legality of these streams are determined by the embedding service and the originating sources. StreamHub does not control the content of embedded players.",
+        text: "Sports streams are displayed via embedded iframe players provided by EmbedSportex (streams.esportex.site). The quality, availability, and legality of these streams are determined by the embedding service and the originating sources. SeligaAqui does not control the content of embedded players.",
       },
     ],
   },
@@ -164,7 +164,7 @@ const sections = [
     content: [
       {
         heading: "Governing Law",
-        text: "These Terms and Conditions shall be governed by and construed in accordance with applicable international laws, without regard to conflict of law principles. Any disputes arising out of or relating to these Terms or the use of StreamHub shall be resolved in the appropriate courts of the relevant jurisdiction.",
+        text: "These Terms and Conditions shall be governed by and construed in accordance with applicable international laws, without regard to conflict of law principles. Any disputes arising out of or relating to these Terms or the use of SeligaAqui shall be resolved in the appropriate courts of the relevant jurisdiction.",
       },
       {
         heading: "Severability",
@@ -172,15 +172,15 @@ const sections = [
       },
       {
         heading: "Entire Agreement",
-        text: "These Terms and Conditions, together with the Privacy Policy and any other legal notices or policies published by StreamHub, constitute the entire agreement between you and StreamHub regarding the use of the Application and supersede all prior agreements and understandings, whether written or oral.",
+        text: "These Terms and Conditions, together with the Privacy Policy and any other legal notices or policies published by SeligaAqui, constitute the entire agreement between you and SeligaAqui regarding the use of the Application and supersede all prior agreements and understandings, whether written or oral.",
       },
       {
         heading: "Waiver",
-        text: "The failure of StreamHub to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision. Any waiver of any provision of these Terms will be effective only if in writing and signed by StreamHub.",
+        text: "The failure of SeligaAqui to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision. Any waiver of any provision of these Terms will be effective only if in writing and signed by SeligaAqui.",
       },
       {
         heading: "Contact",
-        text: "If you have any questions about these Terms and Conditions, the Legal Disclaimer, or the Privacy Policy, please open an issue on the StreamHub GitHub repository or contact the development team through the project's official channels.",
+        text: "If you have any questions about these Terms and Conditions, the Legal Disclaimer, or the Privacy Policy, please open an issue on the SeligaAqui GitHub repository or contact the development team through the project's official channels.",
       },
     ],
   },
@@ -282,7 +282,7 @@ export default function LegalDisclaimer() {
             </h1>
             <p className={`mt-1 max-w-2xl text-sm sm:text-base ${mutedText}`}>
               Legal disclaimer, terms and conditions, privacy policy, and liability
-              information for StreamHub.
+              information for SeligaAqui.
             </p>
             <p className={`mt-2 text-xs ${mutedText}`}>
               Effective Date: June 15, 2026 &nbsp;|&nbsp; Last Updated: June 15, 2026
@@ -304,7 +304,7 @@ export default function LegalDisclaimer() {
           {[
             { label: "Open Source", desc: "MIT Licensed", color: "text-sport-green" },
             { label: "No Data Collection", desc: "Privacy-first design", color: "text-accent-light" },
-            { label: "Third-Party Content", desc: "Not hosted by StreamHub", color: "text-sport-yellow" },
+            { label: "Third-Party Content", desc: "Not hosted by SeligaAqui", color: "text-sport-yellow" },
             { label: "No Warranty", desc: 'Provided "as is"', color: "text-sport-red" },
             { label: "Free to Use", desc: "No charges or fees", color: "text-sport-green" },
             { label: "Your Responsibility", desc: "Comply with local laws", color: "text-accent-light" },
@@ -341,9 +341,9 @@ export default function LegalDisclaimer() {
         }`}
       >
         <p className={`text-xs leading-relaxed ${mutedText}`}>
-          By using StreamHub, you confirm that you have read, understood, and agree to be bound
+          By using SeligaAqui, you confirm that you have read, understood, and agree to be bound
           by these Legal Disclaimers and Terms and Conditions. If you do not agree, you must not
-          use the Application. This document was last updated on June 15, 2026. StreamHub reserves
+          use the Application. This document was last updated on June 15, 2026. SeligaAqui reserves
           the right to update these terms at any time without prior notice. The current version of
           these terms will always be available within the Application.
         </p>
