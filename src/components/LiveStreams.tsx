@@ -20,6 +20,20 @@ import type { Channel } from "../types"
 
 const channels: Channel[] = [
   {
+    id: "tv-globo",
+    name: "TV Globo",
+    url: "https://cors-proxy.cooks.fyi/http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "globonews",
+    name: "GloboNews",
+    url: "http://143.14.178.40:7777/GloboNews_HD/index.m3u8",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
     id: "caze-tv",
     name: "Cazé TV (Copa do Mundo FIFA)",
     url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8",
