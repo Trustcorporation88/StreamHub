@@ -19,12 +19,15 @@ import { useTheme } from "../context/ThemeContext"
 import VideoPlayer from "./VideoPlayer"
 import type { M3UChannel } from "../types"
 
+const BRAZIL_CATEGORY = "🇧🇷 Brasil"
+
 const M3U_SOURCES = [
-  { url: "https://iptv-org.github.io/iptv/index.category.m3u", label: "iptv-org" },
-  { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", label: "Free-TV" },
+  { url: "https://iptv-org.github.io/iptv/countries/br.m3u", label: "Brasil", forceCategory: BRAZIL_CATEGORY },
+  { url: "https://iptv-org.github.io/iptv/index.category.m3u", label: "iptv-org", forceCategory: null },
+  { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", label: "Free-TV", forceCategory: null },
 ]
 
-function parseM3U(m3u: string): M3UChannel[] {
+function parseM3U(m3u: string, forceCategory: string | null = null): M3UChannel[] {
   const channels: M3UChannel[] = []
   const lines = m3u.split("\n")
   let currentExtinf: string | null = null
@@ -48,7 +51,7 @@ function parseM3U(m3u: string): M3UChannel[] {
         name,
         url: trimmed,
         logo: tvgLogo,
-        category: groupTitle,
+        category: forceCategory ?? groupTitle,
         tvgId,
         raw: currentExtinf,
       })
@@ -112,9 +115,9 @@ export default function IPTVChannels() {
         const seen = new Set<string>()
         const merged: M3UChannel[] = []
 
-        for (const result of results) {
+        for (const [idx, result] of results.entries()) {
           if (result.status === "fulfilled") {
-            const parsed = parseM3U(result.value)
+            const parsed = parseM3U(result.value, M3U_SOURCES[idx].forceCategory)
             for (const ch of parsed) {
               const key = ch.url.toLowerCase().trim()
               if (!seen.has(key)) {
@@ -150,7 +153,11 @@ export default function IPTVChannels() {
       cats.set(ch.category, (cats.get(ch.category) || 0) + 1)
     }
     return Array.from(cats.entries())
-      .sort(([, a], [, b]) => b - a)
+      .sort(([ca, a], [cb, b]) => {
+        if (ca === BRAZIL_CATEGORY) return -1
+        if (cb === BRAZIL_CATEGORY) return 1
+        return b - a
+      })
   }, [channels])
 
   const countries = useMemo(() => {
@@ -162,7 +169,11 @@ export default function IPTVChannels() {
       }
     }
     return Array.from(map.entries())
-      .sort(([, a], [, b]) => b - a)
+      .sort(([ca, a], [cb, b]) => {
+        if (ca === "BR") return -1
+        if (cb === "BR") return 1
+        return b - a
+      })
   }, [channels])
 
   const filtered = useMemo(() => {
@@ -190,7 +201,11 @@ export default function IPTVChannels() {
       if (!map.has(ch.category)) map.set(ch.category, [])
       map.get(ch.category)!.push(ch)
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b))
+    return Array.from(map.entries()).sort(([a], [b]) => {
+      if (a === BRAZIL_CATEGORY) return -1
+      if (b === BRAZIL_CATEGORY) return 1
+      return a.localeCompare(b)
+    })
   }, [filtered])
 
   const toggleCategory = (cat: string) => {
