@@ -57,7 +57,10 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
     mpegtsRef.current = null
 
     // Tudo passa pelo proxy: resolve CORS e conteúdo http:// em página https://.
-    const isDirectFile = /\.(mp4|webm|mov|mkv|avi)(\?|$)/i.test(src)
+    const isDirectFile =
+      /\.(mp4|webm|mov|mkv|avi|ts)(\?|$)/i.test(src) ||
+      /\/series\//i.test(src) ||
+      /\/movie\//i.test(src)
     const playableSrc = toProxyUrl(src)
     let cancelled = false
 

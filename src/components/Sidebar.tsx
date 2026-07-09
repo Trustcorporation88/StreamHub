@@ -17,7 +17,7 @@ const navItems: { id: Tab; label: string; icon: ComponentType<{ className?: stri
   { id: "home", label: "Início", icon: Home },
   { id: "iptv", label: "Transmissões ao Vivo", icon: Tv },
   { id: "catalog", label: "Canais IPTV", icon: TvMinimalPlay },
-  { id: "mylist", label: "Minha Lista", icon: KeyRound },
+  { id: "mylist", label: "Minhas Séries", icon: KeyRound },
   { id: "sports", label: "Esportes ao Vivo", icon: Trophy },
   { id: "music", label: "Música", icon: Music },
   { id: "about", label: "Sobre", icon: Info },

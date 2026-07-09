@@ -89,6 +89,22 @@ function parseM3U(m3u: string): M3UChannel[] {
   return channels
 }
 
+// Mantém apenas conteúdo de séries.
+// Em playlists Xtream, episódios de série ficam sob a rota /series/ e/ou em
+// categorias cujo nome contém "serie"/"series". Canais ao vivo (/live/) e
+// filmes (/movie/) são descartados.
+function onlySeries(channels: M3UChannel[]): M3UChannel[] {
+  const byPath = channels.filter((c) => /\/series\//i.test(c.url))
+  if (byPath.length > 0) return byPath
+  // Fallback: pela categoria, quando a URL não traz a rota
+  return channels.filter(
+    (c) =>
+      /s[ée]rie/i.test(c.category) &&
+      !/\/live\//i.test(c.url) &&
+      !/\/movie\//i.test(c.url)
+  )
+}
+
 export default function MyIPTV() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
@@ -154,8 +170,9 @@ export default function MyIPTV() {
         }
         throw new Error("A resposta não é uma playlist válida — confira a URL e as credenciais.")
       }
-      const parsed = parseM3U(text)
-      if (parsed.length === 0) throw new Error("Sua conta está ativa, mas não há canais disponíveis nela.")
+      const parsed = onlySeries(parseM3U(text))
+      if (parsed.length === 0)
+        throw new Error("Sua conta está ativa, mas não encontramos séries na sua lista.")
       setChannels(parsed)
     } catch (err) {
       if ((err as Error).name === "AbortError") return
@@ -234,9 +251,9 @@ export default function MyIPTV() {
             <KeyRound className="w-6 h-6 text-accent-light" />
           </div>
           <div>
-            <h1 className={`text-xl sm:text-2xl font-extrabold ${strongText}`}>Minha Lista</h1>
+            <h1 className={`text-xl sm:text-2xl font-extrabold ${strongText}`}>Minhas Séries</h1>
             <p className={`text-xs sm:text-sm ${mutedText}`}>
-              Conecte sua conta IPTV (Xtream) ou uma lista M3U pessoal
+              Conecte sua conta e assista às séries da sua lista
             </p>
           </div>
         </div>
@@ -387,7 +404,7 @@ export default function MyIPTV() {
               <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${mutedText}`} />
               <input
                 className={`${inputClass} pl-10 pr-10`}
-                placeholder={`Buscar entre ${channels.length.toLocaleString("pt-BR")} canais...`}
+                placeholder={`Buscar entre ${channels.length.toLocaleString("pt-BR")} séries...`}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -404,7 +421,7 @@ export default function MyIPTV() {
 
             <div className={`rounded-2xl border overflow-y-auto max-h-[420px] xl:max-h-none xl:flex-1 ${panelClass}`}>
               {grouped.length === 0 && (
-                <p className={`p-4 text-sm ${mutedText}`}>Nenhum canal encontrado</p>
+                <p className={`p-4 text-sm ${mutedText}`}>Nenhuma série encontrada</p>
               )}
               {grouped.map(([category, list]) => {
                 const isOpen = expanded.has(category) || search.trim().length > 0
@@ -466,7 +483,7 @@ export default function MyIPTV() {
             ) : (
               <div className={`flex h-full min-h-[280px] flex-col items-center justify-center gap-3 rounded-2xl border ${panelClass}`}>
                 <Tv className={`w-10 h-10 ${mutedText}`} />
-                <p className={`text-sm ${mutedText}`}>Selecione um canal para começar a assistir</p>
+                <p className={`text-sm ${mutedText}`}>Selecione uma série para começar a assistir</p>
               </div>
             )}
           </div>
