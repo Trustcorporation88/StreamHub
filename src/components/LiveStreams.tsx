@@ -68,6 +68,20 @@ const channels: Channel[] = [
     category: "Filmes",
     quality: "HD",
   },
+  {
+    id: "tv-aparecida",
+    name: "TV Aparecida",
+    url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "tv-cancao-nova",
+    name: "TV Canção Nova",
+    url: "https://5c65286fc6ace.streamlock.net/cancaonova/CancaoNova.stream_720p/playlist.m3u8",
+    category: "Brasil",
+    quality: "HD",
+  },
 ]
 
 function getQualityColor(q: string, isDark: boolean) {
