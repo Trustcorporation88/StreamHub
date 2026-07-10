@@ -82,6 +82,13 @@ const channels: Channel[] = [
     category: "Brasil",
     quality: "HD",
   },
+  {
+    id: "rede-vida",
+    name: "Rede Vida",
+    url: "http://45.162.231.38:7779/Rede_Vida/index.m3u8",
+    category: "Brasil",
+    quality: "HD",
+  },
 ]
 
 function getQualityColor(q: string, isDark: boolean) {
