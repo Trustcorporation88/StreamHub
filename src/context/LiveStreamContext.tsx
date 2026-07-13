@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef, ty
 import type { EmbedSportexMatch, EmbedSportexResponse } from "../types"
 
 const EMBEDSPORTEX_API = "https://api.esportex.site/api/streams"
-const POLL_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
+// @ts-expect-error reservado para reativar a seção de partidas no futuro
+const POLL_INTERVAL_MS = 5 * 60 * 1000
 const APPROACHING_LIVE_MS = 30 * 60 * 1000 // 30 minutes before kickoff
 
 // ─── Public Types ────────────────────────────────────────────────────────────
@@ -101,6 +102,7 @@ function findLiveOrApproachingMatch(matches: Array<{ slug: string; kickoff: stri
 
 // ─── EmbedSportex Fetcher ────────────────────────────────────────────────────
 
+// @ts-expect-error reservado para reativar a seção de partidas no futuro
 async function fetchFromEmbedSportex(): Promise<{ match: LiveMatch | null; upcoming: { title: string; date: number; teams: { home: { name: string; badge: string }; away: { name: string; badge: string } } } | null }> {
   const res = await fetch(EMBEDSPORTEX_API, {
     signal: AbortSignal.timeout(15000),
@@ -177,7 +179,7 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     lastFetch: null,
     error: null,
   })
-  const [nextUpcoming, setNextUpcoming] = useState<LiveStreamContextType["nextUpcoming"]>(null)
+  const [nextUpcoming] = useState<LiveStreamContextType["nextUpcoming"]>(null)
   const mountedRef = useRef(true)
   const fetchedMatchIdRef = useRef<string | null>(null)
 
@@ -191,47 +193,12 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     mountedRef.current = true
 
-    async function poll() {
-      if (!mountedRef.current) return
-
-      setPollingStatus((prev) => ({ ...prev, isPolling: true }))
-
-      let result: { match: LiveMatch | null; upcoming: { title: string; date: number; teams: { home: { name: string; badge: string }; away: { name: string; badge: string } } } | null } | null = null
-      let lastError: string | null = null
-
-      try {
-        result = await fetchFromEmbedSportex()
-      } catch (err: unknown) {
-        lastError = err instanceof Error ? err.message : "EmbedSportex failed"
-      }
-
-      if (!mountedRef.current) return
-
-      if (result?.match) {
-        if (fetchedMatchIdRef.current !== result.match.id) {
-          setLiveMatchState(result.match)
-          fetchedMatchIdRef.current = result.match.id
-        }
-        setNextUpcoming(null)
-        setPollingStatus({ isPolling: false, lastFetch: new Date(), error: null })
-      } else {
-        setNextUpcoming(result?.upcoming ?? null)
-        setPollingStatus({
-          isPolling: false,
-          lastFetch: new Date(),
-          error: lastError,
-        })
-      }
-    }
-
-    void poll()
-    const interval = setInterval(() => {
-      void poll()
-    }, POLL_INTERVAL_MS)
+    // Seção de partidas de futebol desativada — a aba Transmissões ao Vivo
+    // mostra apenas os canais fixos, sem cards automáticos de jogos.
+    setPollingStatus({ isPolling: false, lastFetch: new Date(), error: null })
 
     return () => {
       mountedRef.current = false
-      clearInterval(interval)
     }
   }, [])
 
