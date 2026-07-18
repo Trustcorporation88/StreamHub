@@ -20,9 +20,16 @@ import type { Channel } from "../types"
 
 const channels: Channel[] = [
   {
+    id: "tv-globo-rj",
+    name: "TV Globo (RJ)",
+    url: "http://45.190.28.50/GLOBO_HD/index.m3u8",
+    category: "Brasil",
+    quality: "HD",
+  },
+  {
     id: "tv-globo-sp",
     name: "TV Globo (SP)",
-    url: "http://187.62.68.32:8080/GLOBO/index.m3u8",
+    url: "https://cors-proxy.cooks.fyi/http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
     category: "Brasil",
     quality: "FHD",
   },
