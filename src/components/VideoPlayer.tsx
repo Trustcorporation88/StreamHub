@@ -69,6 +69,8 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
         const hls = new Hls({
           enableWorker: true,
           lowLatencyMode: true,
+          startLevel: 0,
+          capLevelToPlayerSize: true,
         })
         hlsRef.current = hls
         hls.loadSource(playableSrc)

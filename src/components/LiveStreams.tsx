@@ -96,6 +96,20 @@ const channels: Channel[] = [
     category: "Brasil",
     quality: "HD",
   },
+  {
+    id: "band",
+    name: "Band",
+    url: "http://45.190.28.50/BAND_HD/index.m3u8",
+    category: "Brasil",
+    quality: "HD",
+  },
+  {
+    id: "jovem-pan-news",
+    name: "Jovem Pan News",
+    url: "https://d6yfbj4xxtrod.cloudfront.net/out/v1/7836eb391ec24452b149f3dc6df15bbd/index.m3u8",
+    category: "Brasil",
+    quality: "HD",
+  },
 ]
 
 function getQualityColor(q: string, isDark: boolean) {
