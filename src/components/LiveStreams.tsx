@@ -112,8 +112,8 @@ const channels: Channel[] = [
   },
   {
     id: "band-jornalismo",
-    name: "BandNews / Band Jornalismo",
-    url: "https://www.youtube.com/@BandJornalismo",
+    name: "BandNews TV",
+    url: "https://www.youtube.com/watch?v=FhSGLzUKMxo",
     category: "Brasil",
     quality: "FHD",
   },

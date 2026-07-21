@@ -167,6 +167,13 @@ app.get("/api/youtube-live", async (req, res) => {
       return res.status(404).json({ error: "Nenhuma transmissão ao vivo encontrada agora" })
     }
 
+    // Se a página não indica transmissão AO VIVO agora, é um vídeo gravado
+    // (o YouTube devolve o último vídeo quando não há live). Recusamos, para
+    // não tocar matéria antiga achando que é ao vivo.
+    if (result && result.isLive === false) {
+      return res.status(404).json({ error: "Este canal não está ao vivo no momento." })
+    }
+
     ytCache.set(channel, { videoId, ts: Date.now() })
     res.json({ videoId, isLive: result?.isLive ?? null })
   } catch (e) {
