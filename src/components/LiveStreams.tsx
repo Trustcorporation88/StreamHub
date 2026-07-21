@@ -106,7 +106,7 @@ const channels: Channel[] = [
   {
     id: "jovem-pan-news",
     name: "Jovem Pan News (YouTube)",
-    url: "https://www.youtube.com/channel/UCP391YRAjSOdM_bwievgaZA",
+    url: "https://www.youtube.com/watch?v=X0g2N_HYyg8",
     category: "Brasil",
     quality: "FHD",
   },
