@@ -143,39 +143,33 @@ app.get("/api/youtube-live", async (req, res) => {
           "Cookie": "CONSENT=YES+cb; SOCS=CAI",
         },
       })
-      if (!r.ok) return null
+      if (!r.ok) return { id: null, isLive: false, ok: false }
       const html = await r.text()
-      // O link canonical da página /live aponta para a transmissão ao vivo
-      // principal do momento — é a fonte mais confiável.
+      // A URL /live do canal redireciona para a transmissão ao vivo atual.
+      // O canonical dessa página é a fonte mais confiável do vídeo ao vivo.
       const canonical = html.match(
         /<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/
       )
       const id = canonical?.[1] || (html.match(/"videoId":"([\w-]{11})"/) || [])[1] || null
-      if (!id) return null
+      if (!id) return { id: null, isLive: false, ok: true }
 
-      // Confirma que ESSE vídeo está ao vivo agora (não é gravação).
-      // Procura o marcador de live perto da ocorrência do próprio id.
-      const liveNow =
-        /"isLiveNow":true/.test(html) ||
-        /"style":"LIVE"/.test(html) ||
-        /BADGE_STYLE_TYPE_LIVE_NOW/.test(html) ||
-        /"iconType":"LIVE"/.test(html)
-      return { id, isLive: liveNow }
+      // Marca como gravação SOMENTE se houver sinal explícito de que NÃO é live
+      // (ex.: contador de views de vídeo encerrado). Caso contrário confia na
+      // página /live. Assim não rejeitamos lives válidas por variação de HTML.
+      const explicitlyNotLive =
+        /"isLiveContent":false/.test(html) && !/"isLiveNow":true/.test(html)
+      return { id, isLive: !explicitlyNotLive, ok: true }
     }
 
     let result = await tryLivePage("www.youtube.com")
-    if (!result) result = await tryLivePage("m.youtube.com")
+    if (!result?.id) {
+      const alt = await tryLivePage("m.youtube.com")
+      if (alt?.id) result = alt
+    }
     videoId = result?.id || null
 
     if (!videoId) {
       return res.status(404).json({ error: "Nenhuma transmissão ao vivo encontrada agora" })
-    }
-
-    // Se a página não indica transmissão AO VIVO agora, é um vídeo gravado
-    // (o YouTube devolve o último vídeo quando não há live). Recusamos, para
-    // não tocar matéria antiga achando que é ao vivo.
-    if (result && result.isLive === false) {
-      return res.status(404).json({ error: "Este canal não está ao vivo no momento." })
     }
 
     ytCache.set(channel, { videoId, ts: Date.now() })
