@@ -106,13 +106,6 @@ const channels: Channel[] = [
   {
     id: "jovem-pan-news",
     name: "Jovem Pan News",
-    url: "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01391-addigital-jovempan-klowdtv/playlist.m3u8",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "jovem-pan-news-yt",
-    name: "Jovem Pan News (YouTube)",
     url: "https://www.youtube.com/watch?v=X0g2N_HYyg8",
     category: "Brasil",
     quality: "FHD",
