@@ -52,9 +52,9 @@ function youTubeEmbedUrl(src: string): string | null {
     // youtube.com/embed/<id>
     const embedMatch = u.pathname.match(/^\/embed\/([\w-]+)/)
     if (embedMatch) return `${base}${embedMatch[1]}?${common}`
-    // youtube.com/channel/<UC...> -> live atual do canal
+    // youtube.com/channel/<UC...> -> marcador para resolução dinâmica da live atual
     const chMatch = u.pathname.match(/^\/channel\/([\w-]+)/)
-    if (chMatch) return `${base}live_stream?channel=${chMatch[1]}&${common}`
+    if (chMatch) return `CHANNEL:${chMatch[1]}`
     return null
   } catch {
     return null
@@ -79,10 +79,43 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   const mpegtsRef = useRef<ReturnType<typeof mpegts.createPlayer> | null>(null)
 
   const isHEVC = src.toLowerCase().includes("hvc1") || src.toLowerCase().includes("hev1")
-  const ytEmbed = youTubeEmbedUrl(src)
+  const ytEmbedRaw = youTubeEmbedUrl(src)
+  const ytChannelId = ytEmbedRaw?.startsWith("CHANNEL:") ? ytEmbedRaw.slice(8) : null
+  const [resolvedYtEmbed, setResolvedYtEmbed] = useState<string | null>(null)
+  const [ytError, setYtError] = useState<string | null>(null)
+
+  // ytEmbed final: se for canal, usa o que foi resolvido; senão, o embed direto
+  const ytEmbed = ytChannelId ? resolvedYtEmbed : ytEmbedRaw
+
+  // Resolve a transmissão ao vivo atual de um canal do YouTube
+  useEffect(() => {
+    if (!ytChannelId) return
+    let cancelled = false
+    setResolvedYtEmbed(null)
+    setYtError(null)
+    ;(async () => {
+      try {
+        const r = await fetch(`/api/youtube-live?channel=${ytChannelId}`)
+        const data = await r.json()
+        if (cancelled) return
+        if (data.videoId) {
+          setResolvedYtEmbed(
+            `https://www.youtube-nocookie.com/embed/${data.videoId}?autoplay=1&mute=0&playsinline=1&rel=0`
+          )
+        } else {
+          setYtError(data.error || "Canal sem transmissão ao vivo no momento.")
+        }
+      } catch {
+        if (!cancelled) setYtError("Não foi possível localizar a transmissão ao vivo.")
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [ytChannelId])
 
   useEffect(() => {
-    if (ytEmbed) return // YouTube usa iframe; não precisa de HLS/mpegts
+    if (ytEmbedRaw) return // YouTube usa iframe; não precisa de HLS/mpegts
     const videoMaybe = videoRef.current
     if (!videoMaybe) return
     const media: HTMLVideoElement = videoMaybe
@@ -270,7 +303,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
       mpegtsRef.current = null
       media.src = ""
     }
-  }, [src, isHEVC, ytEmbed])
+  }, [src, isHEVC, ytEmbedRaw])
 
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return
@@ -340,7 +373,8 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
       : `${m}:${String(sec).padStart(2, "0")}`
   }
 
-  if (ytEmbed) {
+  // YouTube: canal (resolução dinâmica) ou vídeo direto
+  if (ytEmbedRaw) {
     return (
       <div
         ref={containerRef}
@@ -348,15 +382,32 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
           fillContainer ? "h-full" : "aspect-video"
         }`}
       >
-        <iframe
-          src={ytEmbed}
-          title={title || "YouTube"}
-          className="w-full h-full"
-          style={fillContainer ? undefined : { aspectRatio: "16 / 9" }}
-          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-          allowFullScreen
-          frameBorder="0"
-        />
+        {ytEmbed ? (
+          <iframe
+            src={ytEmbed}
+            title={title || "YouTube"}
+            className="w-full h-full"
+            style={fillContainer ? undefined : { aspectRatio: "16 / 9" }}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            frameBorder="0"
+          />
+        ) : ytError ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80" style={{ aspectRatio: "16 / 9" }}>
+            <div className="text-center px-8">
+              <WifiOff className="w-10 h-10 text-sport-red mx-auto mb-3" />
+              <p className="text-lg font-bold text-white mb-1">Erro na Transmissão</p>
+              <p className="text-sm text-dark-100">{ytError}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60" style={{ aspectRatio: "16 / 9" }}>
+            <div className="text-center">
+              <Loader2 className="w-10 h-10 text-accent-light animate-spin mx-auto mb-3" />
+              <p className="text-sm text-dark-100">Localizando transmissão ao vivo...</p>
+            </div>
+          </div>
+        )}
       </div>
     )
   }

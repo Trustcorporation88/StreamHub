@@ -108,6 +108,69 @@ app.get("/api/iptv-debug", async (req, res) => {
   }
 })
 
+// ---- YouTube: resolver a live ATUAL de um canal ----
+// Recebe ?channel=<UC...> e devolve { videoId } da transmissão ao vivo do momento.
+// Assim o player nunca precisa de um ID fixo que expira.
+const ytCache = new Map() // channelId -> { videoId, ts }
+const YT_CACHE_MS = 60 * 1000 // 1 min
+
+app.get("/api/youtube-live", async (req, res) => {
+  const channel = req.query?.channel
+  if (!channel || !/^[\w-]+$/.test(channel)) {
+    return res.status(400).json({ error: "Parâmetro channel inválido" })
+  }
+
+  const cached = ytCache.get(channel)
+  if (cached && Date.now() - cached.ts < YT_CACHE_MS) {
+    return res.json({ videoId: cached.videoId, cached: true })
+  }
+
+  try {
+    let videoId = null
+
+    // Estratégia 1: página /live do canal
+    const tryLivePage = async (host) => {
+      const r = await fetch(`https://${host}/channel/${channel}/live`, {
+        redirect: "follow",
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+          "Accept-Language": "pt-BR,pt;q=0.9",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Cookie": "CONSENT=YES+cb; SOCS=CAI",
+        },
+      })
+      if (!r.ok) return null
+      const html = await r.text()
+      const patterns = [
+        /"videoId":"([\w-]{11})"/,
+        /<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/,
+        /watch\?v=([\w-]{11})/,
+      ]
+      for (const p of patterns) {
+        const m = html.match(p)
+        if (m) return m[1]
+      }
+      return null
+    }
+
+    // Tenta youtube.com e depois o mirror sem consentimento
+    videoId = await tryLivePage("www.youtube.com")
+    if (!videoId) videoId = await tryLivePage("m.youtube.com")
+
+    if (!videoId) {
+      return res.status(404).json({ error: "Nenhuma transmissão ao vivo encontrada agora" })
+    }
+
+    ytCache.set(channel, { videoId, ts: Date.now() })
+    res.json({ videoId })
+  } catch (e) {
+    const msg = e?.name === "TimeoutError" ? "Tempo esgotado ao consultar o YouTube" : String(e.message || e)
+    res.status(502).json({ error: msg })
+  }
+})
+
 app.get("/api/iptv-proxy", async (req, res) => {
   const urlStr = req.query?.url
   if (!urlStr) return res.status(400).end("Missing url")
