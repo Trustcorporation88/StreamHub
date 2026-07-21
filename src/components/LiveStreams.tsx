@@ -27,13 +27,6 @@ const channels: Channel[] = [
     quality: "HD",
   },
   {
-    id: "tv-globo-sp",
-    name: "TV Globo (SP)",
-    url: "https://cors-proxy.cooks.fyi/http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
     id: "caze-tv",
     name: "Cazé TV",
     url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8",
