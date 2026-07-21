@@ -110,6 +110,41 @@ const channels: Channel[] = [
     category: "Brasil",
     quality: "FHD",
   },
+  {
+    id: "cnn-brasil",
+    name: "CNN Brasil",
+    url: "https://www.youtube.com/@CNNbrasil",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "band-jornalismo",
+    name: "BandNews / Band Jornalismo",
+    url: "https://www.youtube.com/@BandJornalismo",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "tv-cultura",
+    name: "TV Cultura",
+    url: "https://www.youtube.com/@tvcultura",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "redetv-news",
+    name: "RedeTV News",
+    url: "https://www.youtube.com/@redetv",
+    category: "Brasil",
+    quality: "FHD",
+  },
+  {
+    id: "bandsports",
+    name: "BandSports",
+    url: "https://www.youtube.com/@BandSports",
+    category: "Brasil",
+    quality: "FHD",
+  },
 ]
 
 function getQualityColor(q: string, isDark: boolean) {

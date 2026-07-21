@@ -55,6 +55,9 @@ function youTubeEmbedUrl(src: string): string | null {
     // youtube.com/channel/<UC...> -> marcador para resolução dinâmica da live atual
     const chMatch = u.pathname.match(/^\/channel\/([\w-]+)/)
     if (chMatch) return `CHANNEL:${chMatch[1]}`
+    // youtube.com/@handle -> resolução dinâmica pelo handle
+    const handleMatch = u.pathname.match(/^\/(@[\w.-]+)/)
+    if (handleMatch) return `CHANNEL:${handleMatch[1]}`
     return null
   } catch {
     return null

@@ -116,7 +116,7 @@ const YT_CACHE_MS = 60 * 1000 // 1 min
 
 app.get("/api/youtube-live", async (req, res) => {
   const channel = req.query?.channel
-  if (!channel || !/^[\w-]+$/.test(channel)) {
+  if (!channel || !/^[@\w-]+$/.test(channel)) {
     return res.status(400).json({ error: "Parâmetro channel inválido" })
   }
 
@@ -125,12 +125,14 @@ app.get("/api/youtube-live", async (req, res) => {
     return res.json({ videoId: cached.videoId, cached: true })
   }
 
+  // Aceita tanto ID de canal (UC...) quanto handle (@nome)
+  const path = channel.startsWith("@") ? channel : `channel/${channel}`
+
   try {
     let videoId = null
 
-    // Estratégia 1: página /live do canal
     const tryLivePage = async (host) => {
-      const r = await fetch(`https://${host}/channel/${channel}/live`, {
+      const r = await fetch(`https://${host}/${path}/live`, {
         redirect: "follow",
         signal: AbortSignal.timeout(15000),
         headers: {
@@ -143,6 +145,8 @@ app.get("/api/youtube-live", async (req, res) => {
       })
       if (!r.ok) return null
       const html = await r.text()
+      // Só considera se a página indica transmissão AO VIVO agora
+      const isLive = /"isLiveNow":true/.test(html) || /"isLive":true/.test(html) || /BADGE_STYLE_TYPE_LIVE_NOW/.test(html)
       const patterns = [
         /"videoId":"([\w-]{11})"/,
         /<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/,
@@ -150,21 +154,21 @@ app.get("/api/youtube-live", async (req, res) => {
       ]
       for (const p of patterns) {
         const m = html.match(p)
-        if (m) return m[1]
+        if (m) return { id: m[1], isLive }
       }
       return null
     }
 
-    // Tenta youtube.com e depois o mirror sem consentimento
-    videoId = await tryLivePage("www.youtube.com")
-    if (!videoId) videoId = await tryLivePage("m.youtube.com")
+    let result = await tryLivePage("www.youtube.com")
+    if (!result) result = await tryLivePage("m.youtube.com")
+    videoId = result?.id || null
 
     if (!videoId) {
       return res.status(404).json({ error: "Nenhuma transmissão ao vivo encontrada agora" })
     }
 
     ytCache.set(channel, { videoId, ts: Date.now() })
-    res.json({ videoId })
+    res.json({ videoId, isLive: result?.isLive ?? null })
   } catch (e) {
     const msg = e?.name === "TimeoutError" ? "Tempo esgotado ao consultar o YouTube" : String(e.message || e)
     res.status(502).json({ error: msg })
