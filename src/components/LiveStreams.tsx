@@ -113,7 +113,7 @@ const channels: Channel[] = [
   {
     id: "cnn-brasil",
     name: "CNN Brasil",
-    url: "https://www.youtube.com/@CNNbrasil",
+    url: "https://www.youtube.com/watch?v=0LHIYkbz330",
     category: "Brasil",
     quality: "FHD",
   },
@@ -135,13 +135,6 @@ const channels: Channel[] = [
     id: "redetv-news",
     name: "RedeTV News",
     url: "https://www.youtube.com/@redetv",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "bandsports",
-    name: "BandSports",
-    url: "https://www.youtube.com/@BandSports",
     category: "Brasil",
     quality: "FHD",
   },
