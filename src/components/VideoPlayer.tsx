@@ -25,6 +25,42 @@ function toProxyUrl(url: string): string {
   return `/api/iptv-proxy?url=${encodeURIComponent(url)}`
 }
 
+// Reconhece links do YouTube e devolve a URL de embed apropriada.
+// - vídeo/live por ID  -> embed do vídeo
+// - canal (channel/UC...) -> embed do "ao vivo agora" do canal
+// Retorna null se não for YouTube.
+function youTubeEmbedUrl(src: string): string | null {
+  try {
+    const u = new URL(src)
+    const host = u.hostname.replace(/^www\./, "")
+    if (!/youtube\.com$|youtu\.be$/.test(host)) return null
+
+    const base = "https://www.youtube-nocookie.com/embed/"
+    const common = "autoplay=1&mute=0&playsinline=1&rel=0"
+
+    // youtu.be/<id>
+    if (host === "youtu.be") {
+      const id = u.pathname.slice(1)
+      return id ? `${base}${id}?${common}` : null
+    }
+    // youtube.com/live/<id>
+    const liveMatch = u.pathname.match(/^\/live\/([\w-]+)/)
+    if (liveMatch) return `${base}${liveMatch[1]}?${common}`
+    // youtube.com/watch?v=<id>
+    const v = u.searchParams.get("v")
+    if (v) return `${base}${v}?${common}`
+    // youtube.com/embed/<id>
+    const embedMatch = u.pathname.match(/^\/embed\/([\w-]+)/)
+    if (embedMatch) return `${base}${embedMatch[1]}?${common}`
+    // youtube.com/channel/<UC...> -> live atual do canal
+    const chMatch = u.pathname.match(/^\/channel\/([\w-]+)/)
+    if (chMatch) return `${base}live_stream?channel=${chMatch[1]}&${common}`
+    return null
+  } catch {
+    return null
+  }
+}
+
 export default function VideoPlayer({ src, title, fillContainer = false }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -43,8 +79,10 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   const mpegtsRef = useRef<ReturnType<typeof mpegts.createPlayer> | null>(null)
 
   const isHEVC = src.toLowerCase().includes("hvc1") || src.toLowerCase().includes("hev1")
+  const ytEmbed = youTubeEmbedUrl(src)
 
   useEffect(() => {
+    if (ytEmbed) return // YouTube usa iframe; não precisa de HLS/mpegts
     const videoMaybe = videoRef.current
     if (!videoMaybe) return
     const media: HTMLVideoElement = videoMaybe
@@ -232,7 +270,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
       mpegtsRef.current = null
       media.src = ""
     }
-  }, [src, isHEVC])
+  }, [src, isHEVC, ytEmbed])
 
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return
@@ -300,6 +338,27 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
     return h > 0
       ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
       : `${m}:${String(sec).padStart(2, "0")}`
+  }
+
+  if (ytEmbed) {
+    return (
+      <div
+        ref={containerRef}
+        className={`relative rounded-2xl overflow-hidden bg-black shadow-2xl ${
+          fillContainer ? "h-full" : "aspect-video"
+        }`}
+      >
+        <iframe
+          src={ytEmbed}
+          title={title || "YouTube"}
+          className="w-full h-full"
+          style={fillContainer ? undefined : { aspectRatio: "16 / 9" }}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          frameBorder="0"
+        />
+      </div>
+    )
   }
 
   return (

@@ -105,10 +105,10 @@ const channels: Channel[] = [
   },
   {
     id: "jovem-pan-news",
-    name: "Jovem Pan News",
-    url: "https://d6yfbj4xxtrod.cloudfront.net/out/v1/7836eb391ec24452b149f3dc6df15bbd/index.m3u8",
+    name: "Jovem Pan News (YouTube)",
+    url: "https://www.youtube.com/channel/UCP391YRAjSOdM_bwievgaZA",
     category: "Brasil",
-    quality: "HD",
+    quality: "FHD",
   },
 ]
 
