@@ -23,6 +23,7 @@ const BRAZIL_CATEGORY = "🇧🇷 Brasil"
 
 // Ordem de exibição das categorias no catálogo
 const CATEGORY_ORDER = [
+  "📡 Pluto TV Brasil",
   BRAZIL_CATEGORY,
   "🇺🇸 EUA",
   "🇮🇹 Itália",
@@ -32,6 +33,7 @@ const CATEGORY_ORDER = [
 ]
 
 const M3U_SOURCES = [
+  { url: "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/br_pluto.m3u", label: "Pluto TV", forceCategory: "📡 Pluto TV Brasil" },
   { url: "https://iptv-org.github.io/iptv/countries/br.m3u", label: "Brasil", forceCategory: BRAZIL_CATEGORY },
   { url: "https://iptv-org.github.io/iptv/countries/us.m3u", label: "EUA", forceCategory: "🇺🇸 EUA" },
   { url: "https://iptv-org.github.io/iptv/countries/it.m3u", label: "Itália", forceCategory: "🇮🇹 Itália" },
