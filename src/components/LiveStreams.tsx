@@ -8,7 +8,6 @@ import {
   Zap,
   CircleDot,
   Clock,
-  Calendar,
   X,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
@@ -176,7 +175,7 @@ const heroExit = { opacity: 0, x: 20, scale: 0.95, transition: { duration: 0.2 }
 export default function LiveStreams() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const { liveMatch, pollingStatus, nextUpcoming } = useLiveStream()
+  const { liveMatch } = useLiveStream()
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0])
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
@@ -477,40 +476,6 @@ export default function LiveStreams() {
           </div>
 
           <div className="max-h-[46vh] xl:max-h-none xl:flex-1 overflow-y-auto space-y-1.5 pr-1 pb-1">
-            {!liveMatch && !pollingStatus.isPolling && (
-              <div
-                className={`p-3 sm:p-3.5 rounded-2xl border ${
-                  isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
-                    <Calendar className={`w-5 h-5 ${isDark ? "text-dark-100" : "text-slate-400"}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                      Nenhuma partida ao vivo no momento
-                    </p>
-                    {nextUpcoming ? (
-                      <p className={`text-xs mt-0.5 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                        Next up: {nextUpcoming.teams.home.name} vs {nextUpcoming.teams.away.name} —{" "}
-                        {new Date(nextUpcoming.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    ) : (
-                      <p className={`text-xs mt-0.5 ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                        As partidas de futebol aparecerão aqui quando estiverem ao vivo.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {liveMatch && matchStatus && (
               <motion.button
                 whileTap={{ scale: 0.98 }}
