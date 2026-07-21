@@ -145,18 +145,22 @@ app.get("/api/youtube-live", async (req, res) => {
       })
       if (!r.ok) return null
       const html = await r.text()
-      // Só considera se a página indica transmissão AO VIVO agora
-      const isLive = /"isLiveNow":true/.test(html) || /"isLive":true/.test(html) || /BADGE_STYLE_TYPE_LIVE_NOW/.test(html)
-      const patterns = [
-        /"videoId":"([\w-]{11})"/,
-        /<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/,
-        /watch\?v=([\w-]{11})/,
-      ]
-      for (const p of patterns) {
-        const m = html.match(p)
-        if (m) return { id: m[1], isLive }
-      }
-      return null
+      // O link canonical da página /live aponta para a transmissão ao vivo
+      // principal do momento — é a fonte mais confiável.
+      const canonical = html.match(
+        /<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/
+      )
+      const id = canonical?.[1] || (html.match(/"videoId":"([\w-]{11})"/) || [])[1] || null
+      if (!id) return null
+
+      // Confirma que ESSE vídeo está ao vivo agora (não é gravação).
+      // Procura o marcador de live perto da ocorrência do próprio id.
+      const liveNow =
+        /"isLiveNow":true/.test(html) ||
+        /"style":"LIVE"/.test(html) ||
+        /BADGE_STYLE_TYPE_LIVE_NOW/.test(html) ||
+        /"iconType":"LIVE"/.test(html)
+      return { id, isLive: liveNow }
     }
 
     let result = await tryLivePage("www.youtube.com")
