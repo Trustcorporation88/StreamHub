@@ -47,27 +47,6 @@ const channels: Channel[] = [
     quality: "HD",
   },
   {
-    id: "telecine-action",
-    name: "Telecine Action",
-    url: "http://45.162.231.38:7779/Telecine_Action/index.m3u8",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "telecine-premium",
-    name: "Telecine Premium",
-    url: "http://45.162.231.38:7779/Telecine_Premium/index.m3u8",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "telecine-pipoca",
-    name: "Telecine Pipoca",
-    url: "http://45.162.231.38:7779/Telecine_Pipoca/index.m3u8",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
     id: "tv-aparecida",
     name: "TV Aparecida",
     url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
