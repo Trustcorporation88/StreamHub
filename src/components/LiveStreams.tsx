@@ -47,6 +47,20 @@ const channels: Channel[] = [
     quality: "HD",
   },
   {
+    id: "sony-channel",
+    name: "Sony Channel",
+    url: "http://45.190.28.50/SONY_HD/index.m3u8",
+    category: "Filmes",
+    quality: "HD",
+  },
+  {
+    id: "sony-movies",
+    name: "Sony Movies",
+    url: "http://45.162.64.114/SONY_MOVIES/index.m3u8",
+    category: "Filmes",
+    quality: "HD",
+  },
+  {
     id: "tv-aparecida",
     name: "TV Aparecida",
     url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
