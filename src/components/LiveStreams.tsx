@@ -61,6 +61,20 @@ const channels: Channel[] = [
     quality: "HD",
   },
   {
+    id: "axn",
+    name: "AXN",
+    url: "http://45.190.28.50/AXN_HD/index.m3u8",
+    category: "Filmes",
+    quality: "HD",
+  },
+  {
+    id: "amc-latin-america",
+    name: "AMC Latin America",
+    url: "http://170.83.49.66:8083/AMCHD/index.m3u8",
+    category: "Filmes",
+    quality: "HD",
+  },
+  {
     id: "tv-aparecida",
     name: "TV Aparecida",
     url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
