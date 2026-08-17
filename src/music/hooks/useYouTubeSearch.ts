@@ -8,44 +8,15 @@ interface UseYouTubeSearchReturn {
   search: (query: string) => Promise<void>
 }
 
-const HEALTH_KEY = "streamhub-invidious-health"
 const CACHE_KEY = "streamhub-youtube-search-cache"
 const CACHE_TTL = 24 * 60 * 60 * 1000
+const UNAVAILABLE = "Busca do YouTube indisponível no momento. Tente de novo em instantes."
 
-type HealthScores = Record<string, number>
-
-function getHealthScores(): HealthScores {
-  try {
-    return JSON.parse(localStorage.getItem(HEALTH_KEY) || "{}")
-  } catch {
-    return {}
-  }
-}
-
-function recordSuccess(instance: string) {
-  const scores = getHealthScores()
-  scores[instance] = (scores[instance] || 0) + 1
-  try {
-    localStorage.setItem(HEALTH_KEY, JSON.stringify(scores))
-  } catch {
-    // ignore
-  }
-}
-
-function recordFailure(instance: string) {
-  const scores = getHealthScores()
-  scores[instance] = Math.max((scores[instance] || 0) - 1, -5)
-  try {
-    localStorage.setItem(HEALTH_KEY, JSON.stringify(scores))
-  } catch {
-    // ignore
-  }
-}
-
-function sortByHealth(instances: string[]): string[] {
-  const scores = getHealthScores()
-  return [...instances].sort((a, b) => (scores[b] || 0) - (scores[a] || 0))
-}
+const PIPED_FALLBACKS = [
+  "https://api.piped.private.coffee",
+  "https://pipedapi.reallyaweso.me",
+  "https://pipedapi.leptons.xyz",
+]
 
 interface CachedResult {
   data: Track[]
@@ -90,24 +61,72 @@ function setCachedResults(query: string, data: Track[]) {
   }
 }
 
-const INVIDIOUS_INSTANCES = [
-  "https://inv.thepixora.com",
-  "https://invidious.nerdvpn.de",
-  "https://inv.nadeko.net",
-  "https://invidious.f5.si",
-  "https://yt.chocolatemoo53.com",
-]
+function videoIdFromPipedUrl(url: string): string | null {
+  const match = String(url).match(/[?&]v=([\w-]{11})/) || String(url).match(/([\w-]{11})$/)
+  return match?.[1] || null
+}
+
+function tracksFromPiped(data: unknown): Track[] {
+  const root = data as { items?: unknown[] }
+  const items = Array.isArray(root?.items) ? root.items : Array.isArray(data) ? data : []
+  const tracks: Track[] = []
+  for (const raw of items) {
+    const item = raw as { type?: string; url?: string; title?: string; uploaderName?: string; id?: string }
+    if (item.type && item.type !== "stream") continue
+    const videoId = item.id || videoIdFromPipedUrl(item.url || "")
+    if (!videoId) continue
+    tracks.push({
+      id: `yt-${videoId}`,
+      title: item.title || "Sem título",
+      artist: item.uploaderName || "YouTube",
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+      source: "youtube",
+      streamUrl: `https://www.youtube.com/watch?v=${videoId}`,
+      platformUrl: `https://www.youtube.com/watch?v=${videoId}`,
+    })
+    if (tracks.length >= 20) break
+  }
+  return tracks
+}
+
+async function searchViaApi(query: string, signal: AbortSignal): Promise<Track[] | null> {
+  const res = await fetch(`/api/youtube-search?q=${encodeURIComponent(query)}`, { signal })
+  if (!res.ok) return null
+  const json = (await res.json()) as { tracks?: Track[] }
+  return Array.isArray(json.tracks) && json.tracks.length > 0 ? json.tracks : null
+}
+
+async function searchViaPiped(query: string, signal: AbortSignal): Promise<Track[] | null> {
+  for (const api of PIPED_FALLBACKS) {
+    try {
+      const res = await fetch(
+        `${api}/search?q=${encodeURIComponent(query)}&filter=videos`,
+        { signal, headers: { Accept: "application/json" } },
+      )
+      if (!res.ok) continue
+      const tracks = tracksFromPiped(await res.json())
+      if (tracks.length) return tracks
+    } catch {
+      continue
+    }
+  }
+  return null
+}
 
 export function useYouTubeSearch(): UseYouTubeSearchReturn {
   const [results, setResults] = useState<Track[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const requestIdRef = useRef(0)
+  const abortRef = useRef<AbortController | null>(null)
 
   const search = useCallback(async (query: string) => {
     if (!query.trim()) return
 
     const requestId = ++requestIdRef.current
+    abortRef.current?.abort()
+    const abort = new AbortController()
+    abortRef.current = abort
 
     const cached = getCachedResults(query)
     if (cached) {
@@ -119,58 +138,35 @@ export function useYouTubeSearch(): UseYouTubeSearchReturn {
     setLoading(true)
     setError(null)
 
-    const sorted = sortByHealth(INVIDIOUS_INSTANCES)
-
-    for (const instance of sorted) {
+    try {
+      const fromApi = await searchViaApi(query, abort.signal)
       if (requestId !== requestIdRef.current) return
-
-      try {
-        const res = await fetch(
-          `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video&sort_by=relevance`
-        )
-        if (requestId !== requestIdRef.current) return
-        if (!res.ok) {
-          recordFailure(instance)
-          continue
-        }
-        const invidiousData = await res.json()
-
-        if (!Array.isArray(invidiousData) || invidiousData.length === 0) {
-          recordFailure(instance)
-          continue
-        }
-
-        const tracks: Track[] = invidiousData
-          .filter((item: { type: string }) => item.type === "video")
-          .slice(0, 20)
-          .map((item: { videoId: string; title: string; author: string; videoThumbnails: { url: string }[] }) => ({
-            id: `yt-${item.videoId}`,
-            title: item.title || "Unknown",
-            artist: item.author || "Unknown Artist",
-            thumbnail: item.videoThumbnails?.[0]?.url || `https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg`,
-            source: "youtube" as const,
-            streamUrl: `https://www.youtube.com/watch?v=${item.videoId}`,
-            platformUrl: `https://www.youtube.com/watch?v=${item.videoId}`,
-          }))
-
-        if (tracks.length > 0) {
-          recordSuccess(instance)
-          setCachedResults(query, tracks)
-          if (requestId !== requestIdRef.current) return
-          setResults(tracks)
-          setLoading(false)
-          return
-        }
-      } catch {
-        recordFailure(instance)
-        continue
+      if (fromApi?.length) {
+        setCachedResults(query, fromApi)
+        setResults(fromApi)
+        setLoading(false)
+        return
       }
+
+      const fromPiped = await searchViaPiped(query, abort.signal)
+      if (requestId !== requestIdRef.current) return
+      if (fromPiped?.length) {
+        setCachedResults(query, fromPiped)
+        setResults(fromPiped)
+        setLoading(false)
+        return
+      }
+
+      setResults([])
+      setError(UNAVAILABLE)
+    } catch (err) {
+      if (requestId !== requestIdRef.current) return
+      if ((err as { name?: string })?.name === "AbortError") return
+      setResults([])
+      setError(UNAVAILABLE)
     }
 
-    if (requestId !== requestIdRef.current) return
-    setResults([])
-    setError("Search temporarily unavailable. All instances are down. Try again later.")
-    setLoading(false)
+    if (requestId === requestIdRef.current) setLoading(false)
   }, [])
 
   return { results, loading, error, search }
