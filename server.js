@@ -2,6 +2,7 @@ import express from "express"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { Readable } from "node:stream"
+import { searchYouTube } from "./api/youtube-search.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -271,6 +272,24 @@ app.get("/api/iptv-proxy", async (req, res) => {
       : e.message || String(e)
     if (!res.headersSent) res.status(502).end(`IPTV proxy error: ${msg}`)
     else res.end()
+  }
+})
+
+app.get("/api/youtube-search", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*")
+  const query = req.query?.q
+  if (!query || !String(query).trim()) {
+    return res.status(400).json({ error: "Missing q" })
+  }
+  try {
+    const tracks = await searchYouTube(String(query))
+    res.setHeader("Cache-Control", "public, max-age=120")
+    res.json({ tracks })
+  } catch {
+    res.status(503).json({
+      error: "unavailable",
+      message: "Busca do YouTube indisponível no momento. Tente de novo em instantes.",
+    })
   }
 })
 

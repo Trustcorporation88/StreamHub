@@ -100,7 +100,7 @@ export default function YouTubeSearch() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className={`text-xs font-semibold uppercase tracking-wider ${mutedText}`}>
-              {results.length} results found
+              {results.length} resultados
             </p>
             <motion.button
               onClick={() => playQueue(results, 0)}
