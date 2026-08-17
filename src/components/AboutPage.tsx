@@ -16,6 +16,7 @@ import {
   Music,
   Headphones,
   ListMusic,
+  Clapperboard,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../App"
@@ -60,6 +61,15 @@ const destinations = [
     color: "text-purple-400",
     metric: "45K+",
     metricLabel: "estações",
+  },
+  {
+    id: "library" as Tab,
+    icon: Clapperboard,
+    title: "Biblioteca",
+    description: "Jellyfin no mesmo projeto Railway — filmes e séries que você hospeda.",
+    color: "text-pink-400",
+    metric: "Jellyfin",
+    metricLabel: "subdomínio",
   },
 ]
 
