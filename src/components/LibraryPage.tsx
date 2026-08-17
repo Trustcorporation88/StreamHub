@@ -51,7 +51,7 @@ export default function LibraryPage() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a
-                href={JELLYFIN_URL}
+                href={JELLYFIN_FALLBACK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light min-h-[44px]"
@@ -60,19 +60,19 @@ export default function LibraryPage() {
                 <ExternalLink className="w-4 h-4" />
               </a>
               <a
-                href={JELLYFIN_FALLBACK_URL}
+                href={JELLYFIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors min-h-[44px] ${
                   isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
-                Abrir via Railway
+                Subdomínio (após o DNS)
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>
             <p className={`mt-3 text-xs sm:text-sm ${mutedText}`}>
-              {JELLYFIN_URL.replace(/^https?:\/\//, "")} — use o link Railway até o CNAME do subdomínio propagar.
+              Use {JELLYFIN_FALLBACK_URL.replace(/^https?:\/\//, "")} até o CNAME de {JELLYFIN_URL.replace(/^https?:\/\//, "")} existir no Cloudflare.
             </p>
           </div>
 
