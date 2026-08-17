@@ -1,10 +1,10 @@
 import type { ComponentType, Dispatch, SetStateAction } from "react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound } from "lucide-react"
+import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 
-type Tab = "home" | "iptv" | "catalog" | "mylist" | "sports" | "music" | "about" | "legal"
+type Tab = "home" | "iptv" | "catalog" | "mylist" | "plex" | "sports" | "music" | "about" | "legal"
 
 interface SidebarProps {
   activeTab: Tab
@@ -18,6 +18,7 @@ const navItems: { id: Tab; label: string; icon: ComponentType<{ className?: stri
   { id: "iptv", label: "Transmissões ao Vivo", icon: Tv },
   { id: "catalog", label: "Canais IPTV", icon: TvMinimalPlay },
   { id: "mylist", label: "Minhas Séries", icon: KeyRound },
+  { id: "plex", label: "Plex", icon: Clapperboard },
   { id: "sports", label: "Esportes ao Vivo", icon: Trophy },
   { id: "music", label: "Música", icon: Music },
   { id: "about", label: "Sobre", icon: Info },
