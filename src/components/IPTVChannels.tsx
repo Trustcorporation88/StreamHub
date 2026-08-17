@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import VideoPlayer from "./VideoPlayer"
+import SectionHero from "./SectionHero"
 import type { M3UChannel } from "../types"
 
 const BRAZIL_CATEGORY = "🇧🇷 Brasil"
@@ -246,26 +247,24 @@ export default function IPTVChannels() {
 
   return (
     <div className="flex flex-col xl:h-full">
-      {/* Header */}
       <div className="mb-5 sm:mb-6">
-        <div className="flex flex-wrap items-center gap-3 mb-2">
-          <div className={`p-2 rounded-xl ${isDark ? "bg-accent/20" : "bg-accent/10"}`}>
-            <List className="w-6 h-6 text-accent-light" />
-          </div>
-          <div>
-            <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              Catálogo de Canais IPTV
-            </h2>
-            <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Brasil, EUA, Itália + Filmes, Séries e Esportes
-            </p>
-          </div>
-          {totalCount > 0 && (
-            <span className={`sm:ml-auto px-3 py-1.5 text-xs font-semibold rounded-full border ${isDark ? "bg-accent/20 text-accent-light border-accent/30" : "bg-accent/10 text-accent-dark border-accent/20"}`}>
-              {totalCount.toLocaleString()} channels
-            </span>
-          )}
-        </div>
+        <SectionHero
+          eyebrow="SeligaAqui Catálogo"
+          title="Canais"
+          description="Brasil, EUA, Itália, filmes, séries e esportes — busque e toque no player desta tela."
+          icon={List}
+          accent="cyan"
+          chips={[
+            { label: "Brasil", text: "text-cyan-300", border: "border-cyan-500/20", dot: "bg-cyan-400" },
+            { label: "Filmes", text: "text-sky-300", border: "border-sky-500/20", dot: "bg-sky-400" },
+            { label: "Séries", text: "text-blue-300", border: "border-blue-500/20", dot: "bg-blue-400" },
+          ]}
+          stats={[
+            { label: "Canais", value: totalCount > 0 ? totalCount.toLocaleString() : "…", icon: Tv },
+            { label: "Fontes", value: String(M3U_SOURCES.length), icon: Globe },
+            { label: "Grátis", value: "100%", icon: Sparkles },
+          ]}
+        />
       </div>
 
       {/* Loading State */}

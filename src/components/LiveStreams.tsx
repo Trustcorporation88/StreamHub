@@ -14,6 +14,7 @@ import { useTheme } from "../context/ThemeContext"
 import { useLiveStream } from "../context/LiveStreamContext"
 import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
+import SectionHero from "./SectionHero"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
 
@@ -247,31 +248,36 @@ export default function LiveStreams() {
 
   return (
     <div className="flex flex-col xl:h-full">
-      {/* Header */}
       <div className="mb-5 sm:mb-6">
-        <div className="flex flex-wrap items-center gap-3 mb-2">
-          <div className={`p-2 rounded-xl ${isDark ? "bg-accent/20" : "bg-accent/10"}`}>
-            <Tv className="w-6 h-6 text-accent-light" />
-          </div>
-          <div>
-            <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              Canais IPTV ao Vivo
-            </h2>
-            <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Selecione um canal para começar a assistir
-            </p>
-          </div>
-          {liveMatch && matchStatus?.isLive && (
-            <motion.span
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="sm:ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-green/20 text-sport-green rounded-full border border-sport-green/30"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-sport-green animate-pulse" />
-              LIVE
-            </motion.span>
-          )}
-        </div>
+        <SectionHero
+          eyebrow="SeligaAqui TV"
+          title="Ao vivo"
+          description="Escolha um canal e assista agora. O player fica nesta tela, no mesmo padrão da música."
+          icon={Tv}
+          accent="violet"
+          chips={[
+            { label: "Brasil", text: "text-violet-300", border: "border-violet-500/20", dot: "bg-violet-400" },
+            { label: "Filmes", text: "text-fuchsia-300", border: "border-fuchsia-500/20", dot: "bg-fuchsia-400" },
+            { label: "YouTube", text: "text-red-400", border: "border-red-500/20", dot: "bg-red-400" },
+          ]}
+          stats={[
+            { label: "Canais", value: String(channels.length), icon: Radio },
+            { label: "Qualidade", value: "HD / FHD", icon: Signal },
+            { label: "Player", value: "Nesta tela", icon: Play },
+          ]}
+          badge={
+            liveMatch && matchStatus?.isLive ? (
+              <motion.span
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-green/20 text-sport-green rounded-full border border-sport-green/30"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-sport-green animate-pulse" />
+                LIVE
+              </motion.span>
+            ) : undefined
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">

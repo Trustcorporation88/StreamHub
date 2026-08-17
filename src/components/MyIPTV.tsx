@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import VideoPlayer from "./VideoPlayer"
+import SectionHero from "./SectionHero"
 import type { M3UChannel } from "../types"
 
 const STORAGE_KEY = "myiptv-config-v1"
@@ -244,49 +245,48 @@ export default function MyIPTV() {
 
   return (
     <div className="flex flex-col gap-5 sm:gap-6 xl:h-full">
-      {/* Cabeçalho */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${isDark ? "bg-accent/20" : "bg-accent/10"}`}>
-            <KeyRound className="w-6 h-6 text-accent-light" />
-          </div>
-          <div>
-            <h1 className={`text-xl sm:text-2xl font-extrabold ${strongText}`}>Minhas Séries</h1>
-            <p className={`text-xs sm:text-sm ${mutedText}`}>
-              Conecte sua conta e assista às séries da sua lista
-            </p>
-          </div>
-        </div>
-        {config && !editing && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => config && fetchPlaylist(config)}
-              className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
-                isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              Atualizar
-            </button>
-            <button
-              onClick={() => setEditing(true)}
-              className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
-                isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <KeyRound className="w-4 h-4" />
-              Editar acesso
-            </button>
-            <button
-              onClick={disconnect}
-              className="inline-flex items-center gap-2 rounded-xl bg-sport-red/15 px-3 py-2 text-sm font-semibold text-sport-red transition-colors hover:bg-sport-red/25"
-            >
-              <LogOut className="w-4 h-4" />
-              Sair
-            </button>
-          </div>
-        )}
-      </div>
+      <SectionHero
+        eyebrow="SeligaAqui Lista"
+        title="Minhas séries"
+        description="Conecte Xtream ou M3U e assista às séries da sua lista neste player."
+        icon={KeyRound}
+        accent="emerald"
+        chips={[
+          { label: "Xtream", text: "text-emerald-300", border: "border-emerald-500/20", dot: "bg-emerald-400" },
+          { label: "M3U", text: "text-teal-300", border: "border-teal-500/20", dot: "bg-teal-400" },
+        ]}
+        actions={
+          config && !editing ? (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => config && fetchPlaylist(config)}
+                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
+                  isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                Atualizar
+              </button>
+              <button
+                onClick={() => setEditing(true)}
+                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
+                  isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                <KeyRound className="w-4 h-4" />
+                Editar acesso
+              </button>
+              <button
+                onClick={disconnect}
+                className="inline-flex items-center gap-2 rounded-xl bg-sport-red/15 px-3 py-2 text-sm font-semibold text-sport-red transition-colors hover:bg-sport-red/25"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair
+              </button>
+            </div>
+          ) : undefined
+        }
+      />
 
       {/* Formulário de conexão */}
       {editing && (

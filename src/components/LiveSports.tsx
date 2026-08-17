@@ -20,6 +20,7 @@ import {
 import { useTheme } from "../context/ThemeContext"
 import type { Match, MatchDetail } from "../types"
 import SportsPlayer from "./SportsPlayer"
+import SectionHero from "./SectionHero"
 
 interface Source {
   id: string
@@ -367,39 +368,36 @@ export default function LiveSports() {
 
   return (
     <div className="flex flex-col xl:h-full">
-      {/* Header */}
       <div className="mb-5 sm:mb-6">
-        <div className="flex flex-wrap items-center gap-3 mb-1">
-          <div
-            className={`p-2.5 rounded-xl ${isDark ? "bg-sport-yellow/15" : "bg-amber-50"}`}
-          >
-            <Trophy
-              className={`w-5 h-5 ${isDark ? "text-sport-yellow" : "text-amber-600"}`}
-            />
-          </div>
-          <div>
-            <h2
-              className={`text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}
-            >
-              Esportes ao Vivo
-            </h2>
-            <p
-              className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}
-            >
-              Agenda de partidas &amp; players ao vivo
-            </p>
-          </div>
-          {liveCount > 0 && (
-            <motion.span
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="sm:ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-red/20 text-sport-red rounded-full border border-sport-red/30"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-sport-red animate-pulse" />
-              {liveCount} LIVE
-            </motion.span>
-          )}
-        </div>
+        <SectionHero
+          eyebrow="SeligaAqui Esportes"
+          title="Esportes"
+          description="Agenda e players ao vivo. Mesmo visual da música, com o jogo nesta tela."
+          icon={Trophy}
+          accent="amber"
+          chips={[
+            { label: "Futebol", text: "text-amber-300", border: "border-amber-500/20", dot: "bg-amber-400" },
+            { label: "NBA", text: "text-orange-300", border: "border-orange-500/20", dot: "bg-orange-400" },
+            { label: "Ao vivo", text: "text-sport-red", border: "border-red-500/20", dot: "bg-sport-red" },
+          ]}
+          stats={[
+            { label: "Modalidades", value: "9", icon: Trophy },
+            { label: "Ao vivo agora", value: String(liveCount), icon: CircleDot },
+            { label: "Fontes", value: "2 APIs", icon: Zap },
+          ]}
+          badge={
+            liveCount > 0 ? (
+              <motion.span
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-sport-red/20 text-sport-red rounded-full border border-sport-red/30"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-sport-red animate-pulse" />
+                {liveCount} LIVE
+              </motion.span>
+            ) : undefined
+          }
+        />
       </div>
 
       {/* Sport Category Tabs */}
