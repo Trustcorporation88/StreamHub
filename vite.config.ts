@@ -66,6 +66,39 @@ function iptvProxy(): Plugin {
   }
 }
 
+function youtubeSearchProxy(): Plugin {
+  return {
+    name: "youtube-search-proxy",
+    configureServer(server) {
+      server.middlewares.use("/api/youtube-search", async (req, res) => {
+        const query = new URL(req.url || "", "http://localhost").searchParams.get("q")
+        if (!query?.trim()) {
+          res.statusCode = 400
+          res.setHeader("Content-Type", "application/json")
+          res.end(JSON.stringify({ error: "Missing q" }))
+          return
+        }
+        try {
+          const { searchYouTube } = await import("./api/youtube-search.js") as {
+            searchYouTube: (query: string) => Promise<unknown[]>
+          }
+          const tracks = await searchYouTube(query)
+          res.statusCode = 200
+          res.setHeader("Content-Type", "application/json")
+          res.end(JSON.stringify({ tracks }))
+        } catch {
+          res.statusCode = 503
+          res.setHeader("Content-Type", "application/json")
+          res.end(JSON.stringify({
+            error: "unavailable",
+            message: "Busca do YouTube indisponível no momento. Tente de novo em instantes.",
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), iptvProxy()],
+  plugins: [react(), iptvProxy(), youtubeSearchProxy()],
 })
