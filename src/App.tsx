@@ -12,10 +12,11 @@ import LegalDisclaimer from "./components/LegalDisclaimer"
 import AboutPage from "./components/AboutPage"
 import MusicPortal from "./music/components/MusicPortal"
 import MyIPTV from "./components/MyIPTV"
+import PlexPage from "./components/PlexPage"
 
-export type Tab = "home" | "iptv" | "catalog" | "mylist" | "sports" | "music" | "about" | "legal"
+export type Tab = "home" | "iptv" | "catalog" | "mylist" | "plex" | "sports" | "music" | "about" | "legal"
 
-const VALID_TABS: Tab[] = ["home", "iptv", "catalog", "mylist", "sports", "music", "about", "legal"]
+const VALID_TABS: Tab[] = ["home", "iptv", "catalog", "mylist", "plex", "sports", "music", "about", "legal"]
 
 function getInitialTab(): Tab {
   const hash = window.location.hash.replace("#", "")
@@ -61,6 +62,8 @@ function AppShell() {
         return <LiveStreams key="iptv" />
       case "mylist":
         return <MyIPTV key="mylist" />
+      case "plex":
+        return <PlexPage key="plex" />
       case "catalog":
         return <IPTVChannels key="catalog" />
       case "sports":

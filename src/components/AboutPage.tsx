@@ -16,6 +16,7 @@ import {
   Music,
   Headphones,
   ListMusic,
+  Clapperboard,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../App"
@@ -60,6 +61,15 @@ const destinations = [
     color: "text-purple-400",
     metric: "45K+",
     metricLabel: "estações",
+  },
+  {
+    id: "plex" as Tab,
+    icon: Clapperboard,
+    title: "Plex Watch",
+    description: "Catálogo grátis da Plex (filmes, séries e TV ao vivo oficiais, com anúncios).",
+    color: "text-pink-400",
+    metric: "Grátis",
+    metricLabel: "com anúncios",
   },
 ]
 
