@@ -18,6 +18,8 @@ import {
 import { useTheme } from "../context/ThemeContext"
 import VideoPlayer from "./VideoPlayer"
 import { useCatalogStore } from "../stores/catalog"
+import { useDebouncedValue } from "../hooks/useDebouncedValue"
+import { ChannelListSkeleton, Skeleton } from "./Skeleton"
 import { M3U_SOURCES, categoryRank, extractCountry } from "../lib/m3u"
 import type { M3UChannel } from "../types"
 
@@ -41,6 +43,9 @@ export default function IPTVChannels() {
   const activeChannel = useCatalogStore(s => s.activeChannel)
   const setActiveChannel = useCatalogStore(s => s.setActiveChannel)
   const loading = status === "loading" || status === "idle"
+  // The input updates instantly; the 4k-channel scan waits for a pause in
+  // typing. Without this every keystroke filtered the whole catalog.
+  const debouncedSearch = useDebouncedValue(search, 200)
   const totalCount = channels.length
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
@@ -87,8 +92,8 @@ export default function IPTVChannels() {
     if (selectedCountry !== "All") {
       result = result.filter((c) => extractCountry(c) === selectedCountry)
     }
-    if (search.trim()) {
-      const q = search.toLowerCase()
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase()
       result = result.filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
@@ -96,7 +101,7 @@ export default function IPTVChannels() {
       )
     }
     return result
-  }, [channels, selectedCategory, selectedCountry, search])
+  }, [channels, selectedCategory, selectedCountry, debouncedSearch])
 
   const grouped = useMemo(() => {
     const map = new Map<string, M3UChannel[]>()
@@ -153,20 +158,22 @@ export default function IPTVChannels() {
         </div>
       </div>
 
-      {/* Loading State */}
+      {/* Loading State — skeleton rows keep the page's shape so nothing jumps
+          when ~4,000 real channels arrive. */}
       {loading && (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="relative mb-4">
-              <Loader2 className="w-12 h-12 text-accent-light animate-spin mx-auto" />
-              <div className="absolute inset-0 w-12 h-12 border-2 border-accent/20 rounded-full mx-auto" />
+        <div className="flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_380px] gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">
+          <div className="min-w-0">
+            <div className="mb-4 flex items-center gap-2">
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-accent-light" />
+              <p className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
+                Carregando canais — {sourcesLoaded}/{M3U_SOURCES.length} fontes
+              </p>
             </div>
-            <p className={`text-sm font-medium mb-1 ${isDark ? "text-white" : "text-slate-900"}`}>
-              Carregando canais
-            </p>
-            <p className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Fetching playlists ({sourcesLoaded}/{M3U_SOURCES.length} sources)...
-            </p>
+            <Skeleton className="mb-4 h-12 w-full rounded-2xl" />
+            <ChannelListSkeleton rows={9} />
+          </div>
+          <div className="hidden xl:block">
+            <Skeleton className="h-64 w-full rounded-2xl" />
           </div>
         </div>
       )}
