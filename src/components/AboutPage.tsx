@@ -1,4 +1,3 @@
-import type React from "react"
 import {
   Tv,
   List,
@@ -19,10 +18,10 @@ import {
   Clapperboard,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
-import type { Tab } from "../App"
+import type { Tab } from "../routes"
 
 interface AboutPageProps {
-  onNavigate: React.Dispatch<React.SetStateAction<Tab>>
+  onNavigate: (tab: Tab) => void
 }
 
 const destinations = [

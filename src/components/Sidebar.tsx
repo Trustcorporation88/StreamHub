@@ -1,13 +1,13 @@
-import type { ComponentType, Dispatch, SetStateAction } from "react"
+import type { ComponentType } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 
-type Tab = "home" | "iptv" | "catalog" | "mylist" | "plex" | "sports" | "music" | "about" | "legal"
+import type { Tab } from "../routes"
 
 interface SidebarProps {
   activeTab: Tab
-  onTabChange: Dispatch<SetStateAction<Tab>>
+  onTabChange: (tab: Tab) => void
   isOpen: boolean
   onClose: () => void
 }
