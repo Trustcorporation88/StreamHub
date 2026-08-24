@@ -1,28 +1,33 @@
-import { useState, useEffect } from "react"
+import { Suspense, lazy, useEffect, useState } from "react"
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, Monitor } from "lucide-react"
+import { Loader2, Menu, Monitor } from "lucide-react"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { LiveStreamProvider } from "./context/LiveStreamContext"
 import Sidebar from "./components/Sidebar"
-import HomePage from "./components/HomePage"
-import LiveStreams from "./components/LiveStreams"
-import IPTVChannels from "./components/IPTVChannels"
-import LiveSports from "./components/LiveSports"
-import LegalDisclaimer from "./components/LegalDisclaimer"
-import AboutPage from "./components/AboutPage"
-import MusicPortal from "./music/components/MusicPortal"
-import MyIPTV from "./components/MyIPTV"
-import PlexPage from "./components/PlexPage"
+import ErrorBoundary from "./components/ErrorBoundary"
+import { pathForTab, tabForPath, VALID_TABS, type Tab } from "./routes"
 
-export type Tab = "home" | "iptv" | "catalog" | "mylist" | "plex" | "sports" | "music" | "about" | "legal"
-
-const VALID_TABS: Tab[] = ["home", "iptv", "catalog", "mylist", "plex", "sports", "music", "about", "legal"]
-
-function getInitialTab(): Tab {
-  const hash = window.location.hash.replace("#", "")
-  if (VALID_TABS.includes(hash as Tab)) return hash as Tab
-  return "home"
-}
+// Each section is its own chunk. Before this the whole app — every player, the
+// music portal, the 900-line sports view — shipped as one 1.3 MB bundle that
+// had to download and parse before the home page could paint.
+const HomePage = lazy(() => import("./components/HomePage"))
+const LiveStreams = lazy(() => import("./components/LiveStreams"))
+const IPTVChannels = lazy(() => import("./components/IPTVChannels"))
+const MyIPTV = lazy(() => import("./components/MyIPTV"))
+const PlexPage = lazy(() => import("./components/PlexPage"))
+const LiveSports = lazy(() => import("./components/LiveSports"))
+const MusicPortal = lazy(() => import("./music/components/MusicPortal"))
+const AboutPage = lazy(() => import("./components/AboutPage"))
+const LegalDisclaimer = lazy(() => import("./components/LegalDisclaimer"))
 
 const CONTENT_VARIANTS = {
   initial: { opacity: 0, y: 8 },
@@ -32,63 +37,73 @@ const CONTENT_VARIANTS = {
 
 const CONTENT_TRANSITION = { duration: 0.2, ease: "easeOut" as const }
 
+function RouteFallback() {
+  return (
+    <div className="flex h-full min-h-[50vh] items-center justify-center">
+      <Loader2 className="h-6 w-6 animate-spin text-accent" />
+    </div>
+  )
+}
+
+/**
+ * Sections used to be addressed by hash (`#catalog`). Anything bookmarked or
+ * shared under the old scheme still works: we translate it to the new path
+ * once, on load, and drop the hash.
+ */
+function LegacyHashRedirect() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "")
+    if (!hash) return
+    if (!VALID_TABS.includes(hash as Tab)) return
+    if (location.pathname !== "/") return
+    navigate(pathForTab(hash as Tab), { replace: true })
+  }, [navigate, location.pathname])
+
+  return null
+}
+
+function NotFound() {
+  return (
+    <div className="flex h-full min-h-[50vh] flex-col items-center justify-center text-center">
+      <p className="mb-2 text-5xl font-bold text-accent">404</p>
+      <h2 className="mb-2 text-lg font-semibold text-text-primary">Página não encontrada</h2>
+      <p className="mb-4 text-sm text-text-secondary">
+        Esse endereço não existe — talvez a seção tenha sido renomeada.
+      </p>
+      <a
+        href="/"
+        className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-light"
+      >
+        Voltar ao início
+      </a>
+    </div>
+  )
+}
+
 function AppShell() {
-  const [activeTab, setActiveTab] = useState<Tab>(getInitialTab)
-
-  useEffect(() => {
-    window.location.hash = activeTab
-  }, [activeTab])
-
-  useEffect(() => {
-    const onHashChange = () => {
-      const hash = window.location.hash.replace("#", "")
-      if (VALID_TABS.includes(hash as Tab)) {
-        setActiveTab(hash as Tab)
-      }
-    }
-    window.addEventListener("hashchange", onHashChange)
-    return () => window.removeEventListener("hashchange", onHashChange)
-  }, [])
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme } = useTheme()
   const isDark = theme === "dark"
+  const location = useLocation()
+  const navigate = useNavigate()
+  const activeTab = tabForPath(location.pathname)
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "home":
-        return <HomePage key="home" onNavigate={setActiveTab} />
-      case "iptv":
-        return <LiveStreams key="iptv" />
-      case "mylist":
-        return <MyIPTV key="mylist" />
-      case "plex":
-        return <PlexPage key="plex" />
-      case "catalog":
-        return <IPTVChannels key="catalog" />
-      case "sports":
-        return <LiveSports key="sports" />
-      case "music":
-        return <MusicPortal key="music" />
-      case "about":
-        return <AboutPage key="about" onNavigate={setActiveTab} />
-      case "legal":
-        return <LegalDisclaimer key="legal" />
-      default:
-        return <HomePage key="home" onNavigate={setActiveTab} />
-    }
-  }
+  const goToTab = (tab: Tab) => navigate(pathForTab(tab))
 
   return (
     <div className="flex h-dvh overflow-hidden bg-surface-500 text-text-primary transition-colors">
+      <LegacyHashRedirect />
       <Sidebar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={goToTab}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         {/* Mobile Top Bar */}
         <header
           className={`lg:hidden flex items-center gap-3 px-4 py-3 border-b shrink-0 safe-area-top ${
@@ -130,7 +145,13 @@ function AppShell() {
               transition={CONTENT_TRANSITION}
               className="min-h-full"
             >
-              {renderContent()}
+              {/* Keyed by path so a crash in one section doesn't leave the
+                  boundary stuck in its error state after navigating away. */}
+              <ErrorBoundary key={location.pathname}>
+                <Suspense fallback={<RouteFallback />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </main>
@@ -139,11 +160,38 @@ function AppShell() {
   )
 }
 
+/** HomePage and AboutPage take an onNavigate callback; the router supplies it. */
+function HomePageRoute() {
+  const navigate = useNavigate()
+  return <HomePage onNavigate={(tab: Tab) => navigate(pathForTab(tab))} />
+}
+
+function AboutPageRoute() {
+  const navigate = useNavigate()
+  return <AboutPage onNavigate={(tab: Tab) => navigate(pathForTab(tab))} />
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <LiveStreamProvider>
-        <AppShell />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route path="/" element={<HomePageRoute />} />
+              <Route path="/iptv" element={<LiveStreams />} />
+              <Route path="/catalog" element={<IPTVChannels />} />
+              <Route path="/mylist" element={<MyIPTV />} />
+              <Route path="/plex" element={<PlexPage />} />
+              <Route path="/sports" element={<LiveSports />} />
+              <Route path="/music" element={<MusicPortal />} />
+              <Route path="/about" element={<AboutPageRoute />} />
+              <Route path="/legal" element={<LegalDisclaimer />} />
+              <Route path="/index.html" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </LiveStreamProvider>
     </ThemeProvider>
   )
