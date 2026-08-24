@@ -1,4 +1,6 @@
-# StreamHub - IPTV Dashboard & Music Portal
+# StreamHub — IPTV Dashboard & Music Portal
+
+> **Naming note:** the repository is `StreamHub`, the npm package is `iptv-dashboard`, and the running UI is branded **SeligaAqui**. Worth standardising on one.
 
 A free, open-source dashboard for streaming live TV, browsing community playlists, watching sports, and listening to music — all in one place.
 
@@ -39,7 +41,8 @@ A free, open-source dashboard for streaming live TV, browsing community playlist
 - **Volume Memory** — Volume setting persists across sessions.
 
 ### General
-- **URL-based Navigation** — Page state persists across refreshes via URL hash routing (`#home`, `#iptv`, `#catalog`, `#sports`, `#music`).
+- **Command Palette** — `Ctrl+K` / `Cmd+K` (or the search button in the sidebar / mobile header) opens fuzzy search across the whole channel catalogue and every section. Selecting a channel jumps to the catalogue and starts playing it.
+- **URL-based Navigation** — Real routes (`/`, `/iptv`, `/catalog`, `/mylist`, `/plex`, `/sports`, `/music`), so sections are deep-linkable and shareable. Legacy `#hash` URLs are redirected automatically.
 - **Dark / Light Mode** — Full theme support with smooth transitions.
 - **Responsive Design** — Mobile-first design. Optimized for phones, tablets, and desktop.
 
@@ -90,6 +93,8 @@ Powered by the **Media Session API** — the same technology used by Spotify and
 | YouTube | YouTube IFrame API |
 | Media Controls | Media Session API |
 | Icons | Lucide React |
+| State | Zustand |
+| Fuzzy search | Fuse.js |
 
 ---
 
@@ -119,7 +124,7 @@ Powered by the **Media Session API** — the same technology used by Spotify and
 
 ```bash
 # Clone the repository
-git clone https://github.com/TechKnoWEB/StreamHub.git
+git clone https://github.com/Trustcorporation88/StreamHub.git
 cd StreamHub
 
 # Install dependencies
@@ -155,12 +160,25 @@ src/
 │   ├── HomePage.tsx              # Landing page with features & data sources
 │   ├── LiveStreams.tsx           # Curated IPTV channel player + live match embed
 │   ├── IPTVChannels.tsx          # Multi-source channel catalogue with filters
+│   ├── MyIPTV.tsx                # Your own M3U / Xtream playlist
+│   ├── PlexPage.tsx              # Plex free channels
 │   ├── LiveSports.tsx            # Live sports streams & match schedules
+│   ├── CommandPalette.tsx        # Ctrl+K fuzzy search over channels & sections
+│   ├── ErrorBoundary.tsx         # Per-section crash containment
+│   ├── Skeleton.tsx              # Loading placeholders
 │   ├── LegalDisclaimer.tsx       # Legal & terms page
 │   ├── Sidebar.tsx               # Navigation sidebar
-│   └── VideoPlayer.tsx           # HLS video player component
-|   └── AboutPage.tsx             # About Project
-|   └── SportsPlayer.tsx          # LiveSports Video player component
+│   ├── VideoPlayer.tsx           # HLS video player component
+│   ├── AboutPage.tsx             # About Project
+│   └── SportsPlayer.tsx          # LiveSports Video player component
+├── stores/
+│   ├── catalog.ts                # IPTV catalogue: fetch, filters, active channel
+│   └── commandPalette.ts         # Command palette open state
+├── lib/
+│   └── m3u.ts                    # M3U parsing, dedup keys, country extraction
+├── hooks/
+│   └── useDebouncedValue.ts      # Keeps the 4k-channel scan off the keystroke path
+├── routes.ts                     # Tab <-> path mapping (single source of truth)
 ├── music/
 │   ├── types.ts                  # Music-specific TypeScript interfaces
 │   ├── MusicContext.tsx           # Global music state + Media Session API
@@ -182,7 +200,7 @@ src/
 │   ├── ThemeContext.tsx           # Dark/Light theme provider
 │   └── LiveStreamContext.tsx      # Live match state shared between Sports & Streams
 ├── types.ts                      # IPTV TypeScript interfaces
-├── App.tsx                       # Root component with hash-based routing
+├── App.tsx                       # Router, layout shell, lazy route definitions
 ├── main.tsx                      # Entry point
 └── index.css                     # Global styles & Tailwind config
 ```
@@ -197,6 +215,20 @@ src/
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint |
+| `npm start` | Serve the production build + IPTV proxy (`server.js`) |
+
+Every pull request runs typecheck, lint, and a build that boots `server.js` and asserts it answers on `/`.
+
+---
+
+## Deployment
+
+Two supported targets, both live in the repo:
+
+| Target | Entry point | Notes |
+|--------|-------------|-------|
+| Railway | `server.js` (Express) | Serves `dist/` plus `/api/iptv-proxy`, `/api/iptv-debug`, `/api/youtube-live`. Configured in `railway.json`. |
+| Vercel | `api/*.js` serverless functions | `vercel.json` handles SPA rewrites and CORS headers for `/api/*`. |
 
 ---
 
@@ -218,8 +250,11 @@ The music portal connects to two free APIs:
 
 All user data (volume, favorites, playlists, recently played) is persisted to `localStorage` under the `streamhub-music` key.
 
-### URL Hash Routing
-Active tab state is stored in the URL hash (`#home`, `#iptv`, `#catalog`, `#sports`, `#music`). Refreshing the page restores the last-viewed section. Browser back/forward navigation works correctly.
+### Routing
+`react-router-dom` with one lazily-loaded chunk per section, so the initial bundle is ~365 kB instead of the ~1.3 MB it would be if every player shipped up front (`hls.js` and `mpegts.js` alone are ~790 kB and now load only when a player mounts). Refreshing restores the current section; back/forward work. Old `#hash` links are translated to paths on load.
+
+### State
+The IPTV catalogue (fetch, merge, de-duplicate, filters, active channel) lives in a Zustand store at `src/stores/catalog.ts` rather than in the page component, so switching tabs doesn't re-download seven playlists or discard your filters. Theme, live-match and music state remain React contexts.
 
 ---
 

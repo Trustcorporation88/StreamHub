@@ -1,11 +1,10 @@
 ﻿import { motion } from "framer-motion"
-import type React from "react"
 import { ArrowRight, Clapperboard, Headphones, Monitor, Music, Radio, Trophy, Tv, Zap } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
-import type { Tab } from "../App"
+import type { Tab } from "../routes"
 
 interface HomePageProps {
-  onNavigate: React.Dispatch<React.SetStateAction<Tab>>
+  onNavigate: (tab: Tab) => void
 }
 
 const QUICK_LINKS: { id: Tab; title: string; description: string; icon: typeof Tv; accent: string }[] = [
