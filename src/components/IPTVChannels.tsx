@@ -152,7 +152,7 @@ export default function IPTVChannels() {
           </div>
           {totalCount > 0 && (
             <span className={`sm:ml-auto px-3 py-1.5 text-xs font-semibold rounded-full border ${isDark ? "bg-accent/20 text-accent-light border-accent/30" : "bg-accent/10 text-accent-dark border-accent/20"}`}>
-              {totalCount.toLocaleString()} channels
+              {totalCount.toLocaleString()} canais
             </span>
           )}
         </div>
@@ -375,7 +375,7 @@ export default function IPTVChannels() {
                       })}
                       {chs.length > 200 && (
                         <p className={`px-4 py-3 text-xs text-center border-t ${isDark ? "text-dark-100 border-white/5" : "text-slate-500 border-slate-200"}`}>
-                          +{(chs.length - 200).toLocaleString()} more channels
+                          +{(chs.length - 200).toLocaleString()} outros canais
                         </p>
                       )}
                     </div>
