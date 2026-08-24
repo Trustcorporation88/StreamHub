@@ -9,11 +9,13 @@ import {
   useNavigate,
 } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, Menu, Monitor } from "lucide-react"
+import { Loader2, Menu, Monitor, Search } from "lucide-react"
 import { ThemeProvider, useTheme } from "./context/ThemeContext"
 import { LiveStreamProvider } from "./context/LiveStreamContext"
 import Sidebar from "./components/Sidebar"
 import ErrorBoundary from "./components/ErrorBoundary"
+import CommandPalette from "./components/CommandPalette"
+import { useCommandPaletteStore } from "./stores/commandPalette"
 import { pathForTab, tabForPath, VALID_TABS, type Tab } from "./routes"
 
 // Each section is its own chunk. Before this the whole app — every player, the
@@ -90,12 +92,14 @@ function AppShell() {
   const location = useLocation()
   const navigate = useNavigate()
   const activeTab = tabForPath(location.pathname)
+  const openPalette = useCommandPaletteStore(s => s.openPalette)
 
   const goToTab = (tab: Tab) => navigate(pathForTab(tab))
 
   return (
     <div className="flex h-dvh overflow-hidden bg-surface-500 text-text-primary transition-colors">
       <LegacyHashRedirect />
+      <CommandPalette />
       <Sidebar
         activeTab={activeTab}
         onTabChange={goToTab}
@@ -131,6 +135,18 @@ function AppShell() {
               SeligaAqui
             </span>
           </div>
+
+          <motion.button
+            onClick={openPalette}
+            className={`ml-auto p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
+              isDark ? "hover:bg-white/10 text-dark-100" : "hover:bg-slate-100 text-slate-500"
+            }`}
+            aria-label="Buscar"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Search className="w-5 h-5" />
+          </motion.button>
         </header>
 
         {/* Main Content with Crossfade */}

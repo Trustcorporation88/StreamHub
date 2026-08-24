@@ -38,12 +38,13 @@ export default function IPTVChannels() {
   const setSelectedCountry = useCatalogStore(s => s.setCountry)
   const resetFilters = useCatalogStore(s => s.resetFilters)
   const load = useCatalogStore(s => s.load)
+  const activeChannel = useCatalogStore(s => s.activeChannel)
+  const setActiveChannel = useCatalogStore(s => s.setActiveChannel)
   const loading = status === "loading" || status === "idle"
   const totalCount = channels.length
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   )
-  const [activeChannel, setActiveChannel] = useState<M3UChannel | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const channelListRef = useRef<HTMLDivElement>(null)
 
@@ -51,6 +52,7 @@ export default function IPTVChannels() {
     // No-ops when the catalog is already loaded or in flight.
     load()
   }, [load])
+
 
   const categories = useMemo(() => {
     const cats = new Map<string, number>()
