@@ -64,6 +64,31 @@ export interface EmbedSportexIframe {
   url: string
 }
 
+/** Raw match payload from the StreamFree API (`/streams?category=`). */
+export interface StreamFreeRaw {
+  id?: string
+  stream_key?: string
+  name: string
+  category: string
+  match_timestamp: number
+  viewers?: number
+  thumbnail_url?: string
+  embed_url?: string
+  team1?: { name?: string; logo?: string }
+  team2?: { name?: string; logo?: string }
+}
+
+/**
+ * Per-match provenance (which upstream served it, how to embed it). Kept beside
+ * `Match` rather than inside it so the UI type stays free of transport details.
+ */
+export interface MatchMeta {
+  source: string
+  viewers: number
+  embedUrl?: string
+  iframes?: EmbedSportexIframe[]
+}
+
 export interface EmbedSportexMatch {
   slug: string
   tag: string

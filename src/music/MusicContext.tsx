@@ -1,7 +1,8 @@
-﻿import { createContext, useReducer, useRef, useEffect, useCallback, type ReactNode } from "react"
+﻿import { useReducer, useRef, useEffect, useCallback, type ReactNode } from "react"
 import type { MusicPlayerState, MusicAction, Track } from "./types"
 import { useAudioPlayer } from "./hooks/useAudioPlayer"
 import type { YouTubeControls } from "./hooks/useYouTubePlayer"
+import { MusicContext } from "./context"
 
 const STORAGE_KEY = "streamhub-music"
 
@@ -274,32 +275,7 @@ function musicReducer(state: MusicPlayerState, action: MusicAction): MusicPlayer
   return next
 }
 
-interface MusicContextValue {
-  state: MusicPlayerState
-  dispatch: React.Dispatch<MusicAction>
-  playTrack: (track: Track, queue?: Track[]) => void
-  togglePlay: () => void
-  nextTrack: () => void
-  prevTrack: () => void
-  seek: (time: number) => void
-  setVolume: (vol: number) => void
-  toggleMute: () => void
-  addToQueue: (track: Track) => void
-  addToQueueNext: (track: Track) => void
-  playQueue: (tracks: Track[], startIndex?: number) => void
-  toggleFavorite: (track: Track) => void
-  isFavorite: (trackId: string) => boolean
-  createPlaylist: (name: string) => void
-  deletePlaylist: (id: string) => void
-  renamePlaylist: (id: string, name: string) => void
-  addToPlaylist: (playlistId: string, track: Track) => void
-  removeFromPlaylist: (playlistId: string, trackIndex: number) => void
-  registerYouTubeControls: (controls: YouTubeControls) => void
-  unregisterYouTubeControls: () => void
-  removeFromRecentlyPlayed: (trackId: string) => void
-}
 
-export const MusicContext = createContext<MusicContextValue | null>(null)
 
 export function MusicProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(musicReducer, initialState)

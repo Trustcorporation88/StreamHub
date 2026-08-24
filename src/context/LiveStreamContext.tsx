@@ -3,7 +3,7 @@ import type { EmbedSportexMatch, EmbedSportexResponse } from "../types"
 
 const EMBEDSPORTEX_API = "https://api.esportex.site/api/streams"
 // @ts-expect-error reservado para reativar a seção de partidas no futuro
-const POLL_INTERVAL_MS = 5 * 60 * 1000
+const _POLL_INTERVAL_MS = 5 * 60 * 1000
 const APPROACHING_LIVE_MS = 30 * 60 * 1000 // 30 minutes before kickoff
 
 // ─── Public Types ────────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ function findLiveOrApproachingMatch(matches: Array<{ slug: string; kickoff: stri
 // ─── EmbedSportex Fetcher ────────────────────────────────────────────────────
 
 // @ts-expect-error reservado para reativar a seção de partidas no futuro
-async function fetchFromEmbedSportex(): Promise<{ match: LiveMatch | null; upcoming: { title: string; date: number; teams: { home: { name: string; badge: string }; away: { name: string; badge: string } } } | null }> {
+async function _fetchFromEmbedSportex(): Promise<{ match: LiveMatch | null; upcoming: { title: string; date: number; teams: { home: { name: string; badge: string }; away: { name: string; badge: string } } } | null }> {
   const res = await fetch(EMBEDSPORTEX_API, {
     signal: AbortSignal.timeout(15000),
   })
@@ -174,7 +174,7 @@ async function fetchFromEmbedSportex(): Promise<{ match: LiveMatch | null; upcom
 
 export function LiveStreamProvider({ children }: { children: ReactNode }) {
   const [liveMatch, setLiveMatchState] = useState<LiveMatch | null>(null)
-  const [pollingStatus, setPollingStatus] = useState<PollingStatus>({
+  const [pollingStatus] = useState<PollingStatus>({
     isPolling: false,
     lastFetch: null,
     error: null,
@@ -194,9 +194,8 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     mountedRef.current = true
 
     // Seção de partidas de futebol desativada — a aba Transmissões ao Vivo
-    // mostra apenas os canais fixos, sem cards automáticos de jogos.
-    setPollingStatus({ isPolling: false, lastFetch: new Date(), error: null })
-
+    // mostra apenas os canais fixos, sem cards automáticos de jogos. O estado
+    // inicial de pollingStatus já reflete "parado", então não há nada a definir.
     return () => {
       mountedRef.current = false
     }

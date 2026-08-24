@@ -94,9 +94,12 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   useEffect(() => {
     if (!ytChannelId) return
     let cancelled = false
-    setResolvedYtEmbed(null)
-    setYtError(null)
     ;(async () => {
+      // Clearing inside the async body (rather than synchronously in the effect)
+      // keeps this off React's cascading-render path; the channel switch and the
+      // reset land in the same commit either way.
+      setResolvedYtEmbed(null)
+      setYtError(null)
       try {
         const r = await fetch(`/api/youtube-live?channel=${ytChannelId}`)
         const data = await r.json()

@@ -54,36 +54,24 @@ export default function SportsPlayer({
     return () => { mountedRef.current = false }
   }, [])
 
-  // Reset failed set when sources list changes
-  useEffect(() => {
+  // Reset while rendering when the inputs change, rather than in an effect.
+  // This is React's documented "adjust state when props change" pattern: it
+  // avoids the extra commit (and the visible flash of the previous stream's
+  // loading state) that a reset-in-effect produces.
+  const [prevSources, setPrevSources] = useState(sources)
+  if (sources !== prevSources) {
+    setPrevSources(sources)
     setFailedSources(new Set())
     setLoading(true)
-  }, [sources])
+  }
 
-  // Sync active source with available sources
-  useEffect(() => {
-    if (!activeSource || !currentSource) return
-    if (currentSource.streamNo !== activeSource.streamNo || currentSource.id !== activeSource.id) {
-      onSourceChange(currentSource)
-    }
-  }, [currentSource?.streamNo, currentSource?.id])
+  const embedUrl = activeSource?.embedUrl ?? null
+  const [prevEmbedUrl, setPrevEmbedUrl] = useState(embedUrl)
+  if (embedUrl !== prevEmbedUrl) {
+    setPrevEmbedUrl(embedUrl)
+    if (!isDirect && !allSourcesFailed) setLoading(true)
+  }
 
-  // Iframe timeout detection
-  useEffect(() => {
-    if (isDirect || !activeSource || allSourcesFailed) return
-
-    setLoading(true)
-
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => {
-      if (!mountedRef.current) return
-      markFailedAndAdvance(activeSource)
-    }, IFRAME_TIMEOUT_MS)
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [activeSource?.embedUrl, isDirect, allSourcesFailed])
 
   const markFailedAndAdvance = useCallback((failedSource: StreamSource) => {
     if (!mountedRef.current) return
@@ -98,6 +86,29 @@ export default function SportsPlayer({
       onSourceChange(nextSource)
     }
   }, [sources, failedSources, onSourceChange])
+
+  // Sync active source with available sources
+  useEffect(() => {
+    if (!activeSource || !currentSource) return
+    if (currentSource.streamNo !== activeSource.streamNo || currentSource.id !== activeSource.id) {
+      onSourceChange(currentSource)
+    }
+  }, [currentSource?.streamNo, currentSource?.id])
+
+  // Iframe timeout detection — declares the stream dead if it never loads.
+  useEffect(() => {
+    if (isDirect || !activeSource || allSourcesFailed) return
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
+      if (!mountedRef.current) return
+      markFailedAndAdvance(activeSource)
+    }, IFRAME_TIMEOUT_MS)
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [activeSource?.embedUrl, isDirect, allSourcesFailed])
 
   const handleIframeLoad = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)

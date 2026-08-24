@@ -1,5 +1,4 @@
 import type { ComponentType, Dispatch, SetStateAction } from "react"
-import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
@@ -30,12 +29,6 @@ const STAGGER_DELAY = 0.05
 export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProps) {
   const { theme, toggle } = useTheme()
   const isDark = theme === "dark"
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const handleNav = (id: Tab) => {
     onTabChange(id)
     onClose()
@@ -120,7 +113,7 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
                       ? "text-dark-100 hover:text-white"
                       : "text-slate-500 hover:text-slate-900"
                 }`}
-                initial={mounted ? false : { opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
                   delay: index * STAGGER_DELAY,

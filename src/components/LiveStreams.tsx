@@ -188,16 +188,7 @@ export default function LiveStreams() {
   const [watchingLive, setWatchingLive] = useState(false)
   const [dismissedNotification, setDismissedNotification] = useState(false)
   const [activeSource, setActiveSource] = useState<StreamSource | null>(null)
-  const [, setTick] = useState(0)
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoPlayRef = useRef(false)
-
-  useEffect(() => {
-    tickRef.current = setInterval(() => setTick((t) => t + 1), 60000)
-    return () => {
-      if (tickRef.current) clearInterval(tickRef.current)
-    }
-  }, [])
 
   useEffect(() => {
     if (liveMatch && !watchingLive && !autoPlayRef.current) {
@@ -218,7 +209,15 @@ export default function LiveStreams() {
     }
   }, [liveMatch])
 
-  const now = useMemo(() => Date.now(), []) // eslint-disable-line react-hooks/exhaustive-deps
+  // Single minute-tick for every time-dependent bit of this view. Previously
+  // there were two clocks: an empty setTick interval that forced a re-render,
+  // and a mount-time useMemo for `now` that never updated — so the re-render
+  // repainted the same frozen "em 2h 15m" once a minute.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000)
+    return () => clearInterval(id)
+  }, [])
 
   const matchStatus = useMemo(() => {
     if (!liveMatch) return null

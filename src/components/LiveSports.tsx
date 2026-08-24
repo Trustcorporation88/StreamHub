@@ -18,7 +18,15 @@ import {
   Users,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
-import type { Match, MatchDetail } from "../types"
+import type {
+  EmbedSportexIframe,
+  EmbedSportexMatch,
+  EmbedSportexResponse,
+  Match,
+  MatchDetail,
+  MatchMeta,
+  StreamFreeRaw,
+} from "../types"
 import SportsPlayer from "./SportsPlayer"
 
 interface Source {
@@ -63,11 +71,11 @@ function parseKickoff(kickoff: string): number {
 }
 
 // StreamFree → normalized Match
-function normalizeStreamFree(raw: any): Match & { _viewers: number; _embedUrl: string } {
+function normalizeStreamFree(raw: StreamFreeRaw): Match & { _viewers: number; _embedUrl: string } {
   let homeName = raw.team1?.name || ""
   let awayName = raw.team2?.name || ""
-  let homeBadge = raw.team1?.logo || ""
-  let awayBadge = raw.team2?.logo || ""
+  const homeBadge = raw.team1?.logo || ""
+  const awayBadge = raw.team2?.logo || ""
 
   if (!homeName && !awayName) {
     const parsed = parseTeamFromTag(raw.name)
@@ -76,11 +84,11 @@ function normalizeStreamFree(raw: any): Match & { _viewers: number; _embedUrl: s
   }
 
   return {
-    id: raw.stream_key || raw.id,
+    id: raw.stream_key || raw.id || raw.name,
     title: raw.name,
     category: raw.category,
     date: raw.match_timestamp * 1000,
-    popular: raw.viewers > 100,
+    popular: (raw.viewers ?? 0) > 100,
     poster: raw.thumbnail_url || "",
     teams: {
       home: { name: homeName, badge: homeBadge },
@@ -102,7 +110,7 @@ async function fetchStreamFree(category: string): Promise<ReturnType<typeof norm
 }
 
 // ESportex → normalized Match
-function normalizeEsportex(raw: any): Match & { _iframes: any[] } {
+function normalizeEsportex(raw: EmbedSportexMatch): Match & { _iframes: EmbedSportexIframe[] } {
   const teams = parseTeamFromTag(raw.tag)
   return {
     id: raw.slug,
@@ -119,17 +127,20 @@ function normalizeEsportex(raw: any): Match & { _iframes: any[] } {
   }
 }
 
-let esportexCache: any = null
+let esportexCache: EmbedSportexResponse | null = null
+
+/** Sport keys on the ESportex payload — everything except its two scalar fields. */
+type EsportexSportKey = Exclude<keyof EmbedSportexResponse, "success" | "timestamp">
 
 async function fetchEsportex(category: string): Promise<ReturnType<typeof normalizeEsportex>[]> {
-  const apiCat = CATEGORY_MAP[category]?.esportex || category
+  const apiCat = (CATEGORY_MAP[category]?.esportex || category) as EsportexSportKey
   let json = esportexCache
   if (!json) {
     const res = await fetch(`${APIS.esportex.base}/streams`, {
       signal: AbortSignal.timeout(12000),
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    json = await res.json()
+    json = (await res.json()) as EmbedSportexResponse
     if (json?.success) esportexCache = json
   }
   if (!json?.success) throw new Error("API returned unsuccessful response")
@@ -138,28 +149,32 @@ async function fetchEsportex(category: string): Promise<ReturnType<typeof normal
 
 async function fetchMatchesWithFallback(category: string): Promise<{
   matches: Match[]
-  matchMeta: Map<string, { source: string; viewers: number; embedUrl?: string; iframes?: any[] }>
+  matchMeta: Map<string, MatchMeta>
 }> {
-  const meta = new Map<string, { source: string; viewers: number; embedUrl?: string; iframes?: any[] }>()
+  const meta = new Map<string, MatchMeta>()
 
   try {
     const raw = await fetchStreamFree(category)
     if (raw.length > 0) {
-      raw.forEach((m) => {
-        meta.set(m.id, { source: "streamfree", viewers: m._viewers, embedUrl: m._embedUrl })
-        delete (m as any)._viewers
-        delete (m as any)._embedUrl
+      // Split the transport-only fields off into `meta` instead of deleting them
+      // from the object in place — same result, no casts, and `matches` is a
+      // genuine Match[] rather than a Match[] we promised to have cleaned up.
+      const matches = raw.map(({ _viewers, _embedUrl, ...match }) => {
+        meta.set(match.id, { source: "streamfree", viewers: _viewers, embedUrl: _embedUrl })
+        return match
       })
-      return { matches: raw, matchMeta: meta }
+      return { matches, matchMeta: meta }
     }
-  } catch {}
+  } catch {
+    // StreamFree is best-effort; fall through to the ESportex mirror below.
+  }
 
   const raw = await fetchEsportex(category)
-  raw.forEach((m) => {
-    meta.set(m.id, { source: "esportex", viewers: 0, iframes: m._iframes })
-    delete (m as any)._iframes
+  const matches = raw.map(({ _iframes, ...match }) => {
+    meta.set(match.id, { source: "esportex", viewers: 0, iframes: _iframes })
+    return match
   })
-  return { matches: raw, matchMeta: meta }
+  return { matches, matchMeta: meta }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -277,7 +292,8 @@ export default function LiveSports() {
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const requestIdRef = useRef(0)
   const detailRequestIdRef = useRef(0)
-  const matchMetaRef = useRef<Map<string, { source: string; viewers: number; embedUrl?: string; iframes?: any[] }>>(new Map())
+  const matchMetaRef = useRef<Map<string, MatchMeta>>(new Map())
+  const [matchMeta, setMatchMeta] = useState<Map<string, MatchMeta>>(new Map())
 
   useEffect(() => {
     tickRef.current = setInterval(() => setTick((t) => t + 1), 60000)
@@ -295,7 +311,11 @@ export default function LiveSports() {
     try {
       const result = await fetchMatchesWithFallback(category)
       if (requestId !== requestIdRef.current) return
+      // The ref serves the async detail fetch (no stale-closure risk); the state
+      // copy is what render reads, since a ref read during render is invisible
+      // to React and won't repaint when the source badge changes.
       matchMetaRef.current = result.matchMeta
+      setMatchMeta(result.matchMeta)
       setMatches(result.matches)
     } catch (err: unknown) {
       if (requestId !== requestIdRef.current) return
@@ -336,7 +356,7 @@ export default function LiveSports() {
       } else {
         const iframes = meta.iframes
         if (!iframes?.length) throw new Error("Nenhum dado de transmissão disponível")
-        sources = iframes.map((iframe: any, index: number) => ({
+        sources = iframes.map((iframe: EmbedSportexIframe, index: number) => ({
           id: match.id,
           streamNo: index + 1,
           language: iframe.server,
@@ -549,7 +569,7 @@ export default function LiveSports() {
                   {matches.map((match) => {
                     const isActive = detail?.id === match.id
                     const timeInfo = formatDate(match.date)
-                    const meta = matchMetaRef.current.get(match.id)
+                    const meta = matchMeta.get(match.id)
                     const src = meta?.source ?? ""
                     return (
                       <motion.button

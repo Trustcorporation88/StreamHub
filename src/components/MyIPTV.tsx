@@ -188,6 +188,12 @@ export default function MyIPTV() {
   }, [])
 
   useEffect(() => {
+    // fetchPlaylist flips `loading` synchronously on purpose: this effect is a
+    // data fetch against an external provider, and the spinner has to land in
+    // the same commit as the config change or the UI looks frozen on slow
+    // playlists. That is the case the rule's docs exempt, but it can't see it
+    // through the useCallback boundary.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (config && !editing) fetchPlaylist(config)
   }, [config, editing, fetchPlaylist])
 
