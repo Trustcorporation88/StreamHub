@@ -17,155 +17,40 @@ import {
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import VideoPlayer from "./VideoPlayer"
+import { useCatalogStore } from "../stores/catalog"
+import { M3U_SOURCES, categoryRank, extractCountry } from "../lib/m3u"
 import type { M3UChannel } from "../types"
-
-const BRAZIL_CATEGORY = "🇧🇷 Brasil"
-
-// Ordem de exibição das categorias no catálogo
-const CATEGORY_ORDER = [
-  "📡 Pluto TV Brasil",
-  BRAZIL_CATEGORY,
-  "🇺🇸 EUA",
-  "🇮🇹 Itália",
-  "🎬 Filmes",
-  "📺 Séries",
-  "🏆 Esportes",
-]
-
-const M3U_SOURCES = [
-  { url: "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/br_pluto.m3u", label: "Pluto TV", forceCategory: "📡 Pluto TV Brasil" },
-  { url: "https://iptv-org.github.io/iptv/countries/br.m3u", label: "Brasil", forceCategory: BRAZIL_CATEGORY },
-  { url: "https://iptv-org.github.io/iptv/countries/us.m3u", label: "EUA", forceCategory: "🇺🇸 EUA" },
-  { url: "https://iptv-org.github.io/iptv/countries/it.m3u", label: "Itália", forceCategory: "🇮🇹 Itália" },
-  { url: "https://iptv-org.github.io/iptv/categories/movies.m3u", label: "Filmes", forceCategory: "🎬 Filmes" },
-  { url: "https://iptv-org.github.io/iptv/categories/series.m3u", label: "Séries", forceCategory: "📺 Séries" },
-  { url: "https://iptv-org.github.io/iptv/categories/sports.m3u", label: "Esportes", forceCategory: "🏆 Esportes" },
-]
-
-function categoryRank(cat: string): number {
-  const idx = CATEGORY_ORDER.indexOf(cat)
-  return idx === -1 ? CATEGORY_ORDER.length : idx
-}
-
-function parseM3U(m3u: string, forceCategory: string | null = null): M3UChannel[] {
-  const channels: M3UChannel[] = []
-  const lines = m3u.split("\n")
-  let currentExtinf: string | null = null
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-
-    if (trimmed.startsWith("#EXTINF:")) {
-      currentExtinf = trimmed
-    } else if (currentExtinf && trimmed && !trimmed.startsWith("#")) {
-      const tvgId = (currentExtinf.match(/tvg-id="([^"]*)"/) || [])[1] || ""
-      const tvgLogo = (currentExtinf.match(/tvg-logo="([^"]*)"/) || [])[1] || ""
-      const groupTitle = (
-        currentExtinf.match(/group-title="([^"]*)"/) || []
-      )[1] || "Sem categoria"
-      const name =
-        currentExtinf.split(",").pop()?.trim() || "Canal Desconhecido"
-
-      channels.push({
-        id: tvgId || `ch-${channels.length}`,
-        name,
-        url: trimmed,
-        logo: tvgLogo,
-        category: forceCategory ?? groupTitle,
-        tvgId,
-        raw: currentExtinf,
-      })
-      currentExtinf = null
-    }
-  }
-
-  return channels
-}
-
-function extractCountry(channel: M3UChannel): string | null {
-  const tvgCountry = channel.raw?.match(/tvg-country="([^"]*)"/)?.[1]
-  if (tvgCountry && tvgCountry !== "ALL" && tvgCountry.trim()) {
-    return tvgCountry.trim().toUpperCase()
-  }
-  const id = channel.tvgId || channel.id
-  const dotAtMatch = id.match(/\.([a-zA-Z]{2,3})@/)
-  if (dotAtMatch) return dotAtMatch[1].toUpperCase()
-  const dotTldMatch = id.match(/\.([a-zA-Z]{2,3})$/)
-  if (dotTldMatch) return dotTldMatch[1].toUpperCase()
-  const shortId = id.match(/^([a-zA-Z]{2,3})$/)
-  if (shortId) return shortId[1].toUpperCase()
-  return null
-}
 
 export default function IPTVChannels() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const [channels, setChannels] = useState<M3UChannel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [search, setSearch] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
-  const [selectedCountry, setSelectedCountry] = useState<string>("All")
+  // Catalog data and filters live in the store so they survive tab switches;
+  // this component used to refetch all seven playlists on every remount.
+  const channels = useCatalogStore(s => s.channels)
+  const status = useCatalogStore(s => s.status)
+  const error = useCatalogStore(s => s.error)
+  const sourcesLoaded = useCatalogStore(s => s.sourcesLoaded)
+  const search = useCatalogStore(s => s.search)
+  const selectedCategory = useCatalogStore(s => s.selectedCategory)
+  const selectedCountry = useCatalogStore(s => s.selectedCountry)
+  const setSearch = useCatalogStore(s => s.setSearch)
+  const setSelectedCategory = useCatalogStore(s => s.setCategory)
+  const setSelectedCountry = useCatalogStore(s => s.setCountry)
+  const resetFilters = useCatalogStore(s => s.resetFilters)
+  const load = useCatalogStore(s => s.load)
+  const loading = status === "loading" || status === "idle"
+  const totalCount = channels.length
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   )
   const [activeChannel, setActiveChannel] = useState<M3UChannel | null>(null)
-  const [totalCount, setTotalCount] = useState(0)
-  const [sourcesLoaded, setSourcesLoaded] = useState(0)
   const searchRef = useRef<HTMLInputElement>(null)
   const channelListRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    let cancelled = false
-
-    async function fetchAll() {
-      try {
-        const results = await Promise.allSettled(
-          M3U_SOURCES.map((src) =>
-            fetch(src.url, { signal: AbortSignal.timeout(30000) })
-              .then((res) => {
-                if (!res.ok) throw new Error(`HTTP ${res.status}`)
-                return res.text()
-              })
-          )
-        )
-
-        if (cancelled) return
-
-        const seen = new Set<string>()
-        const merged: M3UChannel[] = []
-
-        for (const [idx, result] of results.entries()) {
-          if (result.status === "fulfilled") {
-            const parsed = parseM3U(result.value, M3U_SOURCES[idx].forceCategory)
-            for (const ch of parsed) {
-              const key = ch.url.toLowerCase().trim()
-              if (!seen.has(key)) {
-                seen.add(key)
-                merged.push(ch)
-              }
-            }
-          }
-          setSourcesLoaded((p) => p + 1)
-        }
-
-        if (merged.length === 0) {
-          throw new Error("Nenhum canal encontrado em nenhuma fonte")
-        }
-
-        setChannels(merged)
-        setTotalCount(merged.length)
-        setLoading(false)
-      } catch (err) {
-        if (cancelled) return
-        setError((err as Error).message || "Falha ao carregar a lista de canais")
-        setLoading(false)
-      }
-    }
-
-    fetchAll()
-    return () => { cancelled = true }
-  }, [])
+    // No-ops when the catalog is already loaded or in flight.
+    load()
+  }, [load])
 
   const categories = useMemo(() => {
     const cats = new Map<string, number>()
@@ -239,9 +124,7 @@ export default function IPTVChannels() {
   const hasActiveFilters = selectedCategory !== "All" || selectedCountry !== "All"
 
   const clearAllFilters = () => {
-    setSelectedCategory("All")
-    setSelectedCountry("All")
-    setSearch("")
+    resetFilters()
   }
 
   return (
@@ -300,10 +183,10 @@ export default function IPTVChannels() {
               {error}
             </p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => load({ force: true })}
               className="px-4 py-2 bg-accent hover:bg-accent-light text-white text-sm font-medium rounded-xl transition-colors"
             >
-              Try Again
+              Tentar novamente
             </button>
           </div>
         </div>
