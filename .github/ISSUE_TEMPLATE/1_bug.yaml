@@ -1,0 +1,63 @@
+name: Bug report
+description: Something in the app is broken or behaves unexpectedly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area?
+      options:
+        - Live TV / IPTV player
+        - Channel catalog
+        - My list
+        - Plex
+        - Sports
+        - Music (radio)
+        - Music (YouTube)
+        - Navigation / layout
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Catalog tab
+        2. Filter by country "Brazil"
+        3. Click any channel
+        4. Player stays on "connecting"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 140 on Windows 11 / Safari on iOS 18
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Open DevTools (F12) → Console and paste anything in red. Automatically formatted as code.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked that this isn't just one upstream channel being offline (other channels work)
+          required: false

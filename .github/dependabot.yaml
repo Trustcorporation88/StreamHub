@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR per ecosystem cluster instead of a dozen singles — this repo
+      # has no maintainer capacity for reviewing 20 dependency bumps a week.
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      dev-tooling:
+        patterns:
+          - eslint*
+          - "@eslint/*"
+          - typescript*
+          - vite
+          - "@vitejs/*"
+          - tailwindcss
+          - postcss
+          - autoprefixer
+      runtime:
+        patterns:
+          - express
+          - hls.js
+          - mpegts.js
+          - framer-motion
+          - lucide-react
+          - react-router-dom
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

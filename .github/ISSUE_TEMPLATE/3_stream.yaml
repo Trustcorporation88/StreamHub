@@ -1,0 +1,49 @@
+name: Broken stream or source
+description: A channel, station or upstream source stopped working
+labels: [source]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Channels come from community-maintained upstream lists (iptv-org, Free-TV) and
+        free APIs. Many failures are upstream and out of this project's control — but
+        reports help us spot when a whole *source* has broken rather than one channel.
+
+  - type: input
+    id: name
+    attributes:
+      label: Channel or station name
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: Which source?
+      options:
+        - IPTV catalog (iptv-org / Free-TV)
+        - Curated live channels
+        - My list (custom playlist)
+        - Sports
+        - Internet radio (Radio Browser)
+        - YouTube / music
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: How widespread is it?
+      options:
+        - Just this one channel
+        - Several channels from the same source
+        - The entire section is empty or failing
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: What does the player show?
+      placeholder: Spins forever / "Erro ao carregar" / black screen with audio / HTTP 403
