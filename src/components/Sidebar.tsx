@@ -1,13 +1,14 @@
-import type { ComponentType, Dispatch, SetStateAction } from "react"
+import type { ComponentType } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard } from "lucide-react"
+import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard, Search } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
+import { useCommandPaletteStore } from "../stores/commandPalette"
 
-type Tab = "home" | "iptv" | "catalog" | "mylist" | "plex" | "sports" | "music" | "about" | "legal"
+import type { Tab } from "../routes"
 
 interface SidebarProps {
   activeTab: Tab
-  onTabChange: Dispatch<SetStateAction<Tab>>
+  onTabChange: (tab: Tab) => void
   isOpen: boolean
   onClose: () => void
 }
@@ -29,6 +30,7 @@ const STAGGER_DELAY = 0.05
 export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProps) {
   const { theme, toggle } = useTheme()
   const isDark = theme === "dark"
+  const openPalette = useCommandPaletteStore(s => s.openPalette)
   const handleNav = (id: Tab) => {
     onTabChange(id)
     onClose()
@@ -94,6 +96,32 @@ export default function Sidebar({ activeTab, onTabChange, isOpen, onClose }: Sid
           >
             <X className="w-5 h-5" />
           </motion.button>
+        </div>
+
+        {/* Quick search — the palette's discoverable entry point. Ctrl+K works
+            too, but phones have no Ctrl key. */}
+        <div className="px-4 pt-4">
+          <button
+            onClick={() => {
+              openPalette()
+              onClose()
+            }}
+            className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors ${
+              isDark
+                ? "border-white/10 bg-white/5 text-dark-100 hover:bg-white/10"
+                : "border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100"
+            }`}
+          >
+            <Search className="h-4 w-4 shrink-0" />
+            <span className="flex-1 truncate">Buscar canais...</span>
+            <kbd
+              className={`hidden shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium lg:inline ${
+                isDark ? "border-white/10 text-dark-100" : "border-slate-300 text-slate-400"
+              }`}
+            >
+              Ctrl K
+            </kbd>
+          </button>
         </div>
 
         {/* Navigation */}

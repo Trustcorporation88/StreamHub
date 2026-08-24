@@ -19,6 +19,14 @@ interface CatalogState {
   selectedCountry: string
 
   load: (options?: { force?: boolean }) => Promise<void>
+  /**
+   * The channel currently loaded in the catalog player. Owned by the store so
+   * the command palette can start playback from anywhere, and so playback
+   * survives a tab switch.
+   */
+  activeChannel: M3UChannel | null
+  setActiveChannel: (channel: M3UChannel | null) => void
+
   setSearch: (value: string) => void
   setCategory: (value: string) => void
   setCountry: (value: string) => void
@@ -92,6 +100,9 @@ export const useCatalogStore = create<CatalogState>()(
         })
       }
     },
+
+    activeChannel: null,
+    setActiveChannel: channel => set({ activeChannel: channel }),
 
     setSearch: value => set({ search: value }),
     setCategory: value => set({ selectedCategory: value }),
