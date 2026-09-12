@@ -3,13 +3,14 @@ export type OfficialWatchInfo = {
   href: string
   headline: string
   body: string
+  note?: string
   cta: string
   secondaryHref?: string
   secondaryCta?: string
 }
 
-const GLOBO_YOUTUBE = "https://www.youtube.com/@tvglobo"
-const GLOBO_PLAY_LIVE = "https://globoplay.globo.com/tv-globo/ao-vivo/6120663/"
+const GLOBO_PLAY_LIVE =
+  "https://globoplay.globo.com/tv-globo/ao-vivo/6120663/?origemId=93228&glbproduct=UA-296593-56&assinaturaHIT=desconhecido"
 
 function isGloboOfficialHost(host: string): boolean {
   return host === "globoplay.globo.com" || host === "globo.com" || host.endsWith(".globo.com")
@@ -24,11 +25,10 @@ export function getOfficialWatchInfo(src: string): OfficialWatchInfo | null {
       return {
         provider: "Globoplay",
         href: src.startsWith("http") ? src : GLOBO_PLAY_LIVE,
-        headline: "TV Globo no Globoplay",
-        body: "O sinal IPTV antigo foi bloqueado pelo servidor. A programação linear da Globo no Rio é oficial no Globoplay — pode pedir login ou assinatura.",
-        cta: "Assistir no Globoplay",
-        secondaryHref: GLOBO_YOUTUBE,
-        secondaryCta: "Canal oficial no YouTube",
+        headline: "Assista à TV Globo ao vivo gratuitamente",
+        body: "Clique no link abaixo e faça login na sua Conta Globo para assistir. Se ainda não tiver uma conta, cadastre-se gratuitamente.",
+        note: "É grátis e não é necessário informar cartão de crédito. O login é obrigatório para acessar a transmissão.",
+        cta: "Assistir à TV Globo ao vivo",
       }
     }
     return null
