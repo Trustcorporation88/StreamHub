@@ -9,6 +9,7 @@ import {
   CircleDot,
   Clock,
   X,
+  ExternalLink,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useLiveStream } from "../context/LiveStreamContext"
@@ -16,12 +17,13 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
+import { GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo } from "../lib/officialWatch"
 
 const channels: Channel[] = [
   {
     id: "tv-globo-rj",
     name: "TV Globo (RJ)",
-    url: "http://45.190.28.50/GLOBO_HD/index.m3u8",
+    url: GLOBO_RJ_OFFICIAL_URL,
     category: "Brasil",
     quality: "HD",
   },
@@ -420,8 +422,24 @@ export default function LiveStreams() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs shrink-0">
-                  <Signal className="w-3.5 h-3.5 text-sport-green" />
-                  <span className="text-sport-green font-medium hidden sm:inline">Conectado</span>
+                  {watchingLive || !getOfficialWatchInfo(activeChannel.url) ? (
+                    <>
+                      <Signal className="w-3.5 h-3.5 text-sport-green" />
+                      <span className="text-sport-green font-medium hidden sm:inline">Conectado</span>
+                    </>
+                  ) : (
+                    <a
+                      href={activeChannel.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-accent-light hover:text-white font-medium"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">
+                        {getOfficialWatchInfo(activeChannel.url)?.provider ?? "Oficial"}
+                      </span>
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -586,6 +604,15 @@ export default function LiveStreams() {
                           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getQualityColor(channel.quality, isDark)}`}>
                             {channel.quality}
                           </span>
+                          {getOfficialWatchInfo(channel.url) && (
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                              isDark
+                                ? "bg-accent/20 text-accent-light border-accent/30"
+                                : "bg-violet-50 text-violet-700 border-violet-200"
+                            }`}>
+                              Oficial
+                            </span>
+                          )}
                         </div>
                       </div>
                       {isActive && (

@@ -11,7 +11,9 @@ import {
   Loader2,
   WifiOff,
   AlertTriangle,
+  ExternalLink,
 } from "lucide-react"
+import { getOfficialWatchInfo } from "../lib/officialWatch"
 
 interface VideoPlayerProps {
   src: string
@@ -82,7 +84,9 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   const mpegtsRef = useRef<ReturnType<typeof mpegts.createPlayer> | null>(null)
 
   const isHEVC = src.toLowerCase().includes("hvc1") || src.toLowerCase().includes("hev1")
-  const ytEmbedRaw = youTubeEmbedUrl(src)
+  const officialWatch = getOfficialWatchInfo(src)
+  const isOfficialWatch = officialWatch !== null
+  const ytEmbedRaw = isOfficialWatch ? null : youTubeEmbedUrl(src)
   const ytChannelId = ytEmbedRaw?.startsWith("CHANNEL:") ? ytEmbedRaw.slice(8) : null
   const [resolvedYtEmbed, setResolvedYtEmbed] = useState<string | null>(null)
   const [ytError, setYtError] = useState<string | null>(null)
@@ -121,7 +125,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
   }, [ytChannelId])
 
   useEffect(() => {
-    if (ytEmbedRaw) return // YouTube usa iframe; não precisa de HLS/mpegts
+    if (ytEmbedRaw || isOfficialWatch) return // YouTube/oficial: sem HLS/mpegts
     const videoMaybe = videoRef.current
     if (!videoMaybe) return
     const media: HTMLVideoElement = videoMaybe
@@ -309,7 +313,7 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
       mpegtsRef.current = null
       media.src = ""
     }
-  }, [src, isHEVC, ytEmbedRaw])
+  }, [src, isHEVC, ytEmbedRaw, isOfficialWatch])
 
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return
@@ -377,6 +381,57 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
     return h > 0
       ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
       : `${m}:${String(sec).padStart(2, "0")}`
+  }
+
+  if (officialWatch) {
+    return (
+      <div
+        ref={containerRef}
+        className={`relative rounded-2xl overflow-hidden bg-black shadow-2xl ${
+          fillContainer ? "h-full" : "aspect-video"
+        }`}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.18),_transparent_55%)]" />
+        <div className="relative z-10 flex h-full min-h-[220px] items-center justify-center px-6 py-8">
+          <div className="max-w-md text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-accent-light">
+              {officialWatch.provider}
+            </p>
+            {title && (
+              <p className="mt-2 text-xs text-white/50">{title}</p>
+            )}
+            <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
+              {officialWatch.headline}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-white/70">
+              {officialWatch.body}
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href={officialWatch.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/25 transition-colors hover:bg-accent-light"
+              >
+                {officialWatch.cta}
+                <ExternalLink className="h-4 w-4" />
+              </a>
+              {officialWatch.secondaryHref && officialWatch.secondaryCta && (
+                <a
+                  href={officialWatch.secondaryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/15"
+                >
+                  {officialWatch.secondaryCta}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // YouTube: canal (resolução dinâmica) ou vídeo direto
