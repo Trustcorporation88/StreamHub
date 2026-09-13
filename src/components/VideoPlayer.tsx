@@ -387,12 +387,12 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
     return (
       <div
         ref={containerRef}
-        className={`relative rounded-2xl overflow-hidden bg-black shadow-2xl ${
+        className={`relative rounded-2xl overflow-y-auto bg-black shadow-2xl ${
           fillContainer ? "h-full" : "aspect-video"
         }`}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.18),_transparent_55%)]" />
-        <div className="relative z-10 flex h-full min-h-[220px] items-center justify-center px-6 py-8">
+        <div className="relative z-10 flex min-h-full items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
           <div className="max-w-md text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-accent-light">
               {officialWatch.provider}

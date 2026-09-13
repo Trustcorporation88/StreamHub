@@ -17,7 +17,7 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
-import { GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo } from "../lib/officialWatch"
+import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo } from "../lib/officialWatch"
 
 const channels: Channel[] = [
   {
@@ -30,7 +30,7 @@ const channels: Channel[] = [
   {
     id: "caze-tv",
     name: "Cazé TV",
-    url: "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8",
+    url: CAZE_TV_OFFICIAL_URL,
     category: "Brasil",
     quality: "HD",
   },
@@ -188,6 +188,7 @@ export default function LiveStreams() {
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0])
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
+  const officialWatch = !watchingLive ? getOfficialWatchInfo(activeChannel.url) : null
   const [dismissedNotification, setDismissedNotification] = useState(false)
   const [activeSource, setActiveSource] = useState<StreamSource | null>(null)
   const autoPlayRef = useRef(false)
@@ -278,7 +279,7 @@ export default function LiveStreams() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:flex-1 xl:min-h-0">
         {/* Player Section */}
         <div className="xl:col-span-2 flex flex-col min-h-0">
-          <div className="aspect-video sm:aspect-[16/9] md:aspect-[3/2] w-full rounded-2xl overflow-hidden bg-black border border-white/5 xl:aspect-auto xl:flex-1 xl:min-h-0 relative">
+          <div className={`${officialWatch ? "min-h-[360px]" : "aspect-video sm:aspect-[16/9] md:aspect-[3/2]"} w-full rounded-2xl overflow-hidden bg-black border border-white/5 xl:aspect-auto xl:flex-1 xl:min-h-0 relative`}>
             {watchingLive && liveMatch ? (
               liveMatch.sources.length > 0 ? (
                 <SportsPlayer
@@ -422,21 +423,21 @@ export default function LiveStreams() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs shrink-0">
-                  {watchingLive || !getOfficialWatchInfo(activeChannel.url) ? (
+                  {!officialWatch ? (
                     <>
                       <Signal className="w-3.5 h-3.5 text-sport-green" />
                       <span className="text-sport-green font-medium hidden sm:inline">Conectado</span>
                     </>
                   ) : (
                     <a
-                      href={activeChannel.url}
+                      href={officialWatch.href}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-accent-light hover:text-white font-medium"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">
-                        {getOfficialWatchInfo(activeChannel.url)?.provider ?? "Oficial"}
+                        {officialWatch.provider}
                       </span>
                     </a>
                   )}
