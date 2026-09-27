@@ -7,45 +7,36 @@ const source = readFileSync(new URL('./publicDomainFilms.ts', import.meta.url), 
 const { outputText } = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 })
-const { buildSearchUrl, parseSearchResponse, pickPlayableFile, PAGE_SIZE } =
+const { FILMS, FILM_GENRES, filterFilms, pickPlayableFile } =
   await import(`data:text/javascript,${encodeURIComponent(outputText)}`)
 
-test('search is limited to public-domain feature films', () => {
-  const url = new URL(buildSearchUrl({ genre: 'all', text: '', page: 1 }))
-  assert.equal(url.origin, 'https://archive.org')
-  const q = url.searchParams.get('q')
-  assert.match(q, /collection:feature_films/)
-  assert.match(q, /licenseurl:\*publicdomain\*/)
-  assert.match(q, /format:\(h\.264 OR "MPEG4"/)
-  assert.equal(url.searchParams.get('rows'), String(PAGE_SIZE))
+test('catalog is a fixed list of known titles with unique ids and valid genres', () => {
+  assert.ok(FILMS.length >= 50)
+  const ids = new Set(FILMS.map((f) => f.id))
+  assert.equal(ids.size, FILMS.length)
+  const genres = new Set(FILM_GENRES.map((g) => g.id))
+  for (const film of FILMS) {
+    assert.ok(genres.has(film.genre), `${film.title} has unknown genre ${film.genre}`)
+    assert.ok(film.year >= 1900 && film.year <= 1970, `${film.title} year ${film.year}`)
+    assert.equal(film.poster, `https://archive.org/services/img/${encodeURIComponent(film.id)}`)
+  }
+  for (const title of ['Night of the Living Dead', 'Nosferatu', 'Metropolis', 'Charade', 'His Girl Friday']) {
+    assert.ok(FILMS.some((f) => f.title === title), `missing ${title}`)
+  }
 })
 
-test('genre and title search are added; query syntax is stripped from user text', () => {
-  const url = new URL(buildSearchUrl({ genre: 'western', text: 'rio "bravo") OR licenseurl:*', page: 3 }))
-  const q = url.searchParams.get('q')
-  assert.match(q, /subject:western/)
-  assert.match(q, /title:\(rio bravo OR licenseurl\)/)
-  assert.equal((q.match(/licenseurl:\*publicdomain\*/g) || []).length, 1)
-  assert.equal(url.searchParams.get('page'), '3')
+test('search matches original and Brazilian titles, ignoring accents and case', () => {
+  assert.deepEqual(filterFilms(FILMS, 'all', 'mortos-vivos').map((f) => f.title), ['Night of the Living Dead'])
+  assert.deepEqual(filterFilms(FILMS, 'all', 'METROPOLIS').map((f) => f.title), ['Metropolis'])
+  assert.deepEqual(filterFilms(FILMS, 'all', 'encouracado').map((f) => f.title), ['Battleship Potemkin'])
+  assert.equal(filterFilms(FILMS, 'all', '').length, FILMS.length)
 })
 
-test('search response becomes film cards and skips broken rows', () => {
-  const { films, total } = parseSearchResponse({
-    response: {
-      numFound: 7667,
-      docs: [
-        { identifier: 'his_girl_friday', title: 'His Girl Friday', year: 1940 },
-        { title: 'no id' },
-        { identifier: 'untitled', year: 'n/a' },
-      ],
-    },
-  })
-  assert.equal(total, 7667)
-  assert.deepEqual(films.map((f) => f.id), ['his_girl_friday', 'untitled'])
-  assert.equal(films[0].year, 1940)
-  assert.equal(films[1].title, 'untitled')
-  assert.equal(films[1].year, undefined)
-  assert.equal(films[0].poster, 'https://archive.org/services/img/his_girl_friday')
+test('genre filter keeps only that genre', () => {
+  const westerns = filterFilms(FILMS, 'faroeste', '')
+  assert.ok(westerns.length > 0)
+  assert.ok(westerns.every((f) => f.genre === 'faroeste'))
+  assert.deepEqual(filterFilms(FILMS, 'faroeste', 'nosferatu'), [])
 })
 
 test('prefers the h.264 MP4 and builds a download URL', () => {
@@ -60,12 +51,15 @@ test('prefers the h.264 MP4 and builds a download URL', () => {
   assert.equal(url, 'https://archive.org/download/his_girl_friday/his_girl_friday.mp4')
 })
 
-test('file names with spaces or folders are encoded per segment', () => {
-  const url = pickPlayableFile('item', {
-    metadata: { licenseurl: 'http://creativecommons.org/publicdomain/mark/1.0/' },
-    files: [{ name: 'part one/My Film.mp4', format: 'h.264' }],
+test('never picks a Matroska original over the MP4 derivative', () => {
+  const url = pickPlayableFile('m', {
+    metadata: { licenseurl: 'https://creativecommons.org/publicdomain/mark/1.0/' },
+    files: [
+      { name: 'Metropolis 1927 BDrip 1080p x265.mkv', format: 'Matroska', height: '1080' },
+      { name: 'Metropolis 1927 BDrip 1080p x265.mp4', format: 'h.264', height: '480' },
+    ],
   })
-  assert.equal(url, 'https://archive.org/download/item/part%20one/My%20Film.mp4')
+  assert.equal(url, 'https://archive.org/download/m/Metropolis%201927%20BDrip%201080p%20x265.mp4')
 })
 
 test('items without a public-domain license or without MP4 do not play', () => {
