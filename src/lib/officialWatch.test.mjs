@@ -8,7 +8,7 @@ const source = readFileSync(new URL('./officialWatch.ts', import.meta.url), 'utf
 const { outputText } = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 })
-const { getOfficialWatchInfo, CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL } =
+const { getOfficialWatchInfo, CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, isYouTubeWatchUrl } =
   await import(`data:text/javascript,${encodeURIComponent(outputText)}`)
 
 for (const url of [
@@ -17,14 +17,23 @@ for (const url of [
   'https://www.youtube.com/c/cazetv',
   'https://www.youtube.com/@cazetv/streams',
   'https://www.youtube.com/@cazetv/live?feature=shared',
+]) {
+  test(`Caze YouTube channel plays in the player: ${url}`, () => {
+    assert.equal(isYouTubeWatchUrl(url), true)
+    assert.equal(getOfficialWatchInfo(url), null)
+  })
+}
+
+for (const url of [
   'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8',
   'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8?example=1',
 ]) {
-  test(`Caze official destination: ${url}`, () => {
+  test(`Legacy Caze stream resolves to the in-player YouTube channel: ${url}`, () => {
     const info = getOfficialWatchInfo(url)
     assert.equal(info.href, CAZE_TV_OFFICIAL_URL)
-    assert.equal(info.cta, 'Abrir CazéTV no YouTube')
-    assert.match(info.body, /nova aba/)
+    assert.equal(info.cta, 'Assistir no player')
+    assert.match(info.body, /neste player/)
+    assert.equal(isYouTubeWatchUrl(info.href), true)
   })
 }
 

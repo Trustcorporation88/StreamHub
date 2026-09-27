@@ -16,7 +16,6 @@ import {
   Headphones,
   ListMusic,
   Clapperboard,
-  Library,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../routes"
@@ -128,35 +127,6 @@ const sourceCards = [
     description: "Interface do YouTube focada em privacidade para buscar músicas sem chave de API.",
     tags: ["YouTube", "Sem autenticação", "Privacidade"],
     tone: "text-pink-400",
-  },
-]
-
-const externalApps = [
-  {
-    title: "SmartTube",
-    href: "https://github.com/yuliskov/SmartTube",
-    repoLabel: "yuliskov/SmartTube",
-    license: "MIT",
-    platform: "Android TV e TV box",
-    icon: Tv,
-    tone: "text-accent-light",
-    description:
-      "Cliente de YouTube para Android TV e TV box. Neste painel ele aparece só como link e descrição.",
-    notice:
-      "Licença MIT: quem redistribuir o código ou o APK precisa incluir a licença e o copyright. O arquivo de instalação fica na origem do projeto, com a segurança conferida lá. SeligaAqui é um site independente e não se apresenta como o SmartTube oficial.",
-  },
-  {
-    title: "Sonarr",
-    href: "https://github.com/Sonarr/Sonarr",
-    repoLabel: "Sonarr/Sonarr",
-    license: "GPLv3",
-    platform: "Repositório oficial",
-    icon: Library,
-    tone: "text-sport-green",
-    description:
-      "Programa de código aberto para organizar uma biblioteca de séries. O link leva ao repositório oficial.",
-    notice:
-      "Licença GPLv3: código modificado que for distribuído precisa acompanhar o código-fonte correspondente. Não há parceria com a marca Sonarr. Este site não oferece automação de downloads.",
   },
 ]
 
@@ -401,55 +371,34 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </div>
       </section>
 
-      {/* Aplicativos externos — só link e descrição */}
-      <section>
+      {/* Assistir no player */}
+      <section className={`rounded-2xl border p-4 sm:p-5 ${panelClass}`}>
         <div className="flex items-center gap-2 mb-3">
-          <ExternalLink className={`w-4 h-4 ${mutedText}`} />
+          <Play className={`w-4 h-4 ${mutedText}`} />
           <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
-            Aplicativos externos
+            Assistir no painel
           </h2>
         </div>
-        <p className={`mb-3 text-sm ${mutedText}`}>
-          Projetos independentes, citados apenas com link e descrição. Eles não rodam dentro do SeligaAqui.
+        <p className={`text-sm leading-relaxed ${mutedText}`}>
+          YouTube e séries abrem no mesmo player dos canais. Clique no título e a reprodução começa aqui.
         </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-          {externalApps.map((app) => (
-            <a
-              key={app.title}
-              href={app.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group rounded-2xl border p-4 transition-colors ${
-                isDark
-                  ? "bg-dark-300/30 border-white/[0.06] hover:bg-white/[0.05] hover:border-white/10"
-                  : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
-                  <app.icon className={`w-5 h-5 ${app.tone}`} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className={`text-base font-bold truncate ${strongText}`}>
-                      {app.title}
-                    </h3>
-                    <ExternalLink className="w-3.5 h-3.5 shrink-0 text-accent-light" />
-                  </div>
-                  <p className={`text-xs mt-0.5 ${mutedText}`}>
-                    {app.repoLabel} · {app.license} · {app.platform}
-                  </p>
-                  <p className={`mt-2 text-sm leading-relaxed ${mutedText}`}>
-                    {app.description}
-                  </p>
-                  <p className={`mt-2 text-xs leading-relaxed ${mutedText}`}>
-                    {app.notice}
-                  </p>
-                </div>
-              </div>
-            </a>
-          ))}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => onNavigate("youtube")}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light"
+          >
+            <Play className="w-4 h-4" />
+            Assistir no YouTube
+          </button>
+          <button
+            onClick={() => onNavigate("mylist")}
+            className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+              isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Assistir minhas séries
+          </button>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard, Search } from "lucide-react"
+import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard, Search, MonitorPlay } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useCommandPaletteStore } from "../stores/commandPalette"
 
@@ -21,6 +21,7 @@ const navItems: { id: Tab; label: string; icon: ComponentType<{ className?: stri
   { id: "plex", label: "Plex", icon: Clapperboard },
   { id: "sports", label: "Esportes ao Vivo", icon: Trophy },
   { id: "music", label: "Música", icon: Music },
+  { id: "youtube", label: "YouTube", icon: MonitorPlay },
   { id: "about", label: "Sobre", icon: Info },
 ]
 
