@@ -16,6 +16,7 @@ test('search is limited to public-domain feature films', () => {
   const q = url.searchParams.get('q')
   assert.match(q, /collection:feature_films/)
   assert.match(q, /licenseurl:\*publicdomain\*/)
+  assert.match(q, /format:\(h\.264 OR "MPEG4"/)
   assert.equal(url.searchParams.get('rows'), String(PAGE_SIZE))
 })
 

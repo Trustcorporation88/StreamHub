@@ -29,8 +29,10 @@ const DOWNLOAD_URL = "https://archive.org/download/"
 export const PAGE_SIZE = 24
 
 // Only items the uploader marked as public domain. Everything else in the
-// feature_films collection may still be under copyright.
-const BASE_QUERY = "collection:feature_films AND mediatype:movies AND licenseurl:*publicdomain*"
+// feature_films collection may still be under copyright. The format clause
+// drops items whose video was taken down and only metadata is left.
+const BASE_QUERY =
+  'collection:feature_films AND mediatype:movies AND licenseurl:*publicdomain* AND format:(h.264 OR "MPEG4" OR "512Kb MPEG4")'
 
 export const FILM_GENRES: FilmGenre[] = [
   { id: "all", label: "Todos", query: "" },
