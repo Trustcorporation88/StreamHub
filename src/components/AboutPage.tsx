@@ -16,6 +16,7 @@ import {
   Headphones,
   ListMusic,
   Clapperboard,
+  Library,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../routes"
@@ -127,6 +128,35 @@ const sourceCards = [
     description: "Interface do YouTube focada em privacidade para buscar músicas sem chave de API.",
     tags: ["YouTube", "Sem autenticação", "Privacidade"],
     tone: "text-pink-400",
+  },
+]
+
+const externalApps = [
+  {
+    title: "SmartTube",
+    href: "https://github.com/yuliskov/SmartTube",
+    repoLabel: "yuliskov/SmartTube",
+    license: "MIT",
+    platform: "Android TV e TV box",
+    icon: Tv,
+    tone: "text-accent-light",
+    description:
+      "Cliente de YouTube para Android TV e TV box. Não roda no navegador: instale na TV pelo repositório do projeto.",
+    notice:
+      "Licença MIT: quem redistribuir o código ou o APK precisa incluir a licença e o copyright. O SeligaAqui não hospeda o APK e não é o site oficial do SmartTube.",
+  },
+  {
+    title: "Sonarr",
+    href: "https://github.com/Sonarr/Sonarr",
+    repoLabel: "Sonarr/Sonarr",
+    license: "GPLv3",
+    platform: "Repositório oficial",
+    icon: Library,
+    tone: "text-sport-green",
+    description:
+      "Programa de código aberto para organizar uma biblioteca de séries. O link leva ao repositório oficial.",
+    notice:
+      "Licença GPLv3: código modificado que for distribuído precisa acompanhar o código-fonte correspondente. Não há parceria com a marca Sonarr, e o SeligaAqui não oferece automação de downloads.",
   },
 ]
 
@@ -399,6 +429,58 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             <List className="w-4 h-4" />
             Assistir minhas séries
           </button>
+        </div>
+      </section>
+
+      {/* Aplicativos externos */}
+      <section>
+        <div className="flex items-center gap-2 mb-3">
+          <ExternalLink className={`w-4 h-4 ${mutedText}`} />
+          <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
+            Aplicativos externos
+          </h2>
+        </div>
+        <p className={`mb-3 text-sm ${mutedText}`}>
+          Projetos independentes. Clique no card para abrir o repositório do projeto.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          {externalApps.map((app) => (
+            <a
+              key={app.title}
+              href={app.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`group rounded-2xl border p-4 transition-colors ${
+                isDark
+                  ? "bg-dark-300/30 border-white/[0.06] hover:bg-white/[0.05] hover:border-white/10"
+                  : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
+                  <app.icon className={`w-5 h-5 ${app.tone}`} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className={`text-base font-bold truncate ${strongText}`}>
+                      {app.title}
+                    </h3>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 text-accent-light" />
+                  </div>
+                  <p className={`text-xs mt-0.5 ${mutedText}`}>
+                    {app.repoLabel} · {app.license} · {app.platform}
+                  </p>
+                  <p className={`mt-2 text-sm leading-relaxed ${mutedText}`}>
+                    {app.description}
+                  </p>
+                  <p className={`mt-2 text-xs leading-relaxed ${mutedText}`}>
+                    {app.notice}
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
         </div>
       </section>
 

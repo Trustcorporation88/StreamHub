@@ -103,7 +103,7 @@ const sections = [
       },
       {
         heading: "Content Sources",
-        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. SeligaAqui does not claim ownership of any third-party content displayed within the Application.",
+        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. SeligaAqui does not claim ownership of any third-party content displayed within the Application. References to SmartTube and Sonarr are outbound links and short descriptions only. Their code is not included in this Application.",
       },
       {
         heading: "Counter-Notification",
@@ -145,11 +145,15 @@ const sections = [
     content: [
       {
         heading: "Third-Party Links",
-        text: "SeligaAqui may contain links to third-party websites, APIs, or services that are not owned or controlled by SeligaAqui. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, and various CDN/streaming servers. SeligaAqui has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
+        text: "SeligaAqui may contain links to third-party websites, APIs, or services that are not owned or controlled by SeligaAqui. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, SmartTube (github.com/yuliskov/SmartTube), the official Sonarr repository (github.com/Sonarr/Sonarr), and various CDN/streaming servers. SeligaAqui has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
       },
       {
         heading: "No Responsibility",
         text: "We strongly advise you to read the terms and conditions and privacy policies of any third-party website or service that you visit or interact with through SeligaAqui. SeligaAqui shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any third-party content, goods, or services available on or through any third-party site or service.",
+      },
+      {
+        heading: "External Applications",
+        text: "SmartTube is an Android TV and TV-box application published under the MIT License. Sonarr is linked only through its official repository and is published under the GNU General Public License v3. SeligaAqui does not host their installers, does not ship their source code, and does not present itself as an official site or partner of either project. Anyone who redistributes SmartTube code or an APK must include the MIT License and copyright notice. Anyone who distributes modified Sonarr code must comply with GPLv3 and provide the corresponding source. SeligaAqui does not offer download automation.",
       },
       {
         heading: "Embed Player Disclaimer",
@@ -285,7 +289,7 @@ export default function LegalDisclaimer() {
               information for SeligaAqui.
             </p>
             <p className={`mt-2 text-xs ${mutedText}`}>
-              Effective Date: June 15, 2026 &nbsp;|&nbsp; Last Updated: June 15, 2026
+              Effective Date: June 15, 2026 &nbsp;|&nbsp; Last Updated: September 27, 2026
             </p>
           </div>
         </div>
@@ -343,7 +347,7 @@ export default function LegalDisclaimer() {
         <p className={`text-xs leading-relaxed ${mutedText}`}>
           By using SeligaAqui, you confirm that you have read, understood, and agree to be bound
           by these Legal Disclaimers and Terms and Conditions. If you do not agree, you must not
-          use the Application. This document was last updated on June 15, 2026. SeligaAqui reserves
+          use the Application. This document was last updated on September 27, 2026. SeligaAqui reserves
           the right to update these terms at any time without prior notice. The current version of
           these terms will always be available within the Application.
         </p>
