@@ -17,16 +17,9 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
-import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+import { CAZE_TV_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
 
 const channels: Channel[] = [
-  {
-    id: "tv-globo-rj",
-    name: "TV Globo (RJ)",
-    url: GLOBO_RJ_OFFICIAL_URL,
-    category: "Brasil",
-    quality: "HD",
-  },
   {
     id: "caze-tv",
     name: "Cazé TV",
