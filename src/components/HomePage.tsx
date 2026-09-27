@@ -1,5 +1,5 @@
 ﻿import { motion } from "framer-motion"
-import { ArrowRight, Clapperboard, Film, Headphones, Monitor, MonitorPlay, Music, Radio, Trophy, Tv, Zap } from "lucide-react"
+import { ArrowRight, Clapperboard, Headphones, Monitor, MonitorPlay, Music, Radio, Trophy, Tv, Zap } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../routes"
 
@@ -10,7 +10,6 @@ interface HomePageProps {
 const QUICK_LINKS: { id: Tab; title: string; description: string; icon: typeof Tv; accent: string }[] = [
   { id: "iptv", title: "Transmissões ao Vivo", description: "Navegue pelos canais ao vivo mais recentes e seleções rápidas.", icon: Tv, accent: "text-accent-light" },
   { id: "catalog", title: "Canais IPTV", description: "Explore coleções de canais organizadas por categoria.", icon: Monitor, accent: "text-sport-green" },
-  { id: "movies", title: "Filmes", description: "Clássicos em domínio público. Clique no filme e assista aqui.", icon: Film, accent: "text-sport-yellow" },
   { id: "plex", title: "Plex", description: "Filmes e séries grátis no Plex Watch, oficiais e com anúncios.", icon: Clapperboard, accent: "text-pink-400" },
   { id: "sports", title: "Esportes ao Vivo", description: "Acompanhe transmissões de partidas e os próximos jogos.", icon: Trophy, accent: "text-sport-yellow" },
   { id: "music", title: "Música", description: "Abra a busca do YouTube, estações de rádio e playlists.", icon: Music, accent: "text-purple-400" },

@@ -103,7 +103,7 @@ const sections = [
       },
       {
         heading: "Content Sources",
-        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. The Films section lists only Internet Archive (archive.org) titles marked as public domain, and the video files are served directly by the Internet Archive. SeligaAqui does not claim ownership of any third-party content displayed within the Application. References to SmartTube and Sonarr are outbound links and short descriptions only. Their code is not included in this Application.",
+        text: "The IPTV catalog data is sourced from iptv-org/iptv, a community-maintained repository licensed under MIT. Sports match data and stream embeds are provided by the EmbedSportex API. SeligaAqui does not claim ownership of any third-party content displayed within the Application. References to SmartTube and Sonarr are outbound links and short descriptions only. Their code is not included in this Application.",
       },
       {
         heading: "Counter-Notification",
