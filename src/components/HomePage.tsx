@@ -1,5 +1,5 @@
 ﻿import { motion } from "framer-motion"
-import { ArrowRight, Clapperboard, Headphones, Monitor, Music, Radio, Trophy, Tv, Zap } from "lucide-react"
+import { ArrowRight, Clapperboard, Headphones, Monitor, MonitorPlay, Music, Radio, Trophy, Tv, Zap } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import type { Tab } from "../routes"
 
@@ -13,6 +13,7 @@ const QUICK_LINKS: { id: Tab; title: string; description: string; icon: typeof T
   { id: "plex", title: "Plex", description: "Filmes e séries grátis no Plex Watch, oficiais e com anúncios.", icon: Clapperboard, accent: "text-pink-400" },
   { id: "sports", title: "Esportes ao Vivo", description: "Acompanhe transmissões de partidas e os próximos jogos.", icon: Trophy, accent: "text-sport-yellow" },
   { id: "music", title: "Música", description: "Abra a busca do YouTube, estações de rádio e playlists.", icon: Music, accent: "text-purple-400" },
+  { id: "youtube", title: "YouTube", description: "Busque um vídeo e assista aqui no player, como nos canais.", icon: MonitorPlay, accent: "text-sport-red" },
   { id: "about", title: "Sobre", description: "Veja o que o SeligaAqui oferece e como foi construído.", icon: Zap, accent: "text-accent-light" },
   { id: "legal", title: "Jurídico", description: "Leia o aviso legal, os termos e as notas de privacidade.", icon: Radio, accent: "text-sport-red" },
 ]

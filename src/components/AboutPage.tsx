@@ -371,6 +371,37 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </div>
       </section>
 
+      {/* Assistir no player */}
+      <section className={`rounded-2xl border p-4 sm:p-5 ${panelClass}`}>
+        <div className="flex items-center gap-2 mb-3">
+          <Play className={`w-4 h-4 ${mutedText}`} />
+          <h2 className={`text-sm font-semibold uppercase tracking-wider ${mutedText}`}>
+            Assistir no painel
+          </h2>
+        </div>
+        <p className={`text-sm leading-relaxed ${mutedText}`}>
+          YouTube e séries abrem no mesmo player dos canais. Clique no título e a reprodução começa aqui.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => onNavigate("youtube")}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light"
+          >
+            <Play className="w-4 h-4" />
+            Assistir no YouTube
+          </button>
+          <button
+            onClick={() => onNavigate("mylist")}
+            className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+              isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Assistir minhas séries
+          </button>
+        </div>
+      </section>
+
       {/* Legal */}
       <section
         className={`rounded-2xl border p-4 sm:p-5 ${

@@ -13,6 +13,7 @@ import {
   Trophy,
   Tv,
   TvMinimalPlay,
+  MonitorPlay,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "../context/ThemeContext"
@@ -37,6 +38,7 @@ const NAV_COMMANDS: NavCommand[] = [
   { kind: "nav", id: "plex", label: "Plex", hint: "Seu servidor", icon: Clapperboard },
   { kind: "nav", id: "sports", label: "Esportes ao Vivo", hint: "Partidas de hoje", icon: Trophy },
   { kind: "nav", id: "music", label: "Música", hint: "Rádio e YouTube", icon: Music },
+  { kind: "nav", id: "youtube", label: "YouTube", hint: "Clique e assista no player", icon: MonitorPlay },
   { kind: "nav", id: "about", label: "Sobre", hint: "Informações do projeto", icon: Info },
 ]
 

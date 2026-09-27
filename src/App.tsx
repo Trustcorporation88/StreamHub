@@ -28,6 +28,7 @@ const MyIPTV = lazy(() => import("./components/MyIPTV"))
 const PlexPage = lazy(() => import("./components/PlexPage"))
 const LiveSports = lazy(() => import("./components/LiveSports"))
 const MusicPortal = lazy(() => import("./music/components/MusicPortal"))
+const YouTubeWatch = lazy(() => import("./components/YouTubeWatch"))
 const AboutPage = lazy(() => import("./components/AboutPage"))
 const LegalDisclaimer = lazy(() => import("./components/LegalDisclaimer"))
 
@@ -201,6 +202,7 @@ export default function App() {
               <Route path="/plex" element={<PlexPage />} />
               <Route path="/sports" element={<LiveSports />} />
               <Route path="/music" element={<MusicPortal />} />
+              <Route path="/youtube" element={<YouTubeWatch />} />
               <Route path="/about" element={<AboutPageRoute />} />
               <Route path="/legal" element={<LegalDisclaimer />} />
               <Route path="/index.html" element={<Navigate to="/" replace />} />

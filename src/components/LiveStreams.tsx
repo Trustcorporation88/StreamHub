@@ -17,7 +17,7 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
-import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo } from "../lib/officialWatch"
+import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
 
 const channels: Channel[] = [
   {
@@ -188,7 +188,11 @@ export default function LiveStreams() {
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0])
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
-  const officialWatch = !watchingLive ? getOfficialWatchInfo(activeChannel.url) : null
+  const officialInfo = !watchingLive ? getOfficialWatchInfo(activeChannel.url) : null
+  const playsYouTubeHere =
+    isYouTubeWatchUrl(activeChannel.url) ||
+    (officialInfo ? isYouTubeWatchUrl(officialInfo.href) : false)
+  const officialWatch = officialInfo && !playsYouTubeHere ? officialInfo : null
   const [dismissedNotification, setDismissedNotification] = useState(false)
   const [activeSource, setActiveSource] = useState<StreamSource | null>(null)
   const autoPlayRef = useRef(false)

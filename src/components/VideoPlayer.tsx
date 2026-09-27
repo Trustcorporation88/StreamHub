@@ -13,7 +13,7 @@ import {
   AlertTriangle,
   ExternalLink,
 } from "lucide-react"
-import { getOfficialWatchInfo } from "../lib/officialWatch"
+import { getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
 
 interface VideoPlayerProps {
   src: string
@@ -85,8 +85,13 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
 
   const isHEVC = src.toLowerCase().includes("hvc1") || src.toLowerCase().includes("hev1")
   const officialWatch = getOfficialWatchInfo(src)
-  const isOfficialWatch = officialWatch !== null
-  const ytEmbedRaw = isOfficialWatch ? null : youTubeEmbedUrl(src)
+  const inlineYouTubeSrc = isYouTubeWatchUrl(src)
+    ? src
+    : officialWatch && isYouTubeWatchUrl(officialWatch.href)
+      ? officialWatch.href
+      : null
+  const isOfficialWatch = officialWatch !== null && !inlineYouTubeSrc
+  const ytEmbedRaw = inlineYouTubeSrc ? youTubeEmbedUrl(inlineYouTubeSrc) : isOfficialWatch ? null : youTubeEmbedUrl(src)
   const ytChannelId = ytEmbedRaw?.startsWith("CHANNEL:") ? ytEmbedRaw.slice(8) : null
   const [resolvedYtEmbed, setResolvedYtEmbed] = useState<string | null>(null)
   const [ytError, setYtError] = useState<string | null>(null)

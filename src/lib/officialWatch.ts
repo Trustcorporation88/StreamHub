@@ -16,6 +16,17 @@ function isCazeOfficialChannel(host: string, path: string): boolean {
   return host === "youtube.com" && /^\/(?:@cazetv|c\/cazetv)(?:\/(?:live|streams))?\/?$/i.test(path)
 }
 
+/** Endereço que o player já sabe reproduzir aqui, sem abrir outra aba. */
+export function isYouTubeWatchUrl(src: string): boolean {
+  try {
+    const u = new URL(src)
+    const host = u.hostname.replace(/^www\./, "")
+    return host === "youtube.com" || host === "youtu.be" || host === "youtube-nocookie.com"
+  } catch {
+    return false
+  }
+}
+
 function isLegacyCazeStream(host: string, path: string): boolean {
   return host === "dfr80qz435crc.cloudfront.net" &&
     path === "/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8"
@@ -31,13 +42,15 @@ export function getOfficialWatchInfo(src: string): OfficialWatchInfo | null {
     const u = new URL(src)
     const host = u.hostname.replace(/^www\./, "")
     if (u.protocol !== "https:" && u.protocol !== "http:") return null
-    if (isCazeOfficialChannel(host, u.pathname) || isLegacyCazeStream(host, u.pathname)) {
+    // Canal do YouTube: o player incorpora o vídeo. Sem cartão de link.
+    if (isCazeOfficialChannel(host, u.pathname)) return null
+    if (isLegacyCazeStream(host, u.pathname)) {
       return {
         provider: "YouTube · CazéTV",
         href: CAZE_TV_OFFICIAL_URL,
-        headline: "Assista à CazéTV no YouTube",
-        body: "A fonte de vídeo usada aqui está indisponível. Abra o canal oficial da CazéTV no YouTube para ver as transmissões disponíveis. A reprodução acontece no YouTube, em uma nova aba.",
-        cta: "Abrir CazéTV no YouTube",
+        headline: "Assista à CazéTV no player",
+        body: "A fonte antiga está indisponível. A transmissão do canal oficial abre neste player.",
+        cta: "Assistir no player",
       }
     }
     if (isGloboOfficialHost(host)) {
