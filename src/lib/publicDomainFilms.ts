@@ -74,7 +74,6 @@ const ENTRIES: Entry[] = [
   ["robot-monster-1953", "Robot Monster", 1953, "ficcao"],
   ["teenagers_from_outerspace", "Teenagers from Outer Space", 1959, "ficcao"],
   ["The_Amazing_Transparent_Man", "The Amazing Transparent Man", 1960, "ficcao"],
-  ["santa-claus-conquers-the-martians-1964", "Santa Claus Conquers the Martians", 1964, "ficcao"],
   ["Detour", "Detour", 1945, "suspense", "Curva do Destino"],
   ["d.-o.-a.-1949-dvd-upscale", "D.O.A.", 1950, "suspense"],
   ["TheStranger_0", "The Stranger", 1946, "suspense", "O Estranho"],
