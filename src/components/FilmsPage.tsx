@@ -1,14 +1,8 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { AlertTriangle, Film, Loader2, Play, Search, X } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useDebouncedValue } from "../hooks/useDebouncedValue"
-import {
-  FILM_GENRES,
-  PAGE_SIZE,
-  resolveFilmUrl,
-  searchFilms,
-  type PublicDomainFilm,
-} from "../lib/publicDomainFilms"
+import { FILMS, FILM_GENRES, filterFilms, resolveFilmUrl, type PublicDomainFilm } from "../lib/publicDomainFilms"
 import VideoPlayer from "./VideoPlayer"
 
 interface Playing {
@@ -22,12 +16,8 @@ export default function FilmsPage() {
 
   const [genre, setGenre] = useState("all")
   const [text, setText] = useState("")
-  const query = useDebouncedValue(text, 400)
-  const [page, setPage] = useState(1)
-  const [films, setFilms] = useState<PublicDomainFilm[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const query = useDebouncedValue(text, 200)
+  const films = useMemo(() => filterFilms(FILMS, genre, query), [genre, query])
 
   const [opening, setOpening] = useState<string | null>(null)
   const [playing, setPlaying] = useState<Playing | null>(null)
@@ -38,36 +28,6 @@ export default function FilmsPage() {
   const panelClass = isDark ? "bg-dark-300/30 border-white/[0.06]" : "bg-white border-slate-200"
   const mutedText = isDark ? "text-dark-100" : "text-slate-500"
   const strongText = isDark ? "text-white" : "text-slate-900"
-
-  useEffect(() => {
-    const controller = new AbortController()
-    ;(async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const result = await searchFilms({ genre, text: query, page }, controller.signal)
-        setFilms((prev) => (page === 1 ? result.films : [...prev, ...result.films]))
-        setTotal(result.total)
-      } catch (e) {
-        if ((e as Error).name === "AbortError") return
-        setError("Não foi possível carregar a lista de filmes. Tente de novo em instantes.")
-        if (page === 1) setFilms([])
-      } finally {
-        if (!controller.signal.aborted) setLoading(false)
-      }
-    })()
-    return () => controller.abort()
-  }, [genre, query, page])
-
-  const changeGenre = (id: string) => {
-    setGenre(id)
-    setPage(1)
-  }
-
-  const changeText = (value: string) => {
-    setText(value)
-    setPage(1)
-  }
 
   const openFilm = async (film: PublicDomainFilm) => {
     openAbort.current?.abort()
@@ -82,15 +42,17 @@ export default function FilmsPage() {
       playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
     } catch (e) {
       if ((e as Error).name === "AbortError") return
-      setPlayError((e as Error).message || "Não foi possível abrir este filme.")
+      setPlayError(
+        /HTTP|fetch|network/i.test((e as Error).message || "")
+          ? "Não foi possível abrir este filme agora. Tente de novo em instantes."
+          : (e as Error).message
+      )
     } finally {
       if (openAbort.current === controller) setOpening(null)
     }
   }
 
   useEffect(() => () => openAbort.current?.abort(), [])
-
-  const hasMore = films.length < total
 
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
@@ -101,7 +63,7 @@ export default function FilmsPage() {
         <div>
           <h1 className={`text-2xl font-bold ${strongText}`}>Filmes</h1>
           <p className={`text-sm ${mutedText}`}>
-            Clássicos em domínio público. Clique no filme e assista aqui no player.
+            {FILMS.length} clássicos famosos. Clique no filme e assista aqui no player.
           </p>
         </div>
       </div>
@@ -110,13 +72,21 @@ export default function FilmsPage() {
         {playing ? (
           <div className="flex flex-col gap-3">
             <div className="aspect-video w-full overflow-hidden rounded-2xl border border-white/5 bg-black">
-              <VideoPlayer key={playing.url} src={playing.url} title={playing.film.title} fillContainer />
+              <VideoPlayer
+                key={playing.url}
+                src={playing.url}
+                title={playing.film.ptTitle ?? playing.film.title}
+                fillContainer
+              />
             </div>
             <div className={`flex items-start justify-between gap-3 rounded-2xl border p-3 sm:p-4 ${panelClass}`}>
               <div className="min-w-0">
-                <p className={`truncate text-sm font-semibold ${strongText}`}>{playing.film.title}</p>
+                <p className={`truncate text-sm font-semibold ${strongText}`}>
+                  {playing.film.ptTitle ?? playing.film.title}
+                </p>
                 <p className={`text-xs ${mutedText}`}>
-                  {playing.film.year ? `${playing.film.year} · ` : ""}Domínio público · Internet Archive
+                  {playing.film.ptTitle ? `${playing.film.title} · ` : ""}
+                  {playing.film.year} · Domínio público · Internet Archive
                 </p>
               </div>
               <button
@@ -152,7 +122,7 @@ export default function FilmsPage() {
           <Search className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 ${mutedText}`} />
           <input
             value={text}
-            onChange={(e) => changeText(e.target.value)}
+            onChange={(e) => setText(e.target.value)}
             placeholder="Buscar filme pelo título..."
             className={`w-full rounded-xl border py-3 pl-10 pr-4 text-sm outline-none ${
               isDark
@@ -165,7 +135,7 @@ export default function FilmsPage() {
           {FILM_GENRES.map((g) => (
             <button
               key={g.id}
-              onClick={() => changeGenre(g.id)}
+              onClick={() => setGenre(g.id)}
               className={`min-h-[36px] whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
                 genre === g.id
                   ? "bg-accent text-white shadow-lg shadow-accent/25"
@@ -180,11 +150,7 @@ export default function FilmsPage() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-sport-red">{error}</p>}
-
-      {!loading && !error && films.length === 0 && (
-        <p className={`text-sm ${mutedText}`}>Nenhum filme encontrado com esse título.</p>
-      )}
+      {films.length === 0 && <p className={`text-sm ${mutedText}`}>Nenhum filme encontrado com esse título.</p>}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {films.map((film) => {
@@ -223,36 +189,21 @@ export default function FilmsPage() {
               </div>
               <div className="p-2.5">
                 <p className={`line-clamp-2 text-xs font-semibold leading-snug ${isActive ? "text-accent-light" : strongText}`}>
-                  {film.title}
+                  {film.ptTitle ?? film.title}
                 </p>
-                {film.year && <p className={`mt-0.5 text-[11px] ${mutedText}`}>{film.year}</p>}
+                <p className={`mt-0.5 truncate text-[11px] ${mutedText}`}>
+                  {film.ptTitle ? `${film.title} · ` : ""}
+                  {film.year}
+                </p>
               </div>
             </button>
           )
         })}
       </div>
 
-      {loading && (
-        <div className={`flex items-center justify-center gap-2 py-6 text-sm ${mutedText}`}>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Carregando filmes...
-        </div>
-      )}
-
-      {!loading && hasMore && films.length >= PAGE_SIZE && (
-        <button
-          onClick={() => setPage((p) => p + 1)}
-          className={`mx-auto min-h-[44px] rounded-xl px-5 py-2.5 text-sm font-semibold ${
-            isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }`}
-        >
-          Carregar mais filmes
-        </button>
-      )}
-
       <p className={`text-xs leading-relaxed ${mutedText}`}>
-        Acervo do Internet Archive (archive.org), só com títulos marcados como domínio público. Os arquivos
-        são servidos direto pelo Internet Archive.
+        Filmes do acervo do Internet Archive (archive.org) marcados como domínio público. Os arquivos são servidos
+        direto pelo Internet Archive.
       </p>
     </div>
   )
