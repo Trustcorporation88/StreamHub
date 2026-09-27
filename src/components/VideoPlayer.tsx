@@ -21,9 +21,21 @@ interface VideoPlayerProps {
   fillContainer?: boolean
 }
 
+// archive.org sends CORS and Range headers itself. Proxying its full-length
+// films would push hundreds of MB through our server and break seeking.
+function isDirectHost(url: string): boolean {
+  try {
+    const u = new URL(url)
+    return u.protocol === "https:" && /(^|\.)archive\.org$/i.test(u.hostname)
+  } catch {
+    return false
+  }
+}
+
 function toProxyUrl(url: string): string {
   if (typeof window === "undefined") return url
   if (window.location.protocol === "file:") return url
+  if (isDirectHost(url)) return url
   return `/api/iptv-proxy?url=${encodeURIComponent(url)}`
 }
 
@@ -303,7 +315,15 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
 
     if (isDirectFile) {
       media.src = playableSrc
-      media.addEventListener("loadedmetadata", () => setLoading(false))
+      media.addEventListener("loadedmetadata", () => {
+        setLoading(false)
+        media.play().catch(() => {})
+      })
+      media.addEventListener("error", () => {
+        if (cancelled) return
+        setError("Não foi possível carregar este vídeo agora. Tente outro título ou tente de novo em instantes.")
+        setLoading(false)
+      })
     } else if (isXtreamLive) {
       startMpegts()
     } else {
