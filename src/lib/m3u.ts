@@ -34,6 +34,12 @@ export function categoryRank(cat: string): number {
   return idx === -1 ? CATEGORY_ORDER.length : idx
 }
 
+// Globo only streams live through Globoplay with login; community playlists
+// carry unofficial retransmissions of its channels.
+export function isGloboChannel(name: string, tvgId = ""): boolean {
+  return /globo/i.test(name) || /globo/i.test(tvgId)
+}
+
 export function parseM3U(m3u: string, forceCategory: string | null = null): M3UChannel[] {
   const channels: M3UChannel[] = []
   const lines = m3u.split("\n")
@@ -49,6 +55,11 @@ export function parseM3U(m3u: string, forceCategory: string | null = null): M3UC
       const tvgLogo = (currentExtinf.match(/tvg-logo="([^"]*)"/) || [])[1] || ""
       const groupTitle = (currentExtinf.match(/group-title="([^"]*)"/) || [])[1] || "Sem categoria"
       const name = currentExtinf.split(",").pop()?.trim() || "Canal Desconhecido"
+
+      if (isGloboChannel(name, tvgId)) {
+        currentExtinf = null
+        continue
+      }
 
       channels.push({
         id: tvgId || `ch-${channels.length}`,
