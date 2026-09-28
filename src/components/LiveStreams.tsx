@@ -21,16 +21,16 @@ import { CAZE_TV_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from ".
 
 const channels: Channel[] = [
   {
-    id: "caze-tv",
-    name: "Cazé TV",
-    url: CAZE_TV_OFFICIAL_URL,
+    id: "record-news",
+    name: "Record News",
+    url: "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8",
     category: "Brasil",
     quality: "HD",
   },
   {
-    id: "record-news",
-    name: "Record News",
-    url: "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8",
+    id: "caze-tv",
+    name: "Cazé TV",
+    url: CAZE_TV_OFFICIAL_URL,
     category: "Brasil",
     quality: "HD",
   },
