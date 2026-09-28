@@ -14,7 +14,6 @@ import {
   Tv,
   TvMinimalPlay,
   MonitorPlay,
-  Film,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "../context/ThemeContext"
@@ -36,7 +35,6 @@ const NAV_COMMANDS: NavCommand[] = [
   { kind: "nav", id: "iptv", label: "Transmissões ao Vivo", hint: "Canais fixos", icon: Tv },
   { kind: "nav", id: "catalog", label: "Canais IPTV", hint: "Catálogo completo", icon: TvMinimalPlay },
   { kind: "nav", id: "mylist", label: "Minhas Séries", hint: "Sua playlist", icon: KeyRound },
-  { kind: "nav", id: "movies", label: "Filmes", hint: "Clique e assista", icon: Film },
   { kind: "nav", id: "plex", label: "Plex", hint: "Seu servidor", icon: Clapperboard },
   { kind: "nav", id: "sports", label: "Esportes ao Vivo", hint: "Partidas de hoje", icon: Trophy },
   { kind: "nav", id: "music", label: "Música", hint: "Rádio e YouTube", icon: Music },

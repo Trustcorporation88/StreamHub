@@ -26,7 +26,6 @@ const LiveStreams = lazy(() => import("./components/LiveStreams"))
 const IPTVChannels = lazy(() => import("./components/IPTVChannels"))
 const MyIPTV = lazy(() => import("./components/MyIPTV"))
 const PlexPage = lazy(() => import("./components/PlexPage"))
-const FilmsPage = lazy(() => import("./components/FilmsPage"))
 const LiveSports = lazy(() => import("./components/LiveSports"))
 const MusicPortal = lazy(() => import("./music/components/MusicPortal"))
 const YouTubeWatch = lazy(() => import("./components/YouTubeWatch"))
@@ -201,7 +200,6 @@ export default function App() {
               <Route path="/catalog" element={<IPTVChannels />} />
               <Route path="/mylist" element={<MyIPTV />} />
               <Route path="/plex" element={<PlexPage />} />
-              <Route path="/filmes" element={<FilmsPage />} />
               <Route path="/sports" element={<LiveSports />} />
               <Route path="/music" element={<MusicPortal />} />
               <Route path="/youtube" element={<YouTubeWatch />} />
