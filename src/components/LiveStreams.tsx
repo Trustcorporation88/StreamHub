@@ -17,9 +17,20 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
-import { CAZE_TV_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+
+const GLOBO_CHANNEL_ID = "tv-globo"
 
 const channels: Channel[] = [
+  {
+    id: GLOBO_CHANNEL_ID,
+    name: "TV Globo",
+    url: GLOBO_RJ_OFFICIAL_URL,
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Globo_2024.svg/960px-Globo_2024.svg.png",
+    website: GLOBO_RJ_OFFICIAL_URL,
+    category: "Brasil",
+    quality: "HD",
+  },
   {
     id: "record-news",
     name: "Record News",
@@ -203,12 +214,16 @@ const heroExit = { opacity: 0, x: 20, scale: 0.95, transition: { duration: 0.2 }
 
 const LAST_CHANNEL_KEY = "seligaaqui-last-channel"
 
+function firstPlayableChannel(): Channel {
+  return channels.find((channel) => channel.id !== GLOBO_CHANNEL_ID) ?? channels[0]
+}
+
 function readLastChannel(): Channel {
   try {
     const id = localStorage.getItem(LAST_CHANNEL_KEY)
-    return channels.find((channel) => channel.id === id) ?? channels[0]
+    return channels.find((channel) => channel.id === id && channel.id !== GLOBO_CHANNEL_ID) ?? firstPlayableChannel()
   } catch {
-    return channels[0]
+    return firstPlayableChannel()
   }
 }
 
@@ -290,7 +305,11 @@ export default function LiveStreams() {
   )
 
   const playNext = () => {
-    const list = filtered.some((channel) => channel.id === activeChannel.id) ? filtered : channels
+    const playable = channels.filter((channel) => channel.id !== GLOBO_CHANNEL_ID)
+    const list = filtered.some((channel) => channel.id === activeChannel.id)
+      ? filtered.filter((channel) => channel.id !== GLOBO_CHANNEL_ID)
+      : playable
+    if (list.length === 0) return
     const index = list.findIndex((channel) => channel.id === activeChannel.id)
     const next = list[(index + 1) % list.length]
     if (next) selectChannel(next)
@@ -631,7 +650,13 @@ export default function LiveStreams() {
                     key={channel.id}
                     variants={cardVariants}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => selectChannel(channel)}
+                    onClick={() => {
+                      if (channel.id === GLOBO_CHANNEL_ID) {
+                        window.location.assign(GLOBO_RJ_OFFICIAL_URL)
+                        return
+                      }
+                      selectChannel(channel)
+                    }}
                     className={`w-full text-left p-3 sm:p-3.5 rounded-2xl border transition-all duration-200 ${
                       isActive
                         ? isDark
@@ -664,7 +689,7 @@ export default function LiveStreams() {
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className={`text-xs ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-                            {channel.category}
+                            {channel.id === GLOBO_CHANNEL_ID ? "Abre no Globoplay" : channel.category}
                           </span>
                           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getQualityColor(channel.quality, isDark)}`}>
                             {channel.quality}
