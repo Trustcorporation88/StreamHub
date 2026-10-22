@@ -27,7 +27,7 @@ interface AboutPageProps {
 
 const destinations = [
   {
-    id: "iptv" as Tab,
+    id: "home" as Tab,
     icon: Tv,
     title: "Player IPTV",
     description: "Canais selecionados com reprodução HLS e filtros rápidos por categoria.",
@@ -215,7 +215,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:justify-end">
             <button
-              onClick={() => onNavigate("iptv")}
+              onClick={() => onNavigate("home")}
               className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-colors hover:bg-accent-light"
             >
               <Play className="w-4 h-4" />

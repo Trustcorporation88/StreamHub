@@ -31,8 +31,7 @@ interface NavCommand {
 }
 
 const NAV_COMMANDS: NavCommand[] = [
-  { kind: "nav", id: "home", label: "Início", hint: "Página inicial", icon: Home },
-  { kind: "nav", id: "iptv", label: "Transmissões ao Vivo", hint: "Canais fixos", icon: Tv },
+  { kind: "nav", id: "home", label: "Canais ao vivo", hint: "Lista fixa no player", icon: Home },
   { kind: "nav", id: "catalog", label: "Canais IPTV", hint: "Catálogo completo", icon: TvMinimalPlay },
   { kind: "nav", id: "mylist", label: "Minhas Séries", hint: "Sua playlist", icon: KeyRound },
   { kind: "nav", id: "plex", label: "Plex", hint: "Seu servidor", icon: Clapperboard },

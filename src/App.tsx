@@ -21,7 +21,6 @@ import { pathForTab, tabForPath, VALID_TABS, type Tab } from "./routes"
 // Each section is its own chunk. Before this the whole app — every player, the
 // music portal, the 900-line sports view — shipped as one 1.3 MB bundle that
 // had to download and parse before the home page could paint.
-const HomePage = lazy(() => import("./components/HomePage"))
 const LiveStreams = lazy(() => import("./components/LiveStreams"))
 const IPTVChannels = lazy(() => import("./components/IPTVChannels"))
 const MyIPTV = lazy(() => import("./components/MyIPTV"))
@@ -177,12 +176,6 @@ function AppShell() {
   )
 }
 
-/** HomePage and AboutPage take an onNavigate callback; the router supplies it. */
-function HomePageRoute() {
-  const navigate = useNavigate()
-  return <HomePage onNavigate={(tab: Tab) => navigate(pathForTab(tab))} />
-}
-
 function AboutPageRoute() {
   const navigate = useNavigate()
   return <AboutPage onNavigate={(tab: Tab) => navigate(pathForTab(tab))} />
@@ -195,8 +188,8 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<AppShell />}>
-              <Route path="/" element={<HomePageRoute />} />
-              <Route path="/iptv" element={<LiveStreams />} />
+              <Route path="/" element={<LiveStreams />} />
+              <Route path="/iptv" element={<Navigate to="/" replace />} />
               <Route path="/catalog" element={<IPTVChannels />} />
               <Route path="/mylist" element={<MyIPTV />} />
               <Route path="/plex" element={<PlexPage />} />

@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Tv, Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard, Search, MonitorPlay } from "lucide-react"
+import { Monitor, Trophy, Sun, Moon, Home, TvMinimalPlay, Music, X, Info, KeyRound, Clapperboard, Search, MonitorPlay } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useCommandPaletteStore } from "../stores/commandPalette"
 
@@ -14,8 +14,7 @@ interface SidebarProps {
 }
 
 const navItems: { id: Tab; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { id: "home", label: "Início", icon: Home },
-  { id: "iptv", label: "Transmissões ao Vivo", icon: Tv },
+  { id: "home", label: "Canais ao vivo", icon: Home },
   { id: "catalog", label: "Canais IPTV", icon: TvMinimalPlay },
   { id: "mylist", label: "Minhas Séries", icon: KeyRound },
   { id: "plex", label: "Plex", icon: Clapperboard },

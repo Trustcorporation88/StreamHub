@@ -19,6 +19,8 @@ interface VideoPlayerProps {
   src: string
   title?: string
   fillContainer?: boolean
+  onRetry?: () => void
+  onNext?: () => void
 }
 
 function toProxyUrl(url: string): string {
@@ -66,7 +68,33 @@ function youTubeEmbedUrl(src: string): string | null {
   }
 }
 
-export default function VideoPlayer({ src, title, fillContainer = false }: VideoPlayerProps) {
+function OfflineActions({ onRetry, onNext }: { onRetry?: () => void; onNext?: () => void }) {
+  if (!onRetry && !onNext) return null
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="inline-flex min-h-[44px] items-center rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white"
+        >
+          Tentar de novo
+        </button>
+      )}
+      {onNext && (
+        <button
+          type="button"
+          onClick={onNext}
+          className="inline-flex min-h-[44px] items-center rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white"
+        >
+          Próximo canal
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default function VideoPlayer({ src, title, fillContainer = false, onRetry, onNext }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -462,8 +490,9 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
           <div className="absolute inset-0 flex items-center justify-center bg-black/80" style={{ aspectRatio: "16 / 9" }}>
             <div className="text-center px-8">
               <WifiOff className="w-10 h-10 text-sport-red mx-auto mb-3" />
-              <p className="text-lg font-bold text-white mb-1">Erro na Transmissão</p>
+              <p className="text-lg font-bold text-white mb-1">Canal fora do ar</p>
               <p className="text-sm text-dark-100">{ytError}</p>
+              <OfflineActions onRetry={onRetry} onNext={onNext} />
             </div>
           </div>
         ) : (
@@ -518,8 +547,9 @@ export default function VideoPlayer({ src, title, fillContainer = false }: Video
             ) : (
               <WifiOff className="w-8 h-8 text-sport-red mx-auto mb-4" />
             )}
-            <p className="text-lg font-semibold text-white mb-2">Erro na Transmissão</p>
+            <p className="text-lg font-semibold text-white mb-2">Canal fora do ar</p>
             <p className="text-sm text-dark-100 break-words">{error}</p>
+            <OfflineActions onRetry={onRetry} onNext={onNext} />
           </div>
         </div>
       )}

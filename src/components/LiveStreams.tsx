@@ -174,11 +174,23 @@ const heroVariants = {
 }
 const heroExit = { opacity: 0, x: 20, scale: 0.95, transition: { duration: 0.2 } }
 
+const LAST_CHANNEL_KEY = "seligaaqui-last-channel"
+
+function readLastChannel(): Channel {
+  try {
+    const id = localStorage.getItem(LAST_CHANNEL_KEY)
+    return channels.find((channel) => channel.id === id) ?? channels[0]
+  } catch {
+    return channels[0]
+  }
+}
+
 export default function LiveStreams() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const { liveMatch } = useLiveStream()
-  const [activeChannel, setActiveChannel] = useState<Channel>(channels[0])
+  const [activeChannel, setActiveChannel] = useState<Channel>(readLastChannel)
+  const [attempt, setAttempt] = useState(0)
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
   const officialInfo = !watchingLive ? getOfficialWatchInfo(activeChannel.url) : null
@@ -209,11 +221,25 @@ export default function LiveStreams() {
     }
   }, [liveMatch])
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_CHANNEL_KEY, activeChannel.id)
+    } catch {
+      // navegador sem armazenamento
+    }
+  }, [activeChannel.id])
+
+  const selectChannel = (channel: Channel) => {
+    setActiveChannel(channel)
+    setWatchingLive(false)
+    setAttempt(0)
+  }
+
+  const [now, setNow] = useState(() => Date.now())
   // Single minute-tick for every time-dependent bit of this view. Previously
   // there were two clocks: an empty setTick interval that forced a re-render,
   // and a mount-time useMemo for `now` that never updated — so the re-render
   // repainted the same frozen "em 2h 15m" once a minute.
-  const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60_000)
     return () => clearInterval(id)
@@ -235,6 +261,13 @@ export default function LiveStreams() {
     () => (filter === "All" ? channels : channels.filter((c) => c.category === filter)),
     [filter]
   )
+
+  const playNext = () => {
+    const list = filtered.some((channel) => channel.id === activeChannel.id) ? filtered : channels
+    const index = list.findIndex((channel) => channel.id === activeChannel.id)
+    const next = list[(index + 1) % list.length]
+    if (next) selectChannel(next)
+  }
 
   const categoryCounts = useMemo(() => {
     const map = new Map<string, number>()
@@ -297,9 +330,12 @@ export default function LiveStreams() {
               )
             ) : (
               <VideoPlayer
+                key={`${activeChannel.id}-${attempt}`}
                 src={activeChannel.url}
                 title={`${activeChannel.name} — ${activeChannel.category}`}
                 fillContainer
+                onRetry={() => setAttempt((value) => value + 1)}
+                onNext={playNext}
               />
             )}
 
@@ -568,7 +604,7 @@ export default function LiveStreams() {
                     key={channel.id}
                     variants={cardVariants}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => { setActiveChannel(channel); setWatchingLive(false) }}
+                    onClick={() => selectChannel(channel)}
                     className={`w-full text-left p-3 sm:p-3.5 rounded-2xl border transition-all duration-200 ${
                       isActive
                         ? isDark
