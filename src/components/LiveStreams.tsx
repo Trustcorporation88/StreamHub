@@ -24,6 +24,8 @@ const channels: Channel[] = [
     id: "record-news",
     name: "Record News",
     url: "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8",
+    logo: "https://i.imgur.com/HZDRG0K.png",
+    website: "https://noticias.r7.com/record-news/",
     category: "Brasil",
     quality: "HD",
   },
@@ -31,6 +33,8 @@ const channels: Channel[] = [
     id: "caze-tv",
     name: "Cazé TV",
     url: CAZE_TV_OFFICIAL_URL,
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Caz%C3%A9TV_logo.svg/1280px-Caz%C3%A9TV_logo.svg.png",
+    website: "https://www.livemode.com/cazetv",
     category: "Brasil",
     quality: "HD",
   },
@@ -38,6 +42,8 @@ const channels: Channel[] = [
     id: "sbt-interior",
     name: "SBT Interior",
     url: "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8",
+    logo: "https://i.imgur.com/IkZfa4j.png",
+    website: "https://sbtinterior.com/",
     category: "Brasil",
     quality: "HD",
   },
@@ -45,6 +51,8 @@ const channels: Channel[] = [
     id: "sony-channel",
     name: "Sony Channel",
     url: "http://45.190.28.50/SONY_HD/index.m3u8",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sony_Channel_Logo.png/960px-Sony_Channel_Logo.png",
+    website: "https://br.sonychannel.com/",
     category: "Filmes",
     quality: "HD",
   },
@@ -52,6 +60,7 @@ const channels: Channel[] = [
     id: "sony-movies",
     name: "Sony Movies",
     url: "http://45.162.64.114/SONY_MOVIES/index.m3u8",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Sony_Movies_Logo.svg/500px-Sony_Movies_Logo.svg.png",
     category: "Filmes",
     quality: "HD",
   },
@@ -59,6 +68,8 @@ const channels: Channel[] = [
     id: "axn",
     name: "AXN",
     url: "http://45.190.28.50/AXN_HD/index.m3u8",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    website: "https://br.axn.com/",
     category: "Filmes",
     quality: "HD",
   },
@@ -66,6 +77,8 @@ const channels: Channel[] = [
     id: "amc-latin-america",
     name: "AMC Latin America",
     url: "http://170.83.49.66:8083/AMCHD/index.m3u8",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
+    website: "https://www.amctv.la/",
     category: "Filmes",
     quality: "HD",
   },
@@ -73,6 +86,8 @@ const channels: Channel[] = [
     id: "tv-aparecida",
     name: "TV Aparecida",
     url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
+    logo: "https://i.imgur.com/kxrja0X.png",
+    website: "https://www.a12.com/tv",
     category: "Brasil",
     quality: "FHD",
   },
@@ -80,6 +95,7 @@ const channels: Channel[] = [
     id: "tv-cancao-nova",
     name: "TV Canção Nova",
     url: "https://5c65286fc6ace.streamlock.net/cancaonova/CancaoNova.stream_720p/playlist.m3u8",
+    logo: "https://i.imgur.com/OaM9hkH.png",
     category: "Brasil",
     quality: "HD",
   },
@@ -87,6 +103,8 @@ const channels: Channel[] = [
     id: "rede-vida",
     name: "Rede Vida",
     url: "http://45.162.231.38:7779/Rede_Vida/index.m3u8",
+    logo: "https://i.imgur.com/mP1qfp2.png",
+    website: "https://www.redevida.com.br/",
     category: "Brasil",
     quality: "HD",
   },
@@ -94,6 +112,7 @@ const channels: Channel[] = [
     id: "band",
     name: "Band",
     url: "http://45.190.28.50/BAND_HD/index.m3u8",
+    logo: "https://i.imgur.com/1r5T6Pw.png",
     category: "Brasil",
     quality: "HD",
   },
@@ -101,6 +120,8 @@ const channels: Channel[] = [
     id: "jovem-pan-news",
     name: "Jovem Pan News",
     url: "https://www.youtube.com/channel/UCP391YRAjSOdM_bwievgaZA",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Jovem_Pan_logo_2018.svg/960px-Jovem_Pan_logo_2018.svg.png",
+    website: "https://jovempan.com.br/",
     category: "Brasil",
     quality: "FHD",
   },
@@ -108,6 +129,8 @@ const channels: Channel[] = [
     id: "cnn-brasil",
     name: "CNN Brasil",
     url: "https://www.youtube.com/@CNNbrasil",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/CNN_Brasil.svg/960px-CNN_Brasil.svg.png",
+    website: "https://www.cnnbrasil.com.br/",
     category: "Brasil",
     quality: "FHD",
   },
@@ -115,6 +138,7 @@ const channels: Channel[] = [
     id: "band-jornalismo",
     name: "BandNews TV",
     url: "https://www.youtube.com/@bandjornalismo",
+    logo: "https://i.ibb.co/0jVZBFp/u8ya-iw-R-400x400.jpg",
     category: "Brasil",
     quality: "FHD",
   },
@@ -122,6 +146,8 @@ const channels: Channel[] = [
     id: "tv-cultura",
     name: "TV Cultura",
     url: "https://www.youtube.com/@tvcultura",
+    logo: "https://i.ibb.co/nm0jXMM/cultura-3x.png",
+    website: "https://cultura.uol.com.br/",
     category: "Brasil",
     quality: "FHD",
   },
@@ -129,6 +155,7 @@ const channels: Channel[] = [
     id: "redetv-news",
     name: "RedeTV News",
     url: "https://www.youtube.com/@redetv",
+    logo: "https://yt3.googleusercontent.com/CTFU2P7tW43punwV3olirWyw_I5tKS1YzMe6JfeBmWw09ipCy_6GW2uE9EjX8T63pgLIsiJdBpA=s900-c-k-c0x00ffffff-no-rj",
     category: "Brasil",
     quality: "FHD",
   },
@@ -290,7 +317,7 @@ export default function LiveStreams() {
               Canais IPTV ao Vivo
             </h2>
             <p className={`text-sm ${isDark ? "text-dark-100" : "text-slate-500"}`}>
-              Selecione um canal para começar a assistir
+              Selecione um canal para começar a assistir. Logotipos do iptv-org/database.
             </p>
           </div>
           {liveMatch && matchStatus?.isLive && (
@@ -617,15 +644,19 @@ export default function LiveStreams() {
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                        className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 overflow-hidden transition-all ${
                           isActive
-                            ? "bg-accent/20 text-accent-light"
+                            ? "bg-white text-accent-light"
                             : isDark
-                              ? "bg-white/5 text-dark-100"
-                              : "bg-slate-100 text-slate-400"
+                              ? "bg-white text-dark-100"
+                              : "bg-white text-slate-400"
                         }`}
                       >
-                        <Tv className="w-5 h-5" />
+                        {channel.logo ? (
+                          <img src={channel.logo} alt="" className="h-8 w-8 object-contain" />
+                        ) : (
+                          <Tv className="w-5 h-5" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-medium truncate ${isActive ? "text-accent-light" : isDark ? "text-white" : "text-slate-900"}`}>

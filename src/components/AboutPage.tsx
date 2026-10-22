@@ -90,6 +90,14 @@ const sourceCards = [
     tone: "text-sport-green",
   },
   {
+    title: "iptv-org/database",
+    href: "https://github.com/iptv-org/database",
+    icon: Globe,
+    description: "Nomes oficiais, sites e logotipos dos canais ao vivo, publicados pela API do iptv-org.",
+    tags: ["Logotipos", "Metadados", "API"],
+    tone: "text-accent-light",
+  },
+  {
     title: "Free-TV/IPTV",
     href: "https://github.com/Free-TV/IPTV",
     icon: Globe,

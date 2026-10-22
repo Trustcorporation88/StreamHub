@@ -3,6 +3,7 @@ export interface Channel {
   name: string
   url: string
   logo?: string
+  website?: string
   category: string
   quality: string
 }
