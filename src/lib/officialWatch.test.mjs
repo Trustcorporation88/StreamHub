@@ -70,8 +70,25 @@ test('Other Globo content does not inherit the free live-TV promise', () => {
   assert.match(info.body, /dependem do conteúdo/)
 })
 
-test('Curated Caze channel no longer uses the blocked HLS URL', () => {
+test('Curated channel list no longer lives in the component', () => {
   const component = readFileSync(new URL('../components/LiveStreams.tsx', import.meta.url), 'utf8')
-  assert.match(component, /id: "caze-tv",[\s\S]*?url: CAZE_TV_OFFICIAL_URL/)
-  assert.doesNotMatch(component, /Caze_TV\.m3u8/)
+  assert.doesNotMatch(component, /const channels: Channel\[\] = \[/)
+  assert.match(component, /fetch\("\/api\/channels"/)
+})
+
+test('Fallback channel list stays in sync with the official URLs', () => {
+  const channels = JSON.parse(
+    readFileSync(new URL('../data/channels.json', import.meta.url), 'utf8')
+  )
+  assert.equal(channels.find(c => c.id === 'caze-tv').url, CAZE_TV_OFFICIAL_URL)
+  assert.equal(channels.find(c => c.id === 'tv-globo').url, GLOBO_RJ_OFFICIAL_URL)
+  // A fonte HLS bloqueada nunca pode voltar para a lista curada.
+  assert.ok(!channels.some(c => /Caze_TV\.m3u8/.test(c.url)))
+  // Toda URL curada precisa ser http(s) e ter os campos que a UI consome.
+  for (const c of channels) {
+    assert.match(c.url, /^https?:\/\//)
+    assert.ok(c.id && c.name && c.category && c.quality)
+    if (c.logo) assert.match(c.logo, /^https?:\/\//)
+    if (c.website) assert.match(c.website, /^https?:\/\//)
+  }
 })

@@ -112,6 +112,63 @@ Powered by the **Media Session API** — the same technology used by Spotify and
 
 ---
 
+## Canais curados (Airtable)
+
+A lista curada da aba **Canais IPTV ao Vivo** (≈17 canais) é editável sem mexer em código.
+O catálogo grande continua vindo das listas M3U acima — isto vale só para a lista curada.
+
+### Como funciona
+
+```
+Navegador  →  GET /api/channels  →  Express  →  API do Airtable
+                                      ↓ (falhou?)
+                              cache 5 min → src/data/channels.json
+```
+
+O token do Airtable fica **apenas no servidor**, nunca no bundle. Se o Airtable estiver
+fora do ar, mal configurado ou vazio, a rota devolve a última lista em cache e, na falta
+dela, a lista embutida em `src/data/channels.json`. O site nunca fica sem canais.
+
+### Variáveis de ambiente
+
+| Variável | Obrigatória | Descrição |
+|----------|-------------|-----------|
+| `AIRTABLE_TOKEN` | sim | Personal Access Token com escopo `data.records:read` |
+| `AIRTABLE_BASE_ID` | sim | ID da base (começa com `app`) |
+| `AIRTABLE_TABLE` | não | Nome da tabela (padrão: `Canais`) |
+
+Sem `AIRTABLE_TOKEN` e `AIRTABLE_BASE_ID`, a rota serve o fallback — é o comportamento
+em desenvolvimento local.
+
+### Colunas da tabela
+
+| Coluna | Tipo | Obrigatória | Observação |
+|--------|------|-------------|------------|
+| `nome` | Texto | sim | Nome exibido no card |
+| `url` | URL | sim | Precisa ser `http://` ou `https://`; outros esquemas são descartados |
+| `id` | Texto | não | Slug estável; gerado a partir do nome se vazio |
+| `categoria` | Texto/Seleção | não | Usada nos filtros (padrão: `Outros`) |
+| `qualidade` | Seleção | não | `SD`, `HD` ou `FHD` (padrão: `HD`) |
+| `logo` | Anexo ou URL | não | Primeiro anexo é usado quando houver vários |
+| `site` | URL | não | Site oficial do canal, exibido no card |
+| `ativo` | Checkbox | não | Desmarcado tira o canal do ar; ausente = publicado |
+| `ordem` | Número | não | Ordena a lista; sem valor vai para o fim |
+
+Nomes em inglês e com maiúscula (`Nome`, `URL`, `category`…) também são aceitos.
+
+### Operações do dia a dia
+
+- **Adicionar canal:** nova linha com `nome` e `url`. Aparece em até 5 minutos.
+- **Tirar um canal do ar:** desmarque `ativo` — não precisa apagar a linha.
+- **Reordenar:** ajuste `ordem` (use múltiplos de 10 para caber canais no meio).
+- **Forçar atualização imediata:** `GET /api/channels?refresh=1` ignora o cache.
+- **Conferir a origem:** a resposta traz `"source": "airtable"` ou `"source": "fallback"`.
+
+> Mantenha `src/data/channels.json` razoavelmente atualizado: ele é a rede de segurança
+> que vai ao ar se o Airtable falhar.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -215,6 +272,7 @@ src/
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint |
+| `npm test` | Node test suite (official links, M3U parsing, `/api/channels`) |
 | `npm start` | Serve the production build + IPTV proxy (`server.js`) |
 
 Every pull request runs typecheck, lint, and a build that boots `server.js` and asserts it answers on `/`.

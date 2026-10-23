@@ -3,6 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { Readable } from "node:stream"
 import { searchYouTube } from "./api/youtube-search.js"
+import { channelsHandler } from "./api/channels.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -292,6 +293,9 @@ app.get("/api/youtube-search", async (req, res) => {
     })
   }
 })
+
+// ---- Canais curados (Airtable, com cache e fallback local) ----
+app.get("/api/channels", channelsHandler)
 
 // ---- Site estático (build do Vite) + fallback SPA ----
 const distDir = path.join(__dirname, "dist")

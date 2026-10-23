@@ -17,160 +17,33 @@ import VideoPlayer from "./VideoPlayer"
 import SportsPlayer from "./SportsPlayer"
 import type { StreamSource } from "./SportsPlayer"
 import type { Channel } from "../types"
-import { CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+import { GLOBO_RJ_OFFICIAL_URL, getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+import fallbackChannels from "../data/channels.json"
 
 const GLOBO_CHANNEL_ID = "tv-globo"
 
-const channels: Channel[] = [
-  {
-    id: GLOBO_CHANNEL_ID,
-    name: "TV Globo",
-    url: GLOBO_RJ_OFFICIAL_URL,
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Globo_2024.svg/960px-Globo_2024.svg.png",
-    website: GLOBO_RJ_OFFICIAL_URL,
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "record-news",
-    name: "Record News",
-    url: "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8",
-    logo: "https://i.imgur.com/HZDRG0K.png",
-    website: "https://noticias.r7.com/record-news/",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "caze-tv",
-    name: "Cazé TV",
-    url: CAZE_TV_OFFICIAL_URL,
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Caz%C3%A9TV_logo.svg/1280px-Caz%C3%A9TV_logo.svg.png",
-    website: "https://www.livemode.com/cazetv",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "sbt-interior",
-    name: "SBT Interior",
-    url: "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8",
-    logo: "https://i.imgur.com/IkZfa4j.png",
-    website: "https://sbtinterior.com/",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "sony-channel",
-    name: "Sony Channel",
-    url: "http://45.190.28.50/SONY_HD/index.m3u8",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sony_Channel_Logo.png/960px-Sony_Channel_Logo.png",
-    website: "https://br.sonychannel.com/",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "sony-movies",
-    name: "Sony Movies",
-    url: "http://45.162.64.114/SONY_MOVIES/index.m3u8",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Sony_Movies_Logo.svg/500px-Sony_Movies_Logo.svg.png",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "axn",
-    name: "AXN",
-    url: "http://45.190.28.50/AXN_HD/index.m3u8",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
-    website: "https://br.axn.com/",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "amc-latin-america",
-    name: "AMC Latin America",
-    url: "http://170.83.49.66:8083/AMCHD/index.m3u8",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
-    website: "https://www.amctv.la/",
-    category: "Filmes",
-    quality: "HD",
-  },
-  {
-    id: "tv-aparecida",
-    name: "TV Aparecida",
-    url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8",
-    logo: "https://i.imgur.com/kxrja0X.png",
-    website: "https://www.a12.com/tv",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "tv-cancao-nova",
-    name: "TV Canção Nova",
-    url: "https://5c65286fc6ace.streamlock.net/cancaonova/CancaoNova.stream_720p/playlist.m3u8",
-    logo: "https://i.imgur.com/OaM9hkH.png",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "rede-vida",
-    name: "Rede Vida",
-    url: "http://45.162.231.38:7779/Rede_Vida/index.m3u8",
-    logo: "https://i.imgur.com/mP1qfp2.png",
-    website: "https://www.redevida.com.br/",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "band",
-    name: "Band",
-    url: "http://45.190.28.50/BAND_HD/index.m3u8",
-    logo: "https://i.imgur.com/1r5T6Pw.png",
-    category: "Brasil",
-    quality: "HD",
-  },
-  {
-    id: "jovem-pan-news",
-    name: "Jovem Pan News",
-    url: "https://www.youtube.com/channel/UCP391YRAjSOdM_bwievgaZA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Jovem_Pan_logo_2018.svg/960px-Jovem_Pan_logo_2018.svg.png",
-    website: "https://jovempan.com.br/",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "cnn-brasil",
-    name: "CNN Brasil",
-    url: "https://www.youtube.com/@CNNbrasil",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/CNN_Brasil.svg/960px-CNN_Brasil.svg.png",
-    website: "https://www.cnnbrasil.com.br/",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "band-jornalismo",
-    name: "BandNews TV",
-    url: "https://www.youtube.com/@bandjornalismo",
-    logo: "https://i.ibb.co/0jVZBFp/u8ya-iw-R-400x400.jpg",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "tv-cultura",
-    name: "TV Cultura",
-    url: "https://www.youtube.com/@tvcultura",
-    logo: "https://i.ibb.co/nm0jXMM/cultura-3x.png",
-    website: "https://cultura.uol.com.br/",
-    category: "Brasil",
-    quality: "FHD",
-  },
-  {
-    id: "redetv-news",
-    name: "RedeTV News",
-    url: "https://www.youtube.com/@redetv",
-    logo: "https://yt3.googleusercontent.com/CTFU2P7tW43punwV3olirWyw_I5tKS1YzMe6JfeBmWw09ipCy_6GW2uE9EjX8T63pgLIsiJdBpA=s900-c-k-c0x00ffffff-no-rj",
-    category: "Brasil",
-    quality: "FHD",
-  },
-]
+/**
+ * Lista embutida no bundle. Serve como estado inicial (a grade aparece sem
+ * esperar rede) e como rede de seguranca se /api/channels falhar. A lista
+ * publicada vem do Airtable, servida pelo proprio servidor em /api/channels.
+ */
+const FALLBACK_CHANNELS = fallbackChannels as Channel[]
+
+function isChannelList(value: unknown): value is Channel[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      c =>
+        typeof c === "object" &&
+        c !== null &&
+        typeof (c as Channel).id === "string" &&
+        typeof (c as Channel).name === "string" &&
+        typeof (c as Channel).url === "string"
+    )
+  )
+}
+
 
 function getQualityColor(q: string, isDark: boolean) {
   switch (q) {
@@ -214,16 +87,16 @@ const heroExit = { opacity: 0, x: 20, scale: 0.95, transition: { duration: 0.2 }
 
 const LAST_CHANNEL_KEY = "seligaaqui-last-channel"
 
-function firstPlayableChannel(): Channel {
-  return channels.find((channel) => channel.id !== GLOBO_CHANNEL_ID) ?? channels[0]
+function firstPlayableChannel(list: Channel[]): Channel {
+  return list.find((channel) => channel.id !== GLOBO_CHANNEL_ID) ?? list[0]
 }
 
-function readLastChannel(): Channel {
+function readLastChannel(list: Channel[]): Channel {
   try {
     const id = localStorage.getItem(LAST_CHANNEL_KEY)
-    return channels.find((channel) => channel.id === id && channel.id !== GLOBO_CHANNEL_ID) ?? firstPlayableChannel()
+    return list.find((channel) => channel.id === id && channel.id !== GLOBO_CHANNEL_ID) ?? firstPlayableChannel(list)
   } catch {
-    return firstPlayableChannel()
+    return firstPlayableChannel(list)
   }
 }
 
@@ -231,7 +104,8 @@ export default function LiveStreams() {
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const { liveMatch } = useLiveStream()
-  const [activeChannel, setActiveChannel] = useState<Channel>(readLastChannel)
+  const [channels, setChannels] = useState<Channel[]>(FALLBACK_CHANNELS)
+  const [activeChannel, setActiveChannel] = useState<Channel>(() => readLastChannel(FALLBACK_CHANNELS))
   const [attempt, setAttempt] = useState(0)
   const [filter, setFilter] = useState<string>("All")
   const [watchingLive, setWatchingLive] = useState(false)
@@ -253,6 +127,25 @@ export default function LiveStreams() {
       autoPlayRef.current = false
     }
   }, [liveMatch, watchingLive])
+
+  // Lista publicada (Airtable). Chega depois do primeiro paint e substitui a
+  // lista embutida. Qualquer falha mantém o fallback — a grade nunca fica vazia.
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch("/api/channels", { signal: controller.signal })
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((data: { channels?: unknown }) => {
+        const list = data.channels
+        if (!isChannelList(list)) return
+        setChannels(list)
+        // Mantém o canal em exibição se ele ainda existir na lista nova.
+        setActiveChannel(prev => list.find(c => c.id === prev.id) ?? readLastChannel(list))
+      })
+      .catch(() => {
+        /* fallback embutido já está na tela */
+      })
+    return () => controller.abort()
+  }, [])
 
   const prevMatchIdRef = useRef<string | null>(null)
   useEffect(() => {
@@ -301,7 +194,7 @@ export default function LiveStreams() {
 
   const filtered = useMemo(
     () => (filter === "All" ? channels : channels.filter((c) => c.category === filter)),
-    [filter]
+    [filter, channels]
   )
 
   const playNext = () => {
@@ -321,7 +214,7 @@ export default function LiveStreams() {
       map.set(ch.category, (map.get(ch.category) || 0) + 1)
     }
     return map
-  }, [])
+  }, [channels])
 
   return (
     <div className="flex flex-col xl:h-full">
