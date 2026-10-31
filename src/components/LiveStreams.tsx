@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useMemo, useEffect, useRef, type CSSProperties } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Play,
@@ -7,8 +7,6 @@ import {
   Clock,
   X,
   ExternalLink,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useLiveStream } from "../context/LiveStreamContext"
@@ -101,10 +99,10 @@ function ChannelPoster({
       onClick={() => onSelect(channel)}
       aria-current={isActive ? "true" : undefined}
       aria-label={opensOutside ? `${channel.name}, abre no Globoplay` : channel.name}
-      className="w-[46vw] max-w-[210px] shrink-0 snap-start text-left sm:w-[190px]"
+      className="min-w-0 w-full text-left"
     >
       <div
-        className={`relative aspect-video overflow-hidden rounded-md bg-zinc-950 shadow-lg transition duration-200 lg:hover:z-10 lg:hover:scale-[1.04] ${
+        className={`relative aspect-video overflow-hidden rounded-md bg-zinc-950 shadow-lg transition duration-200 hover:ring-white/30 ${
           isActive
             ? isDark
               ? "ring-2 ring-white"
@@ -148,55 +146,35 @@ function ChannelPoster({
   )
 }
 
-function ChannelRow({
-  title,
+function ChannelShelf({
   channels,
   activeId,
   watchingLive,
   isDark,
   onSelect,
 }: {
-  title: string
   channels: Channel[]
   activeId: string
   watchingLive: boolean
   isDark: boolean
   onSelect: (channel: Channel) => void
 }) {
-  const scrollerRef = useRef<HTMLDivElement>(null)
-  const scrollRow = (direction: 1 | -1) => {
-    const el = scrollerRef.current
-    if (!el) return
-    el.scrollBy({ left: direction * Math.max(el.clientWidth * 0.75, 240), behavior: "smooth" })
-  }
-  const arrowClass = `absolute top-[38%] z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/70 text-white opacity-0 shadow-lg transition hover:bg-black group-hover/row:opacity-100 lg:flex`
-
+  const columns = Math.max(1, Math.ceil(channels.length / 2))
   return (
-    <section className="group/row relative" aria-label={title}>
-      <h3 className={`mb-3 text-lg font-bold sm:text-xl ${isDark ? "text-white" : "text-slate-900"}`}>
-        {title}
-      </h3>
-      <div className="relative">
-        <button type="button" aria-label={`Rolar ${title} para a esquerda`} onClick={() => scrollRow(-1)} className={`${arrowClass} left-2`}>
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <div
-          ref={scrollerRef}
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-3 pt-1 scrollbar-hide"
-        >
-          {channels.map((channel) => (
-            <ChannelPoster
-              key={channel.id}
-              channel={channel}
-              isActive={!watchingLive && activeId === channel.id}
-              isDark={isDark}
-              onSelect={onSelect}
-            />
-          ))}
-        </div>
-        <button type="button" aria-label={`Rolar ${title} para a direita`} onClick={() => scrollRow(1)} className={`${arrowClass} right-2`}>
-          <ChevronRight className="h-5 w-5" />
-        </button>
+    <section aria-label="Canais">
+      <div
+        className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 lg:[grid-template-columns:repeat(var(--channel-cols),minmax(0,1fr))]"
+        style={{ "--channel-cols": columns } as CSSProperties}
+      >
+        {channels.map((channel) => (
+          <ChannelPoster
+            key={channel.id}
+            channel={channel}
+            isActive={!watchingLive && activeId === channel.id}
+            isDark={isDark}
+            onSelect={onSelect}
+          />
+        ))}
       </div>
     </section>
   )
@@ -313,20 +291,6 @@ export default function LiveStreams() {
     const next = list[(index + 1) % list.length]
     if (next) selectChannel(next)
   }
-
-  const rows = useMemo(() => {
-    const order: string[] = []
-    const grouped = new Map<string, Channel[]>()
-    for (const channel of channels) {
-      const bucket = grouped.get(channel.category)
-      if (bucket) bucket.push(channel)
-      else {
-        grouped.set(channel.category, [channel])
-        order.push(channel.category)
-      }
-    }
-    return order.map((title) => ({ title, channels: grouped.get(title) ?? [] }))
-  }, [channels])
 
   const openChannel = (channel: Channel) => {
     if (channel.id === GLOBO_CHANNEL_ID) {
@@ -509,18 +473,14 @@ export default function LiveStreams() {
         )}
       </div>
 
-      <div className="mt-8 space-y-8">
-        {rows.map((row) => (
-          <ChannelRow
-            key={row.title}
-            title={row.title}
-            channels={row.channels}
-            activeId={activeChannel.id}
-            watchingLive={watchingLive}
-            isDark={isDark}
-            onSelect={openChannel}
-          />
-        ))}
+      <div className="mt-8">
+        <ChannelShelf
+          channels={channels}
+          activeId={activeChannel.id}
+          watchingLive={watchingLive}
+          isDark={isDark}
+          onSelect={openChannel}
+        />
       </div>
     </div>
   )

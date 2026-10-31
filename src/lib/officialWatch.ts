@@ -16,6 +16,19 @@ function isCazeOfficialChannel(host: string, path: string): boolean {
   return host === "youtube.com" && /^\/(?:@cazetv|c\/cazetv)(?:\/(?:live|streams))?\/?$/i.test(path)
 }
 
+/** Player público que a própria emissora coloca no site. Só o embed da Restream, com token hexadecimal. */
+export function restreamEmbedUrl(src: string): string | null {
+  try {
+    const u = new URL(src)
+    if (u.protocol !== "https:" || u.hostname !== "player.restream.io") return null
+    const token = u.searchParams.get("token")
+    if (!token || !/^[a-f0-9]+$/i.test(token)) return null
+    return `https://player.restream.io/?token=${encodeURIComponent(token)}`
+  } catch {
+    return null
+  }
+}
+
 /** Endereço que o player já sabe reproduzir aqui, sem abrir outra aba. */
 export function isYouTubeWatchUrl(src: string): boolean {
   try {

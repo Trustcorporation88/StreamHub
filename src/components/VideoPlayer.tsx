@@ -13,7 +13,7 @@ import {
   AlertTriangle,
   ExternalLink,
 } from "lucide-react"
-import { getOfficialWatchInfo, isYouTubeWatchUrl } from "../lib/officialWatch"
+import { getOfficialWatchInfo, isYouTubeWatchUrl, restreamEmbedUrl } from "../lib/officialWatch"
 
 interface VideoPlayerProps {
   src: string
@@ -119,6 +119,7 @@ export default function VideoPlayer({ src, title, fillContainer = false, onRetry
       ? officialWatch.href
       : null
   const isOfficialWatch = officialWatch !== null && !inlineYouTubeSrc
+  const restreamEmbed = restreamEmbedUrl(src)
   const ytEmbedRaw = inlineYouTubeSrc ? youTubeEmbedUrl(inlineYouTubeSrc) : isOfficialWatch ? null : youTubeEmbedUrl(src)
   const ytChannelId = ytEmbedRaw?.startsWith("CHANNEL:") ? ytEmbedRaw.slice(8) : null
   const [resolvedYtEmbed, setResolvedYtEmbed] = useState<string | null>(null)
@@ -414,6 +415,27 @@ export default function VideoPlayer({ src, title, fillContainer = false, onRetry
     return h > 0
       ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
       : `${m}:${String(sec).padStart(2, "0")}`
+  }
+
+  if (restreamEmbed) {
+    return (
+      <div
+        ref={containerRef}
+        className={`relative overflow-hidden rounded-2xl bg-black shadow-2xl ${
+          fillContainer ? "h-full" : "aspect-video"
+        }`}
+      >
+        <iframe
+          src={restreamEmbed}
+          title={title || "NTV"}
+          className="h-full w-full"
+          style={fillContainer ? undefined : { aspectRatio: "16 / 9" }}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          frameBorder="0"
+        />
+      </div>
+    )
   }
 
   if (officialWatch) {
