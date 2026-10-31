@@ -146,5 +146,14 @@
     "logo": "https://yt3.googleusercontent.com/CTFU2P7tW43punwV3olirWyw_I5tKS1YzMe6JfeBmWw09ipCy_6GW2uE9EjX8T63pgLIsiJdBpA=s900-c-k-c0x00ffffff-no-rj",
     "category": "Brasil",
     "quality": "FHD"
+  },
+  {
+    "id": "ntv",
+    "name": "NTV",
+    "url": "https://player.restream.io/?token=545d65304d464807a794bb1a66513b84",
+    "logo": "https://www.ntv.tv.br/NTV%20LOGO.webp",
+    "website": "https://www.ntv.tv.br/",
+    "category": "Brasil",
+    "quality": "HD"
   }
 ]

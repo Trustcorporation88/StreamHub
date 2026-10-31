@@ -8,7 +8,7 @@ const source = readFileSync(new URL('./officialWatch.ts', import.meta.url), 'utf
 const { outputText } = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 })
-const { getOfficialWatchInfo, CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, isYouTubeWatchUrl } =
+const { getOfficialWatchInfo, CAZE_TV_OFFICIAL_URL, GLOBO_RJ_OFFICIAL_URL, isYouTubeWatchUrl, restreamEmbedUrl } =
   await import(`data:text/javascript,${encodeURIComponent(outputText)}`)
 
 for (const url of [
@@ -68,6 +68,19 @@ test('Other Globo content does not inherit the free live-TV promise', () => {
   const info = getOfficialWatchInfo('https://globoplay.globo.com/filme/exemplo/')
   assert.doesNotMatch(info.body, /Não precisa|gratuitamente/)
   assert.match(info.body, /dependem do conteúdo/)
+})
+
+test('Restream embed only accepts the public player token', () => {
+  assert.equal(
+    restreamEmbedUrl('https://player.restream.io/?token=545d65304d464807a794bb1a66513b84'),
+    'https://player.restream.io/?token=545d65304d464807a794bb1a66513b84',
+  )
+  assert.equal(restreamEmbedUrl('https://player.restream.io/?token=not a token'), null)
+  assert.equal(restreamEmbedUrl('https://evil.example/?token=545d65304d464807a794bb1a66513b84'), null)
+  assert.equal(
+    restreamEmbedUrl('https://www.ntv.tv.br/'),
+    null,
+  )
 })
 
 test('Curated channel list no longer lives in the component', () => {
