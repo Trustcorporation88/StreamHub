@@ -145,11 +145,15 @@ const sections = [
     content: [
       {
         heading: "Third-Party Links",
-        text: "SeligaAqui may contain links to third-party websites, APIs, or services that are not owned or controlled by SeligaAqui. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, SmartTube (github.com/yuliskov/SmartTube), the official Sonarr repository (github.com/Sonarr/Sonarr), and various CDN/streaming servers. SeligaAqui has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
+        text: "SeligaAqui may contain links to third-party websites, APIs, or services that are not owned or controlled by SeligaAqui. These include, but are not limited to: iptv-org/iptv, EmbedSportex API, streams.esportex.site, SmartTube (github.com/yuliskov/SmartTube), the official Sonarr repository (github.com/Sonarr/Sonarr), Televisão.TV (https://televisao.tv), and various CDN/streaming servers. SeligaAqui has no control over and assumes no responsibility for the content, privacy policies, or practices of any third-party sites or services.",
       },
       {
         heading: "No Responsibility",
         text: "We strongly advise you to read the terms and conditions and privacy policies of any third-party website or service that you visit or interact with through SeligaAqui. SeligaAqui shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any third-party content, goods, or services available on or through any third-party site or service.",
+      },
+      {
+        heading: "Televisão.TV",
+        text: "The Televisão.TV menu opens https://televisao.tv in a new browser tab. That site is an independent catalog of Portuguese-language channels. SeligaAqui does not host, proxy, or embed its players, and does not present itself as Televisão.TV or as a partner of the channels listed there. Availability of each stream is determined by that site and the originating signal.",
       },
       {
         heading: "External Applications",
@@ -289,7 +293,7 @@ export default function LegalDisclaimer() {
               information for SeligaAqui.
             </p>
             <p className={`mt-2 text-xs ${mutedText}`}>
-              Effective Date: June 15, 2026 &nbsp;|&nbsp; Last Updated: September 27, 2026
+              Effective Date: June 15, 2026 &nbsp;|&nbsp; Last Updated: October 31, 2026
             </p>
           </div>
         </div>
@@ -347,7 +351,7 @@ export default function LegalDisclaimer() {
         <p className={`text-xs leading-relaxed ${mutedText}`}>
           By using SeligaAqui, you confirm that you have read, understood, and agree to be bound
           by these Legal Disclaimers and Terms and Conditions. If you do not agree, you must not
-          use the Application. This document was last updated on September 27, 2026. SeligaAqui reserves
+          use the Application. This document was last updated on October 31, 2026. SeligaAqui reserves
           the right to update these terms at any time without prior notice. The current version of
           these terms will always be available within the Application.
         </p>

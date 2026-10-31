@@ -71,6 +71,15 @@ const destinations = [
     metric: "Grátis",
     metricLabel: "com anúncios",
   },
+  {
+    id: "televisao" as Tab,
+    icon: Globe,
+    title: "Televisão.TV",
+    description: "Atalho para o catálogo de canais em português do site televisao.tv.",
+    color: "text-sky-400",
+    metric: "Link",
+    metricLabel: "nova aba",
+  },
 ]
 
 const stats = [

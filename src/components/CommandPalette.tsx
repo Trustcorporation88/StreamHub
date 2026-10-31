@@ -4,6 +4,7 @@ import Fuse from "fuse.js"
 import {
   Clapperboard,
   CornerDownLeft,
+  Globe,
   Home,
   Info,
   KeyRound,
@@ -35,6 +36,7 @@ const NAV_COMMANDS: NavCommand[] = [
   { kind: "nav", id: "catalog", label: "Canais IPTV", hint: "Catálogo completo", icon: TvMinimalPlay },
   { kind: "nav", id: "mylist", label: "Minhas Séries", hint: "Sua playlist", icon: KeyRound },
   { kind: "nav", id: "plex", label: "Plex", hint: "Seu servidor", icon: Clapperboard },
+  { kind: "nav", id: "televisao", label: "Televisão.TV", hint: "Catálogo externo", icon: Globe },
   { kind: "nav", id: "sports", label: "Esportes ao Vivo", hint: "Partidas de hoje", icon: Trophy },
   { kind: "nav", id: "music", label: "Música", hint: "Rádio e YouTube", icon: Music },
   { kind: "nav", id: "youtube", label: "YouTube", hint: "Clique e assista no player", icon: MonitorPlay },

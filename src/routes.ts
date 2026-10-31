@@ -4,6 +4,7 @@ export type Tab =
   | "catalog"
   | "mylist"
   | "plex"
+  | "televisao"
   | "sports"
   | "music"
   | "youtube"
@@ -21,6 +22,7 @@ export const TAB_PATHS: Record<Tab, string> = {
   catalog: "/catalog",
   mylist: "/mylist",
   plex: "/plex",
+  televisao: "/televisao",
   sports: "/sports",
   music: "/music",
   youtube: "/youtube",
